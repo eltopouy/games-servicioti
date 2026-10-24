@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Pajaritos de Pinamar - Paisaje Interactivo | games.servicioti.com.uy</title>
+<meta name="description" content="Paisaje interactivo y sonoro de las aves de Uruguay en Pinamar, Canelones. Escucha sus cantos reales sincronizados, explora de día y atardecer y disfruta en familia.">
+<meta name="theme-color" content="#0c1017">
+<link rel="canonical" href="https://games.servicioti.com.uy/">
+<link rel="icon" type="image/webp" href="assets_mobile/hornero_reposo_trans.webp">
+<link rel="apple-touch-icon" href="assets_mobile/hornero_reposo_trans.webp">
+<link rel="manifest" href="manifest.json">
+<!-- Open Graph / Redes Sociales -->
+<meta property="og:title" content="Pajaritos de Pinamar - Paisaje Interactivo | Juegos ServicioTI">
+<meta property="og:description" content="Paisaje sonoro e interactivo de aves típicas de Uruguay: Hornero, Cotorra, Tero, Cardenal, Zorzal, Benteveo, Chingolo y Gaviota.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://games.servicioti.com.uy/">
+<meta property="og:image" content="https://games.servicioti.com.uy/assets_mobile/pinamar_mediodia_gemini.webp">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+    font-family: 'Nunito', sans-serif;
+    background-color: #0c1017;
+  }
+
+  /* Visor / Ventana de la Cámara */
+  #viewport {
+    position: absolute;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    cursor: grab;
+  }
+
+  #viewport:active {
+    cursor: grabbing;
+  }
+
+  /* Escenario del Mundo Panorámico (Proporción exacta 16:9 Gemini) */
+  #world-stage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-size: 100% 100%;
+    background-position: center center;
+    background-repeat: no-repeat;
+    transform-origin: 0 0;
+    will-change: transform;
+    transition: background-image 0.6s ease;
+  }
+
+  /* Fondos Reales de Gemini Web */
+  #world-stage.theme-mediodia {
+    background-image: url('assets_mobile/pinamar_mediodia_gemini.webp');
+  }
+  #world-stage.theme-costa {
+    background-image: url('assets_mobile/pinamar_costa_gemini.webp');
+  }
+  #world-stage.theme-atardecer {
+    background-image: url('assets_mobile/pinamar_atardecer_gemini.webp');
+  }
+  #world-stage.theme-amanecer {
+    background-image: url('assets_mobile/pinamar_amanecer_gemini.webp');
+  }
+
+  /* Barra Superior de Control */
+  .hud-bar {
+    position: absolute;
+    top: max(12px, env(safe-area-inset-top));
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  .hud-btn {
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.95);
+    border-radius: 50px;
+    padding: 8px 16px;
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(0.78rem, 2.5vw, 0.95rem);
+    color: #2f3542;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s ease, opacity 0.3s ease;
+  }
+
+  .hud-btn:active {
+    transform: scale(0.92);
+  }
+
+  /* Botón de Zoom Out / Vista Completa */
+  #btn-zoom-out {
+    position: absolute;
+    bottom: max(22px, env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 100;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: #ff4757;
+    color: #ffffff;
+    border-color: #ff6b81;
+  }
+
+  #btn-zoom-out.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Percha de Cada Pajarito (Escalado uniforme en el mundo 16:9) */
+  .bird-perch {
+    position: absolute;
+    transform: translate(-50%, -85%);
+    cursor: pointer;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    width: 120px;
+    height: 120px;
+    transition: left 0.65s cubic-bezier(0.2, 0.9, 0.3, 1), top 0.65s cubic-bezier(0.2, 0.9, 0.3, 1), filter 0.2s ease;
+  }
+
+  .bird-sprite {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+    transition: transform 0.15s ease;
+    pointer-events: none;
+    transform-origin: bottom center;
+  }
+
+  /* Animación Suave de Respiración cuando está en reposo */
+  .bird-perch.is-muted .bird-sprite {
+    animation: idleBreathe 3.5s infinite ease-in-out;
+  }
+
+  @keyframes idleBreathe {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-4px) scale(1.02, 0.98); }
+  }
+
+  /* Animación de Canto y Rebote Alegre */
+  .bird-perch.is-singing .bird-sprite {
+    animation: singingBob 0.42s infinite alternate ease-in-out;
+    filter: drop-shadow(0 8px 18px rgba(255, 230, 0, 0.7));
+  }
+
+  @keyframes singingBob {
+    0% { transform: translateY(0) scale(1); }
+    100% { transform: translateY(-7px) scale(1.05, 0.96); }
+  }
+
+  /* Aura de Sonido al cantar */
+  .sound-aura {
+    position: absolute;
+    bottom: 25%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    width: 110%;
+    height: 110%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, rgba(255, 218, 121, 0.25) 50%, transparent 70%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+    transition: opacity 0.3s ease;
+  }
+
+  .bird-perch.is-singing .sound-aura {
+    opacity: 1;
+    animation: auraPulse 1.2s infinite ease-out;
+  }
+
+  @keyframes auraPulse {
+    0% { transform: translate(-50%, 50%) scale(0.6); opacity: 0.85; }
+    100% { transform: translate(-50%, 50%) scale(1.5); opacity: 0; }
+  }
+
+  /* Notas Musicales */
+  .note-spawner {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    pointer-events: none;
+    z-index: 30;
+  }
+
+  .music-note {
+    position: absolute;
+    font-size: clamp(1.2rem, 3.8vw, 1.6rem);
+    font-weight: 900;
+    color: #fffa65;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    animation: floatNote 1.5s forwards ease-out;
+  }
+
+  @keyframes floatNote {
+    0% { transform: translate(0, 0) scale(0.5) rotate(0deg); opacity: 1; }
+    50% { opacity: 0.95; }
+    100% { transform: translate(var(--tx, 20px), -70px) scale(1.35) rotate(var(--rot, 20deg)); opacity: 0; }
+  }
+
+  /* Cartel con Nombre del Pájaro */
+  .bird-toast {
+    position: absolute;
+    bottom: -24px;
+    background: rgba(0, 0, 0, 0.78);
+    color: #ffffff;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.82rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.35);
+  }
+
+  .bird-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Indicador de ayuda al inicio */
+  .help-hint {
+    position: absolute;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #2f3542;
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(0.78rem, 2.4vw, 0.92rem);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22);
+    z-index: 90;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: hintPulse 2s infinite alternate ease-in-out;
+    transition: opacity 0.5s ease;
+  }
+
+  @keyframes hintPulse {
+    0% { transform: translateX(-50%) translateY(0); }
+    100% { transform: translateX(-50%) translateY(-4px); }
+  }
+
+  /* =========================================================================
+     UBICACIÓN EXACTA DE LAS 8 AVES EN EL PAISAJE DE PINAMAR GEMINI
+     ========================================================================= */
+  /* Posición base en Calle de Tosca (Mediodía, Atardecer, Amanecer) */
+  #perch-cotorra  { left: 29.5%; top: 18.0%; } /* Copa alta de pinos y eucaliptos */
+  #perch-hornero  { left: 37.8%; top: 30.5%; } /* Arriba del poste de hormigón con su nido */
+  #perch-benteveo { left: 21.0%; top: 52.0%; } /* En la rama horizontal del pino marítimo */
+  #perch-gaviota  { left: 73.0%; top: 82.0%; } /* Parada en el suelo arenoso de la calle de tosca */
+  #perch-cardenal { left: 67.5%; top: 41.5%; } /* En el Ceibo en flor carmesí */
+  #perch-zorzal   { left: 82.5%; top: 48.0%; } /* En la palmera Butiá / jardín costero */
+  #perch-chingolo { left: 30.2%; top: 67.5%; } /* Posado justo sobre el poste de madera del alambrado */
+  #perch-tero     { left: 52.0%; top: 88.0%; } /* Parado en el pasto en la calle de tosca */
+
+  /* Posición adaptativa en la Escuela / Balneario de Pinamar */
+  #world-stage.theme-costa #perch-cotorra  { left: 22.0%; top: 18.0%; } /* Copa de pino izquierda */
+  #world-stage.theme-costa #perch-hornero  { left: 47.5%; top: 43.5%; } /* Cumbre y viga del techo del edificio */
+  #world-stage.theme-costa #perch-benteveo { left: 12.0%; top: 38.0%; } /* Rama del árbol izquierdo */
+  #world-stage.theme-costa #perch-gaviota  { left: 73.0%; top: 82.0%; } /* Parada en la arena y calle frente a la plaza */
+  #world-stage.theme-costa #perch-cardenal { left: 83.0%; top: 38.0%; } /* En el pino costero de la derecha */
+  #world-stage.theme-costa #perch-zorzal   { left: 91.0%; top: 52.0%; } /* En la rama baja derecha */
+  #world-stage.theme-costa #perch-chingolo { left: 30.0%; top: 71.0%; } /* En el borde de la explanada de hormigón */
+  #world-stage.theme-costa #perch-tero     { left: 52.0%; top: 88.0%; } /* En la calle de tosca central */
+</style>
+</head>
+<body>
+
+<div id="viewport">
+  <div id="world-stage" class="theme-mediodia">
+
+    <!-- 1. COTORRA: Copa del eucalipto y pino -->
+    <div id="perch-cotorra" class="bird-perch is-muted" data-bird="cotorra">
+      <div class="sound-aura"></div>
+      <div class="note-spawner"></div>
+      <img id="img-cotorra" class="bird-sprite" src="assets_mobile/cotorra_reposo_trans.webp" alt="Cotorra">
+      <div class="bird-toast">¡Cotorra!</div>
+    </div>
+
+    <!-- 2. HORNERO: En su nido sobre la columna de hormigón -->
+    <div id="perch-hornero" class="bird-perch is-muted" data-bird="hornero">
+      <div class="sound-aura"></div>
+      <div class="note-spawner"></div>
+      <img id="img-hornero" class="bird-sprite" src="assets_mobile/hornero_reposo_trans.webp" alt="Hornero">
+      <div class="bird-toast">¡Hornero!</div>
+    </div>
+
+    <!-- 3. BENTEVEO: En la rama horizontal del pino marítimo -->
+    <div id="perch-benteveo" class="bird-perch is-muted" data-bird="benteveo">
+      <div class="sound-aura"></div>
+      <div class="note-spawner"></div>
+      <img id="img-benteveo" class="bird-sprite" src="assets_mobile/benteveo_reposo_trans.webp" alt="Benteveo">
+      <div class="bird-toast">¡Benteveo!</div>
+    </div>
+
+    <!-- 4. GAVIOTA: En el cielo costero -->
+    <div id="perch-gaviota" class="bird-perch is-muted" data-bird="gaviota">
+      <div class="sound-aura"></div>
+      <div class="note-spawner"></div>
+      <img id="img-gaviota" class="bird-sprite" src="assets_mobile/gaviota_reposo_trans.webp" alt="Gaviota Cocinera">
+      <div class="bird-toast">¡Gaviota!</div>
+    </div>
+
+    <!-- 5. CARDENAL: En el Ceibo en flor -->
+    <div id="perch-cardenal" class="bird-perch is-muted" data-bird="cardenal">
+      <div class="sound-aura"></div>
+      <div class="note-spawner"></div>
+      <img id="img-cardenal" class="bird-sprite" src="assets_mobile/cardenal_reposo_trans.webp" alt="Cardenal">
+      <div class="bird-toast">¡Cardenal!</div>
+    </div>
+
+    <!-- 6. ZORZAL COLORADO: En la palmera y jardín -->
+    <div id="perch-zorzal" class="bird-perch is-muted" data-bird="zorzal">
+      <div class="sound-aura"></div>
+      <div class="note-spawner"></div>
+      <img id="img-zorzal" class="bird-sprite" src="assets_mobile/zorzal_reposo_trans.webp" alt="Zorzal Colorado">
+      <div class="bird-toast">¡Zorzal Colorado!</div>
+    </div>
+
+    <!-- 7. CHINGOLO: En el alambrado -->
+    <div id="perch-chingolo" class="bird-perch is-muted" data-bird="chingolo">
+      <div class="sound-aura"></div>
+      <div class="note-spawner"></div>
+      <img id="img-chingolo" class="bird-sprite" src="assets_mobile/chingolo_reposo_trans.webp" alt="Chingolo">
+      <div class="bird-toast">¡Chingolo!</div>
+    </div>
+
+    <!-- 8. TERO: En el pasto de la calle de tosca -->
+    <div id="perch-tero" class="bird-perch is-muted" data-bird="tero">
+      <div class="sound-aura"></div>
+      <div class="note-spawner"></div>
+      <img id="img-tero" class="bird-sprite" src="assets_mobile/tero_reposo_trans.webp" alt="Tero">
+      <div class="bird-toast">¡Tero!</div>
+    </div>
+
+  </div>
+
+  <!-- Barra Superior Minimalista -->
+  <header class="hud-bar">
+    <button id="btn-theme" class="hud-btn" type="button" aria-label="Cambiar momento del día">
+      <span id="theme-icon">☀️</span>
+      <span id="theme-text">Mediodía</span>
+    </button>
+
+    <a href="https://servicioti.com.uy" target="_blank" rel="noopener" class="hud-btn" title="ServicioTI - Portal" style="text-decoration:none; padding: 6px 14px; background: rgba(12, 16, 23, 0.82); color: #38bdf8; border: 1.5px solid rgba(56, 189, 248, 0.45); font-size: clamp(0.72rem, 2vw, 0.85rem);">
+      <span>🎮</span>
+      <span>games.servicioti.com.uy</span>
+    </a>
+
+    <button id="btn-master" class="hud-btn" type="button" aria-label="Cantar todos o silenciar">
+      <span id="master-icon">🎶</span>
+      <span id="master-text">Cantar Todos</span>
+    </button>
+  </header>
+
+  <!-- Botón de Zoom Out cuando la cámara se acerca a un pajarito -->
+  <button id="btn-zoom-out" class="hud-btn" type="button">
+    <span>🔍</span>
+    <span>Ver Paisaje Completo</span>
+  </button>
+
+  <!-- Cartel de ayuda inicial para niños -->
+  <div id="help-hint" class="help-hint">
+    <span>👆</span>
+    <span>¡Toca un pajarito para acercarte o mueve con tu dedo!</span>
+  </div>
+</div>
+
+<script>
+  /* =========================================================================
+     DATOS Y CONFIGURACIÓN DE LAS 8 AVES
+     ========================================================================= */
+  const BIRDS = {
+    cotorra: {
+      name: "Cotorra",
+      audioSrc: "audio/canto_cotorra.mp3",
+      reposo: "assets_mobile/cotorra_reposo_trans.webp",
+      canto: "assets_mobile/cotorra_canto_trans.webp"
+    },
+    hornero: {
+      name: "Hornero",
+      audioSrc: "audio/canto_hornero.mp3",
+      reposo: "assets_mobile/hornero_reposo_trans.webp",
+      canto: "assets_mobile/hornero_canto_trans.webp"
+    },
+    benteveo: {
+      name: "Benteveo",
+      audioSrc: "audio/canto_benteveo.mp3",
+      reposo: "assets_mobile/benteveo_reposo_trans.webp",
+      canto: "assets_mobile/benteveo_canto_trans.webp"
+    },
+    gaviota: {
+      name: "Gaviota Cocinera",
+      audioSrc: "audio/canto_gaviota.mp3",
+      reposo: "assets_mobile/gaviota_reposo_trans.webp",
+      canto: "assets_mobile/gaviota_canto_trans.webp"
+    },
+    cardenal: {
+      name: "Cardenal",
+      audioSrc: "audio/canto_cardenal.mp3",
+      reposo: "assets_mobile/cardenal_reposo_trans.webp",
+      canto: "assets_mobile/cardenal_canto_trans.webp"
+    },
+    zorzal: {
+      name: "Zorzal Colorado",
+      audioSrc: "audio/canto_zorzal_colorado.mp3",
+      reposo: "assets_mobile/zorzal_reposo_trans.webp",
+      canto: "assets_mobile/zorzal_canto_trans.webp"
+    },
+    chingolo: {
+      name: "Chingolo",
+      audioSrc: "audio/canto_chingolo.mp3",
+      reposo: "assets_mobile/chingolo_reposo_trans.webp",
+      canto: "assets_mobile/chingolo_canto_trans.webp"
+    },
+    tero: {
+      name: "Tero",
+      audioSrc: "audio/canto_tero.mp3",
+      reposo: "assets_mobile/tero_reposo_trans.webp",
+      canto: "assets_mobile/tero_canto_trans.webp"
+    }
+  };
+
+  /* Coordenadas adaptativas de percha según el fondo */
+  const THEME_PERCHES = {
+    mediodia: {
+      cotorra:  { pctX: 29.5, pctY: 18.0 },
+      hornero:  { pctX: 37.8, pctY: 30.5 },
+      benteveo: { pctX: 21.0, pctY: 52.0 },
+      gaviota:  { pctX: 73.0, pctY: 82.0 },
+      cardenal: { pctX: 67.5, pctY: 41.5 },
+      zorzal:   { pctX: 82.5, pctY: 48.0 },
+      chingolo: { pctX: 30.2, pctY: 67.5 },
+      tero:     { pctX: 52.0, pctY: 88.0 }
+    },
+    atardecer: {
+      cotorra:  { pctX: 29.5, pctY: 18.0 },
+      hornero:  { pctX: 37.8, pctY: 30.5 },
+      benteveo: { pctX: 21.0, pctY: 52.0 },
+      gaviota:  { pctX: 73.0, pctY: 82.0 },
+      cardenal: { pctX: 67.5, pctY: 41.5 },
+      zorzal:   { pctX: 82.5, pctY: 48.0 },
+      chingolo: { pctX: 30.2, pctY: 67.5 },
+      tero:     { pctX: 52.0, pctY: 88.0 }
+    },
+    amanecer: {
+      cotorra:  { pctX: 29.5, pctY: 18.0 },
+      hornero:  { pctX: 37.8, pctY: 30.5 },
+      benteveo: { pctX: 21.0, pctY: 52.0 },
+      gaviota:  { pctX: 73.0, pctY: 82.0 },
+      cardenal: { pctX: 67.5, pctY: 41.5 },
+      zorzal:   { pctX: 82.5, pctY: 48.0 },
+      chingolo: { pctX: 30.2, pctY: 67.5 },
+      tero:     { pctX: 52.0, pctY: 88.0 }
+    },
+    costa: {
+      cotorra:  { pctX: 22.0, pctY: 18.0 },
+      hornero:  { pctX: 47.5, pctY: 43.5 },
+      benteveo: { pctX: 12.0, pctY: 38.0 },
+      gaviota:  { pctX: 73.0, pctY: 82.0 },
+      cardenal: { pctX: 83.0, pctY: 38.0 },
+      zorzal:   { pctX: 91.0, pctY: 52.0 },
+      chingolo: { pctX: 30.0, pctY: 71.0 },
+      tero:     { pctX: 52.0, pctY: 88.0 }
+    }
+  };
+
+  function getBirdCoordinates(id) {
+    const currentTheme = (typeof THEMES !== 'undefined' && THEMES[themeIndex]) ? THEMES[themeIndex].id : "mediodia";
+    const themeSet = THEME_PERCHES[currentTheme] || THEME_PERCHES.mediodia;
+    return themeSet[id] || { pctX: 50, pctY: 50 };
+  }
+
+  // Elementos de Audio HTML5 nativos para salida directa sin bloqueos
+  const audioElements = {};
+  const isSinging = {};
+  const toastTimers = {};
+
+  Object.keys(BIRDS).forEach(id => {
+    const audio = new Audio();
+    audio.src = BIRDS[id].audioSrc;
+    audio.loop = true;
+    audio.preload = "auto";
+    audioElements[id] = audio;
+    isSinging[id] = false;
+  });
+
+  /* =========================================================================
+     CÁMARA: ESCENARIO 16:9, ARRASTRE FLUIDO (PAN) Y ZOOM INTERACTIVO
+     ========================================================================= */
+  const viewport = document.getElementById("viewport");
+  const stage = document.getElementById("world-stage");
+  const btnZoomOut = document.getElementById("btn-zoom-out");
+
+  let camera = {
+    scale: 1,
+    targetScale: 1,
+    x: 0,
+    y: 0,
+    targetX: 0,
+    targetY: 0,
+    isZoomed: false,
+    focusedBird: null
+  };
+
+  let drag = {
+    active: false,
+    startX: 0,
+    startY: 0,
+    origX: 0,
+    origY: 0,
+    hasMoved: false
+  };
+
+  // Ajustar el tamaño del escenario manteniendo la proporción 16:9 de Gemini
+  let stageW = 1920;
+  let stageH = 1080;
+
+  function layoutStage() {
+    const vpW = viewport.clientWidth;
+    const vpH = viewport.clientHeight;
+
+    // El escenario cubre siempre el alto y mantiene la vista panorámica 16:9
+    if (vpW / vpH >= 16 / 9) {
+      stageW = vpW;
+      stageH = vpW * (9 / 16);
+    } else {
+      stageH = vpH;
+      stageW = vpH * (16 / 9);
+    }
+
+    stage.style.width = `${stageW}px`;
+    stage.style.height = `${stageH}px`;
+
+    clampCameraBounds();
+    updateCameraTransform(true);
+  }
+
+  function updateCameraTransform(immediate = false) {
+    if (immediate) {
+      camera.x = camera.targetX;
+      camera.y = camera.targetY;
+      camera.scale = camera.targetScale;
+      stage.style.transition = "none";
+    } else {
+      stage.style.transition = "transform 0.65s cubic-bezier(0.2, 0.9, 0.3, 1)";
+    }
+    stage.style.transform = `translate3d(${camera.targetX}px, ${camera.targetY}px, 0) scale(${camera.targetScale})`;
+  }
+
+  // Acercarse a un pájaro seleccionado
+  function zoomToBird(id) {
+    const bird = BIRDS[id];
+    if (!bird) return;
+
+    camera.isZoomed = true;
+    camera.focusedBird = id;
+    camera.targetScale = window.innerWidth < 768 ? 2.2 : 1.75;
+
+    const vpW = viewport.clientWidth;
+    const vpH = viewport.clientHeight;
+
+    const coords = getBirdCoordinates(id);
+
+    // Coordenadas absolutas del pájaro en el escenario 16:9
+    const birdPxX = (coords.pctX / 100) * stageW;
+    const birdPxY = (coords.pctY / 100) * stageH;
+
+    // Desplazamiento para centrar exactamente el pájaro en la pantalla
+    camera.targetX = (vpW / 2) - (birdPxX * camera.targetScale);
+    camera.targetY = (vpH / 2) - (birdPxY * camera.targetScale);
+
+    clampCameraBounds();
+    updateCameraTransform(false);
+    btnZoomOut.classList.add("show");
+  }
+
+  // Volver a la vista completa del paisaje
+  function resetZoom() {
+    camera.isZoomed = false;
+    camera.focusedBird = null;
+    camera.targetScale = 1;
+    const vpW = viewport.clientWidth;
+    if (stageW > vpW) {
+      camera.targetX = (vpW - stageW) / 2;
+    } else {
+      camera.targetX = 0;
+    }
+    camera.targetY = 0;
+    clampCameraBounds();
+    updateCameraTransform(false);
+    btnZoomOut.classList.remove("show");
+  }
+
+  btnZoomOut.addEventListener("click", resetZoom);
+
+  // Limitar bordes del pan para que el paisaje nunca se salga de la vista
+  function clampCameraBounds() {
+    const vpW = viewport.clientWidth;
+    const vpH = viewport.clientHeight;
+
+    const currentW = stageW * camera.targetScale;
+    const currentH = stageH * camera.targetScale;
+
+    const minX = vpW - currentW;
+    const minY = vpH - currentH;
+
+    if (minX < 0) {
+      camera.targetX = Math.min(0, Math.max(minX, camera.targetX));
+    } else {
+      camera.targetX = (vpW - currentW) / 2;
+    }
+
+    if (minY < 0) {
+      camera.targetY = Math.min(0, Math.max(minY, camera.targetY));
+    } else {
+      camera.targetY = (vpH - currentH) / 2;
+    }
+  }
+
+  // Interacción táctil y de ratón: Arrastre fluido con el dedo (Pan)
+  viewport.addEventListener("pointerdown", e => {
+    if (e.target.closest(".hud-btn")) return;
+    drag.active = true;
+    drag.startX = e.clientX;
+    drag.startY = e.clientY;
+    drag.origX = camera.targetX;
+    drag.origY = camera.targetY;
+    drag.hasMoved = false;
+    stage.style.transition = "none";
+  });
+
+  window.addEventListener("pointermove", e => {
+    if (!drag.active) return;
+    const dx = e.clientX - drag.startX;
+    const dy = e.clientY - drag.startY;
+
+    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+      drag.hasMoved = true;
+    }
+
+    camera.targetX = drag.origX + dx;
+    camera.targetY = drag.origY + dy;
+    clampCameraBounds();
+    stage.style.transform = `translate3d(${camera.targetX}px, ${camera.targetY}px, 0) scale(${camera.targetScale})`;
+  });
+
+  window.addEventListener("pointerup", e => {
+    if (!drag.active) return;
+    drag.active = false;
+    clampCameraBounds();
+    updateCameraTransform(false);
+  });
+
+  window.addEventListener("resize", () => {
+    layoutStage();
+  });
+
+  /* =========================================================================
+     INTERACCIÓN Y CANTO DE AVES
+     ========================================================================= */
+  function toggleBird(id, triggeredByClick = true) {
+    const hint = document.getElementById("help-hint");
+    if (hint) {
+      hint.style.opacity = "0";
+      setTimeout(() => hint.remove(), 500);
+    }
+
+    const audio = audioElements[id];
+    const perch = document.getElementById(`perch-${id}`);
+    const img = document.getElementById(`img-${id}`);
+
+    showBirdToast(id);
+
+    if (isSinging[id]) {
+      isSinging[id] = false;
+      audio.pause();
+      audio.currentTime = 0;
+      perch.classList.remove("is-singing");
+      perch.classList.add("is-muted");
+      img.src = BIRDS[id].reposo;
+      img.setAttribute("data-beak", "closed");
+      if (camera.focusedBird === id) resetZoom();
+    } else {
+      isSinging[id] = true;
+      perch.classList.remove("is-muted");
+      perch.classList.add("is-singing");
+      audio.play().catch(e => console.log("Audio play err", e));
+      spawnMusicNote(id);
+
+      if (triggeredByClick) {
+        zoomToBird(id);
+      }
+    }
+
+    updateMasterButtonState();
+  }
+
+  // Conectar eventos a cada ave
+  Object.keys(BIRDS).forEach(id => {
+    const perch = document.getElementById(`perch-${id}`);
+    perch.addEventListener("pointerdown", e => {
+      e.stopPropagation();
+      drag.active = false;
+    });
+    perch.addEventListener("click", e => {
+      e.stopPropagation();
+      if (!drag.hasMoved) {
+        toggleBird(id, true);
+      }
+    });
+  });
+
+  // Mostrar cartel flotante del nombre del ave
+  function showBirdToast(id) {
+    const perch = document.getElementById(`perch-${id}`);
+    const toast = perch.querySelector(".bird-toast");
+    if (!toast) return;
+
+    if (toastTimers[id]) clearTimeout(toastTimers[id]);
+    toast.classList.add("show");
+    toastTimers[id] = setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2000);
+  }
+
+  // Notas Musicales
+  const NOTES = ["♪", "♫", "♬", "♩", "𝅘𝅥𝅯"];
+  function spawnMusicNote(id) {
+    const perch = document.getElementById(`perch-${id}`);
+    const spawner = perch.querySelector(".note-spawner");
+    if (!spawner) return;
+
+    const note = document.createElement("span");
+    note.className = "music-note";
+    note.textContent = NOTES[Math.floor(Math.random() * NOTES.length)];
+    const tx = (Math.random() - 0.5) * 60;
+    const rot = (Math.random() - 0.5) * 50;
+    note.style.setProperty("--tx", `${tx}px`);
+    note.style.setProperty("--rot", `${rot}deg`);
+
+    const colors = ["#fffa65", "#ff9ff3", "#54a0ff", "#5f27cd", "#00d2d3", "#ff6b6b"];
+    note.style.color = colors[Math.floor(Math.random() * colors.length)];
+
+    spawner.appendChild(note);
+    setTimeout(() => note.remove(), 1500);
+  }
+
+  // Motor de Sincronización de Pico en Tiempo Real a 60 FPS
+  function startLipSyncEngine() {
+    let lastNoteTime = 0;
+
+    function frame(now) {
+      Object.keys(BIRDS).forEach(id => {
+        if (!isSinging[id]) return;
+
+        const img = document.getElementById(`img-${id}`);
+        const audio = audioElements[id];
+        const t = audio.currentTime || (now * 0.001);
+
+        const isOpen = (Math.sin(t * 22 + (id.charCodeAt(0) % 7)) > 0.12) && ((Math.floor(t * 3.5) % 4) !== 0);
+
+        const currentBeak = img.getAttribute("data-beak");
+        if (isOpen && currentBeak !== "open") {
+          img.src = BIRDS[id].canto;
+          img.setAttribute("data-beak", "open");
+        } else if (!isOpen && currentBeak !== "closed") {
+          img.src = BIRDS[id].reposo;
+          img.setAttribute("data-beak", "closed");
+        }
+      });
+
+      if (now - lastNoteTime > 600) {
+        lastNoteTime = now;
+        const singingIds = Object.keys(BIRDS).filter(id => isSinging[id]);
+        if (singingIds.length > 0) {
+          const randomSinger = singingIds[Math.floor(Math.random() * singingIds.length)];
+          spawnMusicNote(randomSinger);
+        }
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  /* =========================================================================
+     BARRA SUPERIOR: MOMENTOS DEL DÍA Y CORO COMPLETO
+     ========================================================================= */
+  const THEMES = [
+    { id: "mediodia", icon: "☀️", name: "Mediodía" },
+    { id: "costa", icon: "🏫", name: "Balneario" },
+    { id: "atardecer", icon: "🌇", name: "Atardecer" },
+    { id: "amanecer", icon: "🌅", name: "Amanecer" }
+  ];
+  let themeIndex = 0;
+  const btnTheme = document.getElementById("btn-theme");
+  const themeIcon = document.getElementById("theme-icon");
+  const themeText = document.getElementById("theme-text");
+
+  btnTheme.addEventListener("click", () => {
+    stage.classList.remove(`theme-${THEMES[themeIndex].id}`);
+    themeIndex = (themeIndex + 1) % THEMES.length;
+    const current = THEMES[themeIndex];
+    stage.classList.add(`theme-${current.id}`);
+    themeIcon.textContent = current.icon;
+    themeText.textContent = current.name;
+
+    // Si la cámara estaba enfocando a un ave, seguirla con fluidez a su nueva posición
+    if (camera.isZoomed && camera.focusedBird) {
+      setTimeout(() => zoomToBird(camera.focusedBird), 120);
+    }
+  });
+
+  const btnMaster = document.getElementById("btn-master");
+  const masterIcon = document.getElementById("master-icon");
+  const masterText = document.getElementById("master-text");
+
+  function updateMasterButtonState() {
+    const anySinging = Object.keys(BIRDS).some(id => isSinging[id]);
+    if (anySinging) {
+      masterIcon.textContent = "🤫";
+      masterText.textContent = "Silencio";
+    } else {
+      masterIcon.textContent = "🎶";
+      masterText.textContent = "Cantar Todos";
+    }
+  }
+
+  btnMaster.addEventListener("click", () => {
+    const anySinging = Object.keys(BIRDS).some(id => isSinging[id]);
+    if (anySinging) {
+      Object.keys(BIRDS).forEach(id => {
+        if (isSinging[id]) toggleBird(id, false);
+      });
+      resetZoom();
+    } else {
+      Object.keys(BIRDS).forEach(id => {
+        if (!isSinging[id]) toggleBird(id, false);
+      });
+    }
+  });
+
+  // Inicialización
+  layoutStage();
+  const initVpW = viewport.clientWidth;
+  if (stageW > initVpW) {
+    camera.targetX = (initVpW - stageW) / 2;
+    clampCameraBounds();
+    updateCameraTransform(true);
+  }
+
+  startLipSyncEngine();
+
+  // Registro de Service Worker para carga offline y caché ultrarrápida
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+</script>
+
+</body>
+</html>

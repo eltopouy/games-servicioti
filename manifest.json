@@ -1,0 +1,22 @@
+{
+  "name": "Pajaritos de Pinamar - Paisaje Interactivo",
+  "short_name": "Pajaritos",
+  "description": "Paisaje sonoro e interactivo de aves y fauna de la Costa de Oro, Uruguay.",
+  "start_url": "./index.html",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#0c1017",
+  "theme_color": "#38bdf8",
+  "icons": [
+    {
+      "src": "assets_mobile/hornero_reposo_trans.webp",
+      "sizes": "192x192",
+      "type": "image/webp"
+    },
+    {
+      "src": "assets_mobile/hornero_canto_trans.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ]
+}

@@ -1,0 +1,315 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Gradiente de Cielo -->
+    <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1b75d0" />
+      <stop offset="35%" stop-color="#4ba3e3" />
+      <stop offset="70%" stop-color="#9be2f5" />
+      <stop offset="100%" stop-color="#e8f7fc" />
+    </linearGradient>
+
+    <!-- Resplandor Solar -->
+    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fbc531" stop-opacity="1" />
+      <stop offset="35%" stop-color="#fbc531" stop-opacity="0.7" />
+      <stop offset="70%" stop-color="rgba(255, 230, 110, 0.45)" />
+      <stop offset="100%" stop-color="rgba(255, 230, 110, 0.45)" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Brillo Ventanas Casa (Atardecer) -->
+    <filter id="windowBlur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6" />
+    </filter>
+
+    <!-- Calle de Tosca Gradiente -->
+    <linearGradient id="toscaGrad" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#cbc0ae" />
+      <stop offset="50%" stop-color="#f8f7f4" />
+      <stop offset="100%" stop-color="#dcd3c3" />
+    </linearGradient>
+
+    <!-- Pinos Agujas Sombra -->
+    <linearGradient id="pineGrad1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3e8e58" />
+      <stop offset="100%" stop-color="#1b4d2e" />
+    </linearGradient>
+  </defs>
+
+  <!-- 1. CIELO -->
+  <rect x="0" y="0" width="1600" height="900" fill="url(#skyGrad)" />
+
+  <!-- 2. SOL DE PINAMAR -->
+  <circle cx="800" cy="120" r="180" fill="url(#sunGlow)" />
+  <circle cx="800" cy="120" r="70" fill="#fbc531" />
+
+  <!-- NUBES DE COSTAS SUAVES -->
+  <g opacity="0.65">
+    <ellipse cx="400" cy="220" rx="140" ry="24" fill="rgba(255, 245, 225, 0.35)" />
+    <ellipse cx="460" cy="210" rx="90" ry="20" fill="rgba(255, 245, 225, 0.35)" />
+    <ellipse cx="1080" cy="280" rx="200" ry="28" fill="rgba(255, 245, 225, 0.35)" />
+    <ellipse cx="1140" cy="270" rx="120" ry="22" fill="rgba(255, 245, 225, 0.35)" />
+    <ellipse cx="800" cy="330" rx="160" ry="22" fill="rgba(255, 245, 225, 0.35)" />
+  </g>
+
+  <!-- 3. DUNAS Y BOSQUE LEJANO -->
+  <path d="M0 520 Q350 490 700 510 T1400 500 Q1520 495 1600 505 L1600 900 L0 900 Z" fill="#8fb898" />
+  <path d="M0 540 Q400 520 850 535 T1600 525 L1600 900 L0 900 Z" fill="#71a17b" />
+
+  <!-- 4. CASITAS COSTERAS BAJAS DE UN PISO (Espaciadas) -->
+  <!-- Casita 1 (Izquierda, fondo entre jardines: x=340..460, y=470..530) -->
+  <g id="casa-izquierda">
+    <!-- Césped y jardín de la casa -->
+    <ellipse cx="400" cy="545" rx="110" ry="22" fill="#44a638" opacity="0.6" />
+    <!-- Pared baja blanca/revoque -->
+    <rect x="350" y="490" width="105" height="42" fill="#f5f6fa" rx="2" />
+    <!-- Techo a dos aguas de chapa/teja roja -->
+    <polygon points="340,490 402,460 465,490" fill="#c0392b" />
+    <!-- Chimenea -->
+    <rect x="430" y="462" width="12" height="24" fill="#a04000" />
+    <ellipse cx="436" cy="462" rx="6" ry="2" fill="#78281f" />
+    <!-- Puerta de madera -->
+    <rect x="390" y="504" width="16" height="28" fill="#795548" rx="1" />
+    <!-- Ventanas con luz -->
+    <rect x="360" y="500" width="18" height="16" fill="#dff9fb" rx="2" />
+    <rect x="424" y="500" width="18" height="16" fill="#dff9fb" rx="2" />
+    
+    
+    <!-- Pérgola de madera costera -->
+    <rect x="335" y="495" width="4" height="35" fill="#5d4037" />
+    <rect x="333" y="493" width="30" height="3" fill="#5d4037" />
+  </g>
+
+  <!-- Casita 2 (Derecha, distante entre pinos: x=1220..1330, y=480..530) -->
+  <g id="casa-derecha">
+    <ellipse cx="1270" cy="540" rx="90" ry="18" fill="#44a638" opacity="0.5" />
+    <rect x="1230" y="495" width="85" height="35" fill="#f5f6fa" rx="2" />
+    <polygon points="1220,495 1272,470 1325,495" fill="#c0392b" />
+    <rect x="1245" y="502" width="16" height="14" fill="#dff9fb" rx="2" />
+    <rect x="1285" y="502" width="16" height="14" fill="#dff9fb" rx="2" />
+    
+    
+  </g>
+
+  <!-- 5. VEGETACIÓN URUGUAYA: ÁRBOLES DEL BOSQUE DE PINAMAR -->
+
+  <!-- EUCALIPTO ALTO Y BLANCO (Corteza en tiras, centro-izquierda: x=490..560) -->
+  <g id="arbol-eucalipto">
+    <!-- Tronco alto plateado -->
+    <path d="M510 560 Q525 350 518 140 L532 140 Q538 350 528 560 Z" fill="#dcdde1" />
+    <!-- Tiras de corteza que se desprenden -->
+    <path d="M515 480 Q505 450 514 420" stroke="#8c6239" stroke-width="3" fill="none" stroke-linecap="round" />
+    <path d="M528 380 Q538 350 526 320" stroke="#8c6239" stroke-width="2.5" fill="none" stroke-linecap="round" />
+    <!-- Follaje de eucalipto péndulo -->
+    <ellipse cx="525" cy="150" rx="50" ry="40" fill="#5f8c74" opacity="0.85" />
+    <ellipse cx="490" cy="190" rx="35" ry="50" fill="#5f8c74" opacity="0.8" />
+    <ellipse cx="555" cy="180" rx="40" ry="45" fill="#5f8c74" opacity="0.8" />
+  </g>
+
+  <!-- PALMERA BUTIÁ (Palmera autóctona con frutos amarillos/naranjas: x=750..900) -->
+  <!-- Percha de la Cotorra en las palmas: x=820, y=240 -->
+  <g id="palmera-butia">
+    <!-- Tronco curvo rugoso con patrones de hojas viejas -->
+    <path d="M840 580 Q825 450 835 320 Q840 280 848 245 L862 248 Q852 285 848 320 Q838 450 855 580 Z" fill="#685a4f" />
+    <!-- Textura romboidal del tronco de butiá -->
+    <g stroke="#3a2f27" stroke-width="2" opacity="0.4">
+      <line x1="835" y1="520" x2="850" y2="525" />
+      <line x1="832" y1="470" x2="846" y2="475" />
+      <line x1="832" y1="420" x2="844" y2="425" />
+      <line x1="835" y1="370" x2="845" y2="375" />
+      <line x1="838" y1="320" x2="848" y2="325" />
+    </g>
+    <!-- Racimos de frutos de Butiá (coquitos dorados) -->
+    <g id="racimo-butia">
+      <ellipse cx="830" cy="275" rx="14" ry="20" fill="#f39c12" />
+      <ellipse cx="845" cy="285" rx="16" ry="22" fill="#f39c12" />
+      <circle cx="826" cy="280" r="5" fill="#f1c40f" />
+      <circle cx="835" cy="290" r="4.5" fill="#f1c40f" />
+      <circle cx="848" cy="292" r="5" fill="#e67e22" />
+    </g>
+    <!-- Grandes hojas arqueadas pinnadas de la Butiá -->
+    <!-- Fronda izquierda caída -->
+    <path d="M848 245 Q750 200 680 270" stroke="#2d7554" stroke-width="7" fill="none" stroke-linecap="round" />
+    <path d="M848 245 Q760 170 710 210" stroke="#3ea375" stroke-width="5" fill="none" stroke-linecap="round" />
+    <!-- Fronda derecha alta (percha cotorra) -->
+    <path d="M852 245 Q920 180 980 230" stroke="#2d7554" stroke-width="7" fill="none" stroke-linecap="round" />
+    <path d="M852 245 Q900 150 940 180" stroke="#3ea375" stroke-width="5" fill="none" stroke-linecap="round" />
+    <!-- Frondas centrales airosas -->
+    <path d="M850 245 Q820 140 850 110" stroke="#2d7554" stroke-width="6" fill="none" stroke-linecap="round" />
+    <path d="M852 245 Q880 140 865 100" stroke="#3ea375" stroke-width="5" fill="none" stroke-linecap="round" />
+  </g>
+
+  <!-- CEIBO EN FLOR (Árbol Nacional del Uruguay, con flores rojas: x=980..1180) -->
+  <!-- Percha del Cardenal de Copete Rojo: x=1060, y=380 -->
+  <g id="arbol-ceibo">
+    <!-- Tronco rugoso retorcido y tortuoso del ceibo -->
+    <path d="M1110 590 Q1120 480 1090 420 Q1065 370 1020 360 L1025 348 Q1075 358 1105 410 Q1135 480 1125 590 Z" fill="#574b43" />
+    <!-- Rama percha del Cardenal -->
+    <path d="M1090 420 Q1050 390 990 410 L992 418 Q1045 400 1085 428 Z" fill="#574b43" />
+    <!-- Follaje verde fresco del ceibo -->
+    <ellipse cx="1030" cy="350" rx="55" ry="35" fill="#55b948" opacity="0.9" />
+    <ellipse cx="1100" cy="330" rx="60" ry="40" fill="#3b9631" opacity="0.9" />
+    <ellipse cx="980" cy="390" rx="40" ry="25" fill="#55b948" opacity="0.85" />
+    <!-- FLORES ROJAS DEL CEIBO (Racimos carmesí) -->
+    <g id="flores-ceibo">
+      <!-- Racimo 1 cerca de la percha del cardenal -->
+      <path d="M1020 380 Q1010 405 1025 415 Q1035 400 1020 380 Z" fill="#e84118" />
+      <circle cx="1022" cy="412" r="5" fill="#c23616" />
+      <path d="M1038 375 Q1030 398 1042 410 Q1050 395 1038 375 Z" fill="#e84118" />
+      <!-- Racimo 2 en rama alta -->
+      <path d="M1070 330 Q1060 355 1075 365 Q1085 350 1070 330 Z" fill="#e84118" />
+      <path d="M1085 325 Q1075 350 1090 360 Q1100 345 1085 325 Z" fill="#e84118" />
+      <circle cx="1088" cy="358" r="4.5" fill="#c23616" />
+      <!-- Racimo 3 hacia la izquierda -->
+      <path d="M965 385 Q955 408 970 418 Q980 402 965 385 Z" fill="#e84118" />
+      <circle cx="968" cy="415" r="4" fill="#c23616" />
+    </g>
+  </g>
+
+  <!-- ANACAHUITA / TILO / OREJA DE NEGRO (Árbol de jardín frondoso: x=360..480) -->
+  <!-- Percha del Zorzal Colorado: x=420, y=360 -->
+  <g id="arbol-anacahuita">
+    <path d="M410 560 Q405 450 420 380 L430 380 Q418 450 424 560 Z" fill="#4a3728" />
+    <!-- Rama extendida para el Zorzal -->
+    <path d="M420 400 Q450 375 490 385 L488 392 Q450 383 420 408 Z" fill="#4a3728" />
+    <!-- Copa frondosa y colgante -->
+    <ellipse cx="410" cy="340" rx="65" ry="50" fill="#44a638" opacity="0.9" />
+    <ellipse cx="450" cy="350" rx="50" ry="40" fill="#55b948" opacity="0.85" />
+    <ellipse cx="380" cy="360" rx="45" ry="35" fill="#3b9631" opacity="0.9" />
+    <!-- Bayas / frutos silvestres rojizos y oscuros -->
+    <circle cx="445" cy="365" r="3" fill="#c0392b" />
+    <circle cx="455" cy="372" r="3.5" fill="#8e44ad" />
+    <circle cx="438" cy="380" r="3" fill="#c0392b" />
+  </g>
+
+  <!-- PINO MARÍTIMO PRINCIPAL (Grande, característico de Pinamar con Piñas y Pinocha: x=60..320) -->
+  <!-- Percha del Benteveo en la rama horizontal: x=260, y=230 -->
+  <g id="pino-maritimo-principal">
+    <!-- Colchón de pinocha caída al pie del pino -->
+    <ellipse cx="200" cy="620" rx="140" ry="30" fill="#8d5b36" opacity="0.85" />
+    <ellipse cx="180" cy="625" rx="110" ry="20" fill="#5d4037" opacity="0.5" />
+
+    <!-- Tronco robusto y corteza rugosa -->
+    <path d="M160 620 Q185 400 180 200 L215 200 Q225 400 205 620 Z" fill="#5d4037" />
+    <!-- Placas de corteza de pino -->
+    <g fill="#795548" opacity="0.45">
+      <rect x="175" y="480" width="18" height="35" rx="4" />
+      <rect x="185" y="420" width="22" height="40" rx="5" />
+      <rect x="178" y="340" width="20" height="30" rx="4" />
+      <rect x="185" y="260" width="18" height="28" rx="4" />
+    </g>
+
+    <!-- RAMA HORIZONTAL FUERTE (Percha del Benteveo: x=200..340, y=220..250) -->
+    <path d="M195 240 Q250 230 320 245 L318 255 Q250 240 195 252 Z" fill="#5d4037" />
+
+    <!-- RAMA ALTA DE PINO -->
+    <path d="M185 180 Q130 150 70 170 L72 178 Q130 160 185 190 Z" fill="#5d4037" />
+
+    <!-- COPA DE PINO MARÍTIMO (Agujas de pinocha densas estilo sombrilla) -->
+    <!-- Capa trasera -->
+    <ellipse cx="200" cy="150" rx="150" ry="60" fill="url(#pineGrad1)" />
+    <!-- Capas volumétricas -->
+    <ellipse cx="140" cy="140" rx="90" ry="45" fill="#2e7046" />
+    <ellipse cx="260" cy="145" rx="100" ry="50" fill="#1b4d2e" />
+    <ellipse cx="190" cy="115" rx="110" ry="45" fill="#3e8e58" />
+    <ellipse cx="300" cy="190" rx="60" ry="30" fill="#2e7046" />
+    <ellipse cx="90" cy="180" rx="65" ry="32" fill="#1b4d2e" />
+
+    <!-- PIÑAS DE PINO COLGANTES (Pinecones) -->
+    <!-- Piña 1 cerca de la rama del benteveo -->
+    <g id="pina-1" transform="translate(310, 250)">
+      <ellipse cx="0" cy="10" rx="8" ry="14" fill="#4e342e" />
+      <path d="M-6 4 Q0 12 6 4 M-7 9 Q0 17 7 9 M-5 15 Q0 21 5 15" stroke="#795548" stroke-width="1.8" fill="none" />
+    </g>
+    <!-- Piña 2 en rama izquierda -->
+    <g id="pina-2" transform="translate(85, 185)">
+      <ellipse cx="0" cy="9" rx="7" ry="12" fill="#4e342e" />
+      <path d="M-5 4 Q0 10 5 4 M-6 8 Q0 15 6 8" stroke="#795548" stroke-width="1.5" fill="none" />
+    </g>
+    <!-- Piña 3 en copa central -->
+    <g id="pina-3" transform="translate(230, 180)">
+      <ellipse cx="0" cy="11" rx="8" ry="15" fill="#4e342e" />
+      <path d="M-6 5 Q0 13 6 5 M-7 10 Q0 18 7 10" stroke="#795548" stroke-width="1.8" fill="none" />
+    </g>
+  </g>
+
+  <!-- PINO DERECHA EN EL FONDO (Marco natural: x=1380..1560) -->
+  <g id="pino-derecha">
+    <path d="M1450 620 Q1460 380 1445 180 L1475 180 Q1490 380 1480 620 Z" fill="#5d4037" />
+    <ellipse cx="1460" cy="140" rx="120" ry="55" fill="#1b4d2e" />
+    <ellipse cx="1420" cy="120" rx="80" ry="40" fill="#2e7046" />
+    <ellipse cx="1500" cy="130" rx="75" ry="38" fill="#3e8e58" />
+  </g>
+
+  <!-- 6. CALLE DE TOSCA BLANCA / BALASTO COSTERO (Típica de Pinamar y balnearios) -->
+  <g id="calle-de-tosca">
+    <!-- Base ancha de tosca que atraviesa el balneario de fondo a primer plano -->
+    <path d="M620 540 Q750 540 880 540 L1350 900 L250 900 Z" fill="url(#toscaGrad)" />
+    <!-- Huellas de rodadas de autos / carritos en el balasto -->
+    <path d="M700 545 Q780 660 620 900" stroke="#dcd3c3" stroke-width="26" fill="none" opacity="0.65" />
+    <path d="M800 545 Q900 660 980 900" stroke="#dcd3c3" stroke-width="28" fill="none" opacity="0.65" />
+    <!-- Piedritas y tosca clara suelta en el camino -->
+    <g fill="#ffffff" opacity="0.75">
+      <ellipse cx="580" cy="780" rx="6" ry="4" />
+      <ellipse cx="720" cy="820" rx="8" ry="5" />
+      <ellipse cx="860" cy="760" rx="7" ry="4" />
+      <ellipse cx="640" cy="680" rx="5" ry="3" />
+      <ellipse cx="800" cy="650" rx="6" ry="4" />
+      <ellipse cx="730" cy="590" rx="4" ry="3" />
+      <ellipse cx="940" cy="840" rx="9" ry="5" />
+      <ellipse cx="480" cy="860" rx="7" ry="4" />
+    </g>
+  </g>
+
+  <!-- BANQUINAS DE ARENA Y PASTO COSTERO (Primer plano) -->
+  <!-- Banquina izquierda: césped y pasto verde donde pasean aves -->
+  <path d="M0 600 Q200 580 350 630 L250 900 L0 900 Z" fill="#44a638" />
+  <!-- Banquina derecha y percha del Tero: x=640..800, y=660..780 -->
+  <path d="M1250 560 Q1400 580 1600 620 L1600 900 L1220 900 Z" fill="#44a638" />
+  <!-- Penacho de pasto verde en el borde del camino (percha del Tero) -->
+  <ellipse cx="660" cy="740" rx="95" ry="26" fill="#55b948" opacity="0.95" />
+  <ellipse cx="650" cy="745" rx="80" ry="18" fill="#3b9631" opacity="0.75" />
+  <!-- Penachos de cola de zorro / cortaderas costeras en la banquina -->
+  <g stroke="#55b948" stroke-width="3" stroke-linecap="round">
+    <path d="M600 740 Q585 710 575 700" />
+    <path d="M610 740 Q605 700 602 690" />
+    <path d="M720 740 Q735 705 750 695" />
+    <path d="M730 740 Q740 710 760 705" />
+  </g>
+
+  <!-- 7. ALAMBRADO DE CAMPO CON NIDO DE BARRO DEL HORNERO -->
+  <!-- Percha del Hornero sobre su nido en el poste: x=240, y=440 -->
+  <!-- Percha del Chingolo sobre el alambre/poste: x=520, y=540 -->
+  <g id="alambrado-y-hornero">
+    <!-- Hilos de alambre galvanizado tensados -->
+    <path d="M60 590 L240 540 L520 575 L750 595" stroke="#2d3436" stroke-width="2.5" fill="none" opacity="0.8" />
+    <path d="M60 620 L240 570 L520 605 L750 625" stroke="#2d3436" stroke-width="2.2" fill="none" opacity="0.75" />
+    <path d="M60 650 L240 600 L520 635 L750 655" stroke="#2d3436" stroke-width="2.2" fill="none" opacity="0.75" />
+
+    <!-- Poste de madera 2 (intermedio, soporte del chingolo) -->
+    <path d="M512 555 L528 555 L525 670 L510 670 Z" fill="#636e72" />
+    <ellipse cx="520" cy="555" rx="8" ry="3.5" fill="#7f8c8d" />
+
+    <!-- POSTE PRINCIPAL ESQUINERO (Soporte del Nido del Hornero) -->
+    <path d="M230 490 L255 490 L250 660 L226 660 Z" fill="#636e72" />
+    <ellipse cx="242" cy="490" rx="12.5" ry="4.5" fill="#7f8c8d" />
+    <!-- Vetas de madera rústica -->
+    <line x1="238" y1="500" x2="236" y2="650" stroke="#2c3e50" stroke-width="1.5" opacity="0.3" />
+  </g>
+
+  <!-- 8. POSTE DE LUZ Y CABLES EN EL CIELO (Costero) -->
+  <!-- Percha alta de la Gaviota en el cielo: x=1260, y=120 -->
+  <g id="poste-de-luz-y-cables">
+    <!-- Poste de madera alto a la derecha -->
+    <path d="M1490 130 L1506 130 L1512 550 L1485 550 Z" fill="#636e72" opacity="0.9" />
+    <!-- Cruceta horizontal de madera -->
+    <rect x="1465" y="145" width="70" height="10" fill="#7f8c8d" rx="2" />
+    <!-- Aisladores de cerámica blancos -->
+    <circle cx="1475" cy="144" r="5" fill="#f5f6fa" />
+    <circle cx="1500" cy="144" r="5" fill="#f5f6fa" />
+    <circle cx="1525" cy="144" r="5" fill="#f5f6fa" />
+    <!-- Cables de luz y teléfono que cruzan el cielo de Pinamar -->
+    <path d="M0 110 Q700 170 1475 144" stroke="#2d3436" stroke-width="2.2" fill="none" opacity="0.75" />
+    <path d="M0 135 Q750 195 1500 144" stroke="#2d3436" stroke-width="2.0" fill="none" opacity="0.7" />
+    <path d="M0 160 Q800 220 1525 144" stroke="#2d3436" stroke-width="1.8" fill="none" opacity="0.65" />
+  </g>
+</svg>
