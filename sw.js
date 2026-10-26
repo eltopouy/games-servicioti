@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pajaritos-cache-v2';
+const CACHE_NAME = 'pajaritos-cache-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -23,6 +23,8 @@ const ASSETS_TO_CACHE = [
   './assets_mobile/chingolo_canto_trans.webp',
   './assets_mobile/tero_reposo_trans.webp',
   './assets_mobile/tero_canto_trans.webp',
+  './assets_mobile/tordo_reposo_trans.webp',
+  './assets_mobile/tordo_canto_trans.webp',
   './assets_pokemon/hornero_pokemon.webp',
   './assets_pokemon/tero_pokemon.webp',
   './assets_pokemon/benteveo_pokemon.webp',
@@ -31,6 +33,7 @@ const ASSETS_TO_CACHE = [
   './assets_pokemon/zorzal_pokemon.webp',
   './assets_pokemon/chingolo_pokemon.webp',
   './assets_pokemon/gaviota_pokemon.webp',
+  './assets_pokemon/tordo_pokemon.webp',
   './assets_pokemon/raw/hornero_card.jpg',
   './assets_pokemon/raw/tero_card.jpg',
   './assets_pokemon/raw/benteveo_card.jpg',
@@ -39,6 +42,7 @@ const ASSETS_TO_CACHE = [
   './assets_pokemon/raw/zorzal_card.jpg',
   './assets_pokemon/raw/chingolo_card.jpg',
   './assets_pokemon/raw/gaviota_card.jpg',
+  './assets_pokemon/raw/tordo_card.jpg',
   './audio/canto_cotorra.mp3',
   './audio/canto_hornero.mp3',
   './audio/canto_benteveo.mp3',
@@ -46,7 +50,8 @@ const ASSETS_TO_CACHE = [
   './audio/canto_cardenal.mp3',
   './audio/canto_zorzal_colorado.mp3',
   './audio/canto_chingolo.mp3',
-  './audio/canto_tero.mp3'
+  './audio/canto_tero.mp3',
+  './audio/canto_tordo.mp3'
 ];
 
 self.addEventListener('install', (e) => {

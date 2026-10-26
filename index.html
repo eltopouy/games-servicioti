@@ -327,6 +327,7 @@
   .type-sonido { background: #9b59b6; }
   .type-agua { background: #3498db; }
   .type-normal { background: #a8a878; }
+  .type-siniestro { background: #2f3542; border: 1px solid #747d8c; }
 
   .poke-desc {
     font-size: 0.72rem;
@@ -527,27 +528,217 @@
   }
 
   /* =========================================================================
-     UBICACIÓN EXACTA DE LAS 8 AVES EN EL PAISAJE DE PINAMAR GEMINI
+     UBICACIÓN EXACTA DE LAS 9 AVES ANALIZADAS CON GEMINI 3.8 FLASH
      ========================================================================= */
   /* Posición base en Calle de Tosca (Mediodía, Atardecer, Amanecer) */
-  #perch-cotorra  { left: 29.5%; top: 18.0%; } /* Copa alta de pinos y eucaliptos */
-  #perch-hornero  { left: 37.8%; top: 30.5%; } /* Arriba del poste de hormigón con su nido */
-  #perch-benteveo { left: 21.0%; top: 52.0%; } /* En la rama horizontal del pino marítimo */
-  #perch-gaviota  { left: 73.0%; top: 82.0%; } /* Parada en el suelo arenoso de la calle de tosca */
-  #perch-cardenal { left: 67.5%; top: 41.5%; } /* En el Ceibo en flor carmesí */
-  #perch-zorzal   { left: 82.5%; top: 48.0%; } /* En la palmera Butiá / jardín costero */
-  #perch-chingolo { left: 30.2%; top: 67.5%; } /* Posado justo sobre el poste de madera del alambrado */
-  #perch-tero     { left: 52.0%; top: 88.0%; } /* Parado en el pasto en la calle de tosca */
+  #perch-cotorra  { left: 31.0%; top: 18.0%; } /* Copa alta del eucalipto */
+  #perch-hornero  { left: 22.8%; top: 65.2%; } /* De pie en el poste del alambrado izquierdo (sin nido) */
+  #perch-benteveo { left: 28.0%; top: 46.5%; } /* En la rama horizontal del gran pino marítimo */
+  #perch-gaviota  { left: 54.0%; top: 13.0%; } /* Planeando en cielo abierto */
+  #perch-cardenal { left: 67.0%; top: 48.0%; } /* En la rama del ceibo / arbusto floral */
+  #perch-zorzal   { left: 65.0%; top: 93.0%; } /* En el manchón de pasto verde del primer plano */
+  #perch-chingolo { left: 78.8%; top: 66.0%; } /* En la punta del poste frente a la palmera */
+  #perch-tero     { left: 44.0%; top: 82.0%; } /* En la banquina de pasto y suelo terroso */
+  #perch-tordo    { left: 86.4%; top: 66.0%; } /* En el poste del cerco rústico a la derecha */
 
   /* Posición adaptativa en la Escuela / Balneario de Pinamar */
-  #world-stage.theme-costa #perch-cotorra  { left: 22.0%; top: 18.0%; } /* Copa de pino izquierda */
-  #world-stage.theme-costa #perch-hornero  { left: 47.5%; top: 43.5%; } /* Cumbre y viga del techo del edificio */
-  #world-stage.theme-costa #perch-benteveo { left: 12.0%; top: 38.0%; } /* Rama del árbol izquierdo */
-  #world-stage.theme-costa #perch-gaviota  { left: 73.0%; top: 82.0%; } /* Parada en la arena y calle frente a la plaza */
-  #world-stage.theme-costa #perch-cardenal { left: 83.0%; top: 38.0%; } /* En el pino costero de la derecha */
-  #world-stage.theme-costa #perch-zorzal   { left: 91.0%; top: 52.0%; } /* En la rama baja derecha */
-  #world-stage.theme-costa #perch-chingolo { left: 30.0%; top: 71.0%; } /* En el borde de la explanada de hormigón */
-  #world-stage.theme-costa #perch-tero     { left: 52.0%; top: 88.0%; } /* En la calle de tosca central */
+  #world-stage.theme-costa #perch-cotorra  { left: 22.0%; top: 18.0%; }
+  #world-stage.theme-costa #perch-hornero  { left: 47.5%; top: 43.5%; }
+  #world-stage.theme-costa #perch-benteveo { left: 12.0%; top: 38.0%; }
+  #world-stage.theme-costa #perch-gaviota  { left: 52.0%; top: 15.0%; }
+  #world-stage.theme-costa #perch-cardenal { left: 83.0%; top: 38.0%; }
+  #world-stage.theme-costa #perch-zorzal   { left: 68.0%; top: 86.0%; }
+  #world-stage.theme-costa #perch-chingolo { left: 30.0%; top: 71.0%; }
+  #world-stage.theme-costa #perch-tero     { left: 48.0%; top: 88.0%; }
+  #world-stage.theme-costa #perch-tordo    { left: 91.0%; top: 62.0%; }
+
+  /* =========================================================================
+     ESTILOS DEL JUEGO: ALIMENTAR A LOS PAJARITOS (MINIJUEGO PARA NIÑOS)
+     ========================================================================= */
+  #feed-hud {
+    position: absolute;
+    top: max(68px, calc(env(safe-area-inset-top) + 54px));
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(46, 204, 113, 0.94);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 3px solid #ffffff;
+    border-radius: 40px;
+    padding: 8px 24px;
+    font-family: 'Fredoka One', cursive;
+    color: #ffffff;
+    font-size: clamp(0.82rem, 2.5vw, 1.05rem);
+    display: none;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+    z-index: 120;
+    pointer-events: auto;
+    animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  #feed-hud.active {
+    display: flex;
+  }
+
+  @keyframes bounceIn {
+    0% { transform: translateX(-50%) scale(0.6); opacity: 0; }
+    100% { transform: translateX(-50%) scale(1); opacity: 1; }
+  }
+
+  /* Animación de miguitas / semillas cayendo */
+  .feed-crumb {
+    position: absolute;
+    font-size: 1.5rem;
+    pointer-events: none;
+    z-index: 150;
+    animation: dropCrumb 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  @keyframes dropCrumb {
+    0% { transform: translate(-50%, -100%) scale(0.6) rotate(0deg); opacity: 1; }
+    60% { transform: translate(calc(-50% + var(--dx, 0px)), 20px) scale(1.1) rotate(var(--rot, 30deg)); opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--dx, 0px)), 45px) scale(0.9) rotate(calc(var(--rot, 30deg) * 2)); opacity: 0; }
+  }
+
+  /* Burbuja de agradecimiento y satisfacción */
+  .feed-bubble {
+    position: absolute;
+    bottom: 105%;
+    left: 50%;
+    transform: translateX(-50%) scale(0.5);
+    background: #ffffff;
+    color: #2c3e50;
+    padding: 6px 14px;
+    border-radius: 18px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+    pointer-events: none;
+    z-index: 60;
+    opacity: 0;
+    animation: popBubble 1.8s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .feed-bubble::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: #ffffff transparent transparent transparent;
+  }
+
+  @keyframes popBubble {
+    0% { opacity: 0; transform: translateX(-50%) scale(0.4) translateY(10px); }
+    15% { opacity: 1; transform: translateX(-50%) scale(1.05) translateY(-5px); }
+    30% { transform: translateX(-50%) scale(1) translateY(0); }
+    80% { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-25px); }
+  }
+
+  /* Animación del pajarito comiendo feliz */
+  .bird-perch.is-eating .bird-sprite {
+    animation: birdPeck 0.3s 3 alternate ease-in-out;
+  }
+
+  @keyframes birdPeck {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(8px) rotate(12deg) scale(1.08, 0.92); }
+  }
+
+  /* Indicador de pajarito ya alimentado */
+  .fed-badge {
+    position: absolute;
+    top: -12px;
+    right: -10px;
+    background: #f1c40f;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+  }
+
+  /* Modal de Victoria al alimentar a todos */
+  #win-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: rgba(10, 20, 35, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  #win-modal.open {
+    display: flex;
+    opacity: 1;
+  }
+
+  .win-card {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    border: 5px solid #ffffff;
+    border-radius: 30px;
+    padding: 30px 24px;
+    text-align: center;
+    color: #ffffff;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .win-card h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    margin-bottom: 12px;
+    text-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  }
+
+  .win-card p {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 22px;
+    line-height: 1.4;
+  }
+
+  .win-btn {
+    background: #f1c40f;
+    color: #2c3e50;
+    border: 3px solid #ffffff;
+    border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.15rem;
+    padding: 12px 32px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+
+  .win-btn:hover {
+    transform: scale(1.06);
+    background: #f39c12;
+  }
 </style>
 </head>
 <body>
@@ -619,6 +810,14 @@
       <div class="bird-toast">¡Tero!</div>
     </div>
 
+    <!-- 9. TORDO RENEGRIDO: En el cerco de postes a la derecha -->
+    <div id="perch-tordo" class="bird-perch is-muted" data-bird="tordo">
+      <div class="sound-aura"></div>
+      <div class="note-spawner"></div>
+      <img id="img-tordo" class="bird-sprite" src="assets_mobile/tordo_reposo_trans.webp" alt="Tordo Renegrido">
+      <div class="bird-toast">¡Tordo Renegrido!</div>
+    </div>
+
   </div>
 
   <!-- Barra Superior de Control -->
@@ -635,10 +834,17 @@
       </button>
     </div>
 
-    <a href="https://servicioti.com.uy" target="_blank" rel="noopener" class="hud-btn" title="ServicioTI - Portal" style="text-decoration:none; padding: 6px 14px; background: rgba(12, 16, 23, 0.82); color: #38bdf8; border: 1.5px solid rgba(56, 189, 248, 0.45); font-size: clamp(0.72rem, 2vw, 0.85rem);">
-      <span>🎮</span>
-      <span>games.servicioti.com.uy</span>
-    </a>
+    <div class="hud-group">
+      <button id="btn-feed-mode" class="hud-btn" type="button" aria-label="Jugar a dar de comer" style="background: #2ecc71; color: #ffffff; border-color: #27ae60;">
+        <span id="feed-btn-icon">🌾</span>
+        <span id="feed-btn-text">Dar de Comer</span>
+      </button>
+
+      <a href="https://servicioti.com.uy" target="_blank" rel="noopener" class="hud-btn" title="ServicioTI - Portal" style="text-decoration:none; padding: 6px 14px; background: rgba(12, 16, 23, 0.82); color: #38bdf8; border: 1.5px solid rgba(56, 189, 248, 0.45); font-size: clamp(0.72rem, 2vw, 0.85rem);">
+        <span>🎮</span>
+        <span>games.servicioti.com.uy</span>
+      </a>
+    </div>
 
     <div class="hud-group">
       <button id="btn-pokedex" class="hud-btn" type="button" aria-label="Abrir Pokédex de Aves Uruguayas" style="background:#e74c3c; color:#fff; border-color:#c0392b;">
@@ -653,6 +859,14 @@
     </div>
   </header>
 
+  <!-- Banner del Minijuego de Alimentar Pajaritos -->
+  <div id="feed-hud">
+    <span>🌾 ¡Toca la pantalla o un pajarito para alimentarlo!</span>
+    <span style="background: rgba(0,0,0,0.25); padding: 3px 12px; border-radius: 20px;">
+      ⭐ <strong id="feed-counter">0</strong> / 9
+    </span>
+  </div>
+
   <!-- Botón de Zoom Out cuando la cámara se acerca a un pajarito -->
   <button id="btn-zoom-out" class="hud-btn" type="button">
     <span>🔍</span>
@@ -662,7 +876,16 @@
   <!-- Cartel de ayuda inicial para niños -->
   <div id="help-hint" class="help-hint">
     <span>👆</span>
-    <span>¡Toca un pajarito para acercarte o mueve con tu dedo!</span>
+    <span>¡Toca un pajarito para que cante o pulsa "Dar de Comer" para jugar!</span>
+  </div>
+
+  <!-- Modal de Victoria del Juego -->
+  <div id="win-modal" role="dialog" aria-modal="true" aria-label="Felicitaciones">
+    <div class="win-card">
+      <h2>🎉 ¡FELICITACIONES! 🎉</h2>
+      <p>¡Alimentaste a todos los 9 pajaritos de Pinamar!<br>¡Ahora están contentos cantando en la Costa de Oro! 🐦✨</p>
+      <button id="win-restart-btn" class="win-btn" type="button">🌟 ¡Jugar de Nuevo!</button>
+    </div>
   </div>
 
   <!-- Modal Pokédex -->
@@ -795,50 +1018,67 @@
       pokemon: "assets_pokemon/gaviota_pokemon.webp",
       card: "assets_pokemon/raw/gaviota_card.jpg",
       desc: "Soberana de la costa de Pinamar. Su cuerpo blanco contrasta con sus alas negras y un pico amarillo con una curiosa mancha roja en el extremo."
+    },
+    tordo: {
+      id: "tordo",
+      name: "Tordo Renegrido",
+      pokeName: "Tordox",
+      pokeType: ["siniestro", "volador"],
+      pokeNumber: "#009",
+      audioSrc: "audio/canto_tordo.mp3",
+      reposo: "assets_mobile/tordo_reposo_trans.webp",
+      canto: "assets_mobile/tordo_canto_trans.webp",
+      pokemon: "assets_pokemon/tordo_pokemon.webp",
+      card: "assets_pokemon/raw/tordo_card.jpg",
+      desc: "El típico pajarito negro de los barrios de Uruguay. Plumaje azabache con brillo tornasolado violáceo y un alegre canto líquido burbujeante."
     }
   };
 
-  /* Coordenadas adaptativas de percha según el fondo */
+  /* Coordenadas adaptativas de percha según el fondo calibradas con Gemini 3.8 Flash */
   const THEME_PERCHES = {
     mediodia: {
-      cotorra:  { pctX: 29.5, pctY: 18.0 },
-      hornero:  { pctX: 37.8, pctY: 30.5 },
-      benteveo: { pctX: 21.0, pctY: 52.0 },
-      gaviota:  { pctX: 73.0, pctY: 82.0 },
-      cardenal: { pctX: 67.5, pctY: 41.5 },
-      zorzal:   { pctX: 82.5, pctY: 48.0 },
-      chingolo: { pctX: 30.2, pctY: 67.5 },
-      tero:     { pctX: 52.0, pctY: 88.0 }
+      cotorra:  { pctX: 31.0, pctY: 18.0 },
+      hornero:  { pctX: 22.8, pctY: 65.2 },
+      benteveo: { pctX: 28.0, pctY: 46.5 },
+      gaviota:  { pctX: 54.0, pctY: 13.0 },
+      cardenal: { pctX: 67.0, pctY: 48.0 },
+      zorzal:   { pctX: 65.0, pctY: 93.0 },
+      chingolo: { pctX: 78.8, pctY: 66.0 },
+      tero:     { pctX: 44.0, pctY: 82.0 },
+      tordo:    { pctX: 86.4, pctY: 66.0 }
     },
     atardecer: {
-      cotorra:  { pctX: 29.5, pctY: 18.0 },
-      hornero:  { pctX: 37.8, pctY: 30.5 },
-      benteveo: { pctX: 21.0, pctY: 52.0 },
-      gaviota:  { pctX: 73.0, pctY: 82.0 },
-      cardenal: { pctX: 67.5, pctY: 41.5 },
-      zorzal:   { pctX: 82.5, pctY: 48.0 },
-      chingolo: { pctX: 30.2, pctY: 67.5 },
-      tero:     { pctX: 52.0, pctY: 88.0 }
+      cotorra:  { pctX: 31.0, pctY: 18.0 },
+      hornero:  { pctX: 22.8, pctY: 65.2 },
+      benteveo: { pctX: 28.0, pctY: 46.5 },
+      gaviota:  { pctX: 54.0, pctY: 13.0 },
+      cardenal: { pctX: 67.0, pctY: 48.0 },
+      zorzal:   { pctX: 65.0, pctY: 93.0 },
+      chingolo: { pctX: 78.8, pctY: 66.0 },
+      tero:     { pctX: 44.0, pctY: 82.0 },
+      tordo:    { pctX: 86.4, pctY: 66.0 }
     },
     amanecer: {
-      cotorra:  { pctX: 29.5, pctY: 18.0 },
-      hornero:  { pctX: 37.8, pctY: 30.5 },
-      benteveo: { pctX: 21.0, pctY: 52.0 },
-      gaviota:  { pctX: 73.0, pctY: 82.0 },
-      cardenal: { pctX: 67.5, pctY: 41.5 },
-      zorzal:   { pctX: 82.5, pctY: 48.0 },
-      chingolo: { pctX: 30.2, pctY: 67.5 },
-      tero:     { pctX: 52.0, pctY: 88.0 }
+      cotorra:  { pctX: 31.0, pctY: 18.0 },
+      hornero:  { pctX: 22.8, pctY: 65.2 },
+      benteveo: { pctX: 28.0, pctY: 46.5 },
+      gaviota:  { pctX: 54.0, pctY: 13.0 },
+      cardenal: { pctX: 67.0, pctY: 48.0 },
+      zorzal:   { pctX: 65.0, pctY: 93.0 },
+      chingolo: { pctX: 78.8, pctY: 66.0 },
+      tero:     { pctX: 44.0, pctY: 82.0 },
+      tordo:    { pctX: 86.4, pctY: 66.0 }
     },
     costa: {
       cotorra:  { pctX: 22.0, pctY: 18.0 },
       hornero:  { pctX: 47.5, pctY: 43.5 },
       benteveo: { pctX: 12.0, pctY: 38.0 },
-      gaviota:  { pctX: 73.0, pctY: 82.0 },
+      gaviota:  { pctX: 52.0, pctY: 15.0 },
       cardenal: { pctX: 83.0, pctY: 38.0 },
-      zorzal:   { pctX: 91.0, pctY: 52.0 },
+      zorzal:   { pctX: 68.0, pctY: 86.0 },
       chingolo: { pctX: 30.0, pctY: 71.0 },
-      tero:     { pctX: 52.0, pctY: 88.0 }
+      tero:     { pctX: 48.0, pctY: 88.0 },
+      tordo:    { pctX: 91.0, pctY: 62.0 }
     }
   };
 
@@ -1323,6 +1563,186 @@
     if (e.target === pokedexModal) {
       pokedexModal.classList.remove("open");
     }
+  });
+
+  /* =========================================================================
+     MINIJUEGO: ALIMENTAR A LOS PAJARITOS (PARA NIÑOS)
+     ========================================================================= */
+  let feedMode = false;
+  const fedBirds = new Set();
+  const btnFeedMode = document.getElementById("btn-feed-mode");
+  const feedBtnText = document.getElementById("feed-btn-text");
+  const feedBtnIcon = document.getElementById("feed-btn-icon");
+  const feedHud = document.getElementById("feed-hud");
+  const feedCounter = document.getElementById("feed-counter");
+  const winModal = document.getElementById("win-modal");
+  const winRestartBtn = document.getElementById("win-restart-btn");
+
+  let audioCtx = null;
+  function playFeedSound() {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      
+      const now = audioCtx.currentTime;
+      
+      // Sonido de 'ñam/crunch'
+      const osc1 = audioCtx.createOscillator();
+      const gain1 = audioCtx.createGain();
+      osc1.type = 'triangle';
+      osc1.frequency.setValueAtTime(320, now);
+      osc1.frequency.exponentialRampToValueAtTime(140, now + 0.12);
+      gain1.gain.setValueAtTime(0.3, now);
+      gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+      osc1.connect(gain1);
+      gain1.connect(audioCtx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.12);
+
+      // Campanita de felicidad (Ding!)
+      const osc2 = audioCtx.createOscillator();
+      const gain2 = audioCtx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(659.25, now + 0.08); // E5
+      osc2.frequency.setValueAtTime(880, now + 0.16);    // A5
+      gain2.gain.setValueAtTime(0.25, now + 0.08);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+      osc2.connect(gain2);
+      gain2.connect(audioCtx.destination);
+      osc2.start(now + 0.08);
+      osc2.stop(now + 0.5);
+    } catch(e) {
+      console.log('Audio synth error', e);
+    }
+  }
+
+  function toggleFeedMode() {
+    feedMode = !feedMode;
+    if (feedMode) {
+      feedHud.classList.add("active");
+      btnFeedMode.style.background = "#e67e22";
+      btnFeedMode.style.borderColor = "#d35400";
+      feedBtnText.textContent = "Salir del Juego";
+      feedBtnIcon.textContent = "❌";
+      viewport.style.cursor = "crosshair";
+    } else {
+      feedHud.classList.remove("active");
+      btnFeedMode.style.background = "#2ecc71";
+      btnFeedMode.style.borderColor = "#27ae60";
+      feedBtnText.textContent = "Dar de Comer";
+      feedBtnIcon.textContent = "🌾";
+      viewport.style.cursor = "grab";
+    }
+  }
+
+  btnFeedMode.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleFeedMode();
+  });
+
+  const FEED_PHRASES = [
+    "¡Ñam ñam! ¡Qué rico!",
+    "¡Pío pío feliz! ❤️",
+    "¡Mmm, semillitas!",
+    "¡Gracias amigo!",
+    "¡Qué delicia! ✨",
+    "¡Pancita llena! 🌾"
+  ];
+  const CRUMB_EMOJIS = ["🌾", "🍞", "🍓", "✨", "🌽"];
+
+  function feedBird(id, clickX, clickY) {
+    const perch = document.getElementById(`perch-${id}`);
+    if (!perch) return;
+
+    playFeedSound();
+    fedBirds.add(id);
+    feedCounter.textContent = fedBirds.size;
+
+    for (let i = 0; i < 4; i++) {
+      const crumb = document.createElement("div");
+      crumb.className = "feed-crumb";
+      crumb.textContent = CRUMB_EMOJIS[Math.floor(Math.random() * CRUMB_EMOJIS.length)];
+      crumb.style.left = `${clickX}px`;
+      crumb.style.top = `${clickY}px`;
+      crumb.style.setProperty("--dx", `${(Math.random() - 0.5) * 50}px`);
+      crumb.style.setProperty("--rot", `${(Math.random() - 0.5) * 60}deg`);
+      viewport.appendChild(crumb);
+      setTimeout(() => crumb.remove(), 900);
+    }
+
+    perch.classList.remove("is-eating");
+    void perch.offsetWidth;
+    perch.classList.add("is-eating");
+    setTimeout(() => perch.classList.remove("is-eating"), 1000);
+
+    const existingBubble = perch.querySelector(".feed-bubble");
+    if (existingBubble) existingBubble.remove();
+    const bubble = document.createElement("div");
+    bubble.className = "feed-bubble";
+    bubble.textContent = FEED_PHRASES[Math.floor(Math.random() * FEED_PHRASES.length)];
+    perch.appendChild(bubble);
+    setTimeout(() => bubble.remove(), 1800);
+
+    if (!perch.querySelector(".fed-badge")) {
+      const badge = document.createElement("div");
+      badge.className = "fed-badge";
+      badge.textContent = "⭐";
+      badge.title = "¡Alimentado!";
+      perch.appendChild(badge);
+    }
+
+    const audio = audioElements[id];
+    if (audio && !isSinging[id]) {
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+      setTimeout(() => {
+        if (!isSinging[id]) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+      }, 1800);
+    }
+
+    if (fedBirds.size >= Object.keys(BIRDS).length) {
+      setTimeout(() => {
+        winModal.classList.add("open");
+      }, 1200);
+    }
+  }
+
+  viewport.addEventListener("pointerdown", (e) => {
+    if (!feedMode) return;
+    if (e.target.closest(".hud-btn") || e.target.closest("#win-modal") || e.target.closest("#pokedex-modal")) return;
+
+    const clickX = e.clientX;
+    const clickY = e.clientY;
+
+    let nearestId = null;
+    let minDist = Infinity;
+
+    Object.keys(BIRDS).forEach(id => {
+      const perch = document.getElementById(`perch-${id}`);
+      if (!perch) return;
+      const r = perch.getBoundingClientRect();
+      const pX = r.left + r.width / 2;
+      const pY = r.top + r.height / 2;
+      const dist = Math.hypot(pX - clickX, pY - clickY);
+      if (dist < minDist) {
+        minDist = dist;
+        nearestId = id;
+      }
+    });
+
+    if (nearestId) {
+      feedBird(nearestId, clickX, clickY);
+    }
+  });
+
+  winRestartBtn.addEventListener("click", () => {
+    winModal.classList.remove("open");
+    fedBirds.clear();
+    feedCounter.textContent = "0";
+    document.querySelectorAll(".fed-badge").forEach(b => b.remove());
   });
 
   // Inicialización

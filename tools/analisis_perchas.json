@@ -1,0 +1,52 @@
+```json
+{
+  "analisis_elementos": "Típico cruce de calles de balasto y arena de Pinamar (Canelones). A la izquierda destaca un pino marítimo añoso con una gruesa rama horizontal, tras el cual se eleva un eucalipto blanco y un alambrado tradicional con postes de madera. En el centro se ubica la columna de hormigón con luminaria y nido de hornero en la cúspide, casas bajas de tejas rojas y jardines con vegetación densa. A la derecha resalta un chivato con intensa floración roja, una palmera y árboles nativos/ornamentales con cerco de postes rústicos, todo bajo un cielo despejado de verano.",
+  "perchas": {
+    "hornero": {
+      "pctX": 22.8,
+      "pctY": 65.2,
+      "descripcion": "Apoyado de pie en el extremo superior plano del poste de madera del alambrado a la izquierda."
+    },
+    "tero": {
+      "pctX": 44.0,
+      "pctY": 82.0,
+      "descripcion": "De pie firmemente en el suelo terroso de la banquina arenosa al borde de la calle."
+    },
+    "benteveo": {
+      "pctX": 28.0,
+      "pctY": 46.5,
+      "descripcion": "Posado sobre la rama horizontal principal del gran pino marítimo a la izquierda."
+    },
+    "cotorra": {
+      "pctX": 31.0,
+      "pctY": 18.0,
+      "descripcion": "En una rama alta del follaje superior del eucalipto blanco."
+    },
+    "cardenal": {
+      "pctX": 67.0,
+      "pctY": 48.0,
+      "descripcion": "En una rama visible entre las flores rojas del chivato a la derecha."
+    },
+    "zorzal": {
+      "pctX": 65.0,
+      "pctY": 93.0,
+      "descripcion": "Caminando y picoteando en el manchón de pasto verde del primer plano inferior."
+    },
+    "chingolo": {
+      "pctX": 78.8,
+      "pctY": 66.0,
+      "descripcion": "Posado en la punta del poste del alambrado ubicado frente a la palmera."
+    },
+    "gaviota": {
+      "pctX": 54.0,
+      "pctY": 13.0,
+      "descripcion": "Planeando en vuelo libre en el cielo abierto azul sobre el camino central."
+    },
+    "tordo": {
+      "pctX": 86.4,
+      "pctY": 66.0,
+      "descripcion": "Posado sobre el poste de madera del cerco a la derecha de la palmera."
+    }
+  }
+}
+```
