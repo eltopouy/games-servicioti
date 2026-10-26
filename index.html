@@ -91,8 +91,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 8px;
     z-index: 100;
     pointer-events: none;
+    flex-wrap: wrap;
+  }
+
+  .hud-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    pointer-events: auto;
   }
 
   .hud-btn {
@@ -104,7 +113,7 @@
     border-radius: 50px;
     padding: 8px 16px;
     font-family: 'Fredoka One', cursive;
-    font-size: clamp(0.78rem, 2.5vw, 0.95rem);
+    font-size: clamp(0.75rem, 2.3vw, 0.92rem);
     color: #2f3542;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
     display: inline-flex;
@@ -116,6 +125,235 @@
 
   .hud-btn:active {
     transform: scale(0.92);
+  }
+
+  /* Modal Pokédex */
+  #pokedex-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+    background: rgba(10, 15, 25, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  #pokedex-modal.open {
+    display: flex;
+    opacity: 1;
+  }
+
+  .pokedex-container {
+    background: #dc0a2d;
+    border: 4px solid #89061c;
+    border-radius: 24px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 2px 6px rgba(255, 255, 255, 0.35);
+    width: 100%;
+    max-width: 980px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    color: #fff;
+  }
+
+  .pokedex-header {
+    background: #b80824;
+    padding: 12px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #89061c;
+  }
+
+  .pokedex-sensor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sensor-big {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #5dade2, #2980b9);
+    border: 3px solid #fff;
+    box-shadow: 0 0 12px #3498db;
+  }
+
+  .sensor-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+  }
+  .sensor-red { background: #e74c3c; }
+  .sensor-yellow { background: #f1c40f; }
+  .sensor-green { background: #2ecc71; }
+
+  .pokedex-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1rem, 3vw, 1.25rem);
+    letter-spacing: 0.8px;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    text-align: center;
+  }
+
+  .pokedex-close {
+    background: rgba(0, 0, 0, 0.35);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    color: #fff;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+  .pokedex-close:hover {
+    background: #e74c3c;
+    transform: scale(1.1);
+  }
+
+  .pokedex-body {
+    padding: 16px;
+    overflow-y: auto;
+    background: #1e222d;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 16px;
+  }
+
+  .poke-card {
+    background: #2b313e;
+    border: 2px solid #434d61;
+    border-radius: 18px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .poke-card:hover {
+    transform: translateY(-4px);
+    border-color: #f1c40f;
+  }
+
+  .poke-card-img-wrap {
+    width: 100%;
+    height: 155px;
+    background: #141720;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    border: 1px solid #333d4f;
+  }
+
+  .poke-card-img {
+    max-width: 92%;
+    max-height: 92%;
+    object-fit: contain;
+    transition: transform 0.25s ease;
+  }
+  .poke-card:hover .poke-card-img {
+    transform: scale(1.08);
+  }
+
+  .poke-num {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.72rem;
+    color: #a4b0be;
+    background: rgba(0,0,0,0.65);
+    padding: 2px 7px;
+    border-radius: 8px;
+  }
+
+  .poke-name {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.05rem;
+    color: #fffa65;
+    margin-bottom: 2px;
+  }
+
+  .poke-species {
+    font-size: 0.76rem;
+    color: #a5b1c2;
+    margin-bottom: 8px;
+  }
+
+  .poke-types {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .type-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 10px;
+    color: #fff;
+    letter-spacing: 0.4px;
+  }
+
+  .type-tierra { background: #d3a152; }
+  .type-volador { background: #89a1f0; }
+  .type-lucha { background: #c03028; }
+  .type-electrico { background: #f1c40f; color: #1e272e; }
+  .type-planta { background: #78c850; }
+  .type-fuego { background: #f08030; }
+  .type-sonido { background: #9b59b6; }
+  .type-agua { background: #3498db; }
+  .type-normal { background: #a8a878; }
+
+  .poke-desc {
+    font-size: 0.72rem;
+    color: #d1d8e0;
+    line-height: 1.35;
+    margin-bottom: 10px;
+    flex-grow: 1;
+  }
+
+  .poke-play-btn {
+    background: #ff4757;
+    border: none;
+    border-radius: 20px;
+    color: #fff;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.78rem;
+    padding: 6px 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .poke-play-btn:hover {
+    background: #ff6b81;
+    transform: scale(1.05);
   }
 
   /* Botón de Zoom Out / Vista Completa */
@@ -383,22 +621,36 @@
 
   </div>
 
-  <!-- Barra Superior Minimalista -->
+  <!-- Barra Superior de Control -->
   <header class="hud-bar">
-    <button id="btn-theme" class="hud-btn" type="button" aria-label="Cambiar momento del día">
-      <span id="theme-icon">☀️</span>
-      <span id="theme-text">Mediodía</span>
-    </button>
+    <div class="hud-group">
+      <button id="btn-theme" class="hud-btn" type="button" aria-label="Cambiar momento del día">
+        <span id="theme-icon">☀️</span>
+        <span id="theme-text">Mediodía</span>
+      </button>
+
+      <button id="btn-skin" class="hud-btn" type="button" aria-label="Alternar modo Pokémon" style="background: rgba(255, 255, 255, 0.9);">
+        <span id="skin-icon">⚡</span>
+        <span id="skin-text">PokéAves</span>
+      </button>
+    </div>
 
     <a href="https://servicioti.com.uy" target="_blank" rel="noopener" class="hud-btn" title="ServicioTI - Portal" style="text-decoration:none; padding: 6px 14px; background: rgba(12, 16, 23, 0.82); color: #38bdf8; border: 1.5px solid rgba(56, 189, 248, 0.45); font-size: clamp(0.72rem, 2vw, 0.85rem);">
       <span>🎮</span>
       <span>games.servicioti.com.uy</span>
     </a>
 
-    <button id="btn-master" class="hud-btn" type="button" aria-label="Cantar todos o silenciar">
-      <span id="master-icon">🎶</span>
-      <span id="master-text">Cantar Todos</span>
-    </button>
+    <div class="hud-group">
+      <button id="btn-pokedex" class="hud-btn" type="button" aria-label="Abrir Pokédex de Aves Uruguayas" style="background:#e74c3c; color:#fff; border-color:#c0392b;">
+        <span>📕</span>
+        <span>Pokédex</span>
+      </button>
+
+      <button id="btn-master" class="hud-btn" type="button" aria-label="Cantar todos o silenciar">
+        <span id="master-icon">🎶</span>
+        <span id="master-text">Cantar Todos</span>
+      </button>
+    </div>
   </header>
 
   <!-- Botón de Zoom Out cuando la cámara se acerca a un pajarito -->
@@ -412,60 +664,137 @@
     <span>👆</span>
     <span>¡Toca un pajarito para acercarte o mueve con tu dedo!</span>
   </div>
+
+  <!-- Modal Pokédex -->
+  <div id="pokedex-modal" role="dialog" aria-modal="true" aria-label="Pokédex de Aves Uruguayas">
+    <div class="pokedex-container">
+      <div class="pokedex-header">
+        <div class="pokedex-sensor">
+          <div class="sensor-big"></div>
+          <div class="sensor-dot sensor-red"></div>
+          <div class="sensor-dot sensor-yellow"></div>
+          <div class="sensor-dot sensor-green"></div>
+        </div>
+        <h2 class="pokedex-title">🔴 POKÉDEX: AVES DE URUGUAY 🇺🇾</h2>
+        <button id="pokedex-close" class="pokedex-close" type="button" aria-label="Cerrar Pokédex">✕</button>
+      </div>
+      <div class="pokedex-body" id="pokedex-grid">
+        <!-- Renderizado dinámicamente con JavaScript -->
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
   /* =========================================================================
-     DATOS Y CONFIGURACIÓN DE LAS 8 AVES
+     DATOS Y CONFIGURACIÓN DE LAS 8 AVES (MODO CLÁSICO Y POKÉMON)
      ========================================================================= */
+  let currentSkin = "classic"; // "classic" | "pokemon"
+
   const BIRDS = {
-    cotorra: {
-      name: "Cotorra",
-      audioSrc: "audio/canto_cotorra.mp3",
-      reposo: "assets_mobile/cotorra_reposo_trans.webp",
-      canto: "assets_mobile/cotorra_canto_trans.webp"
-    },
     hornero: {
+      id: "hornero",
       name: "Hornero",
+      pokeName: "Hornerox",
+      pokeType: ["tierra", "volador"],
+      pokeNumber: "#001",
       audioSrc: "audio/canto_hornero.mp3",
       reposo: "assets_mobile/hornero_reposo_trans.webp",
-      canto: "assets_mobile/hornero_canto_trans.webp"
-    },
-    benteveo: {
-      name: "Benteveo",
-      audioSrc: "audio/canto_benteveo.mp3",
-      reposo: "assets_mobile/benteveo_reposo_trans.webp",
-      canto: "assets_mobile/benteveo_canto_trans.webp"
-    },
-    gaviota: {
-      name: "Gaviota Cocinera",
-      audioSrc: "audio/canto_gaviota.mp3",
-      reposo: "assets_mobile/gaviota_reposo_trans.webp",
-      canto: "assets_mobile/gaviota_canto_trans.webp"
-    },
-    cardenal: {
-      name: "Cardenal",
-      audioSrc: "audio/canto_cardenal.mp3",
-      reposo: "assets_mobile/cardenal_reposo_trans.webp",
-      canto: "assets_mobile/cardenal_canto_trans.webp"
-    },
-    zorzal: {
-      name: "Zorzal Colorado",
-      audioSrc: "audio/canto_zorzal_colorado.mp3",
-      reposo: "assets_mobile/zorzal_reposo_trans.webp",
-      canto: "assets_mobile/zorzal_canto_trans.webp"
-    },
-    chingolo: {
-      name: "Chingolo",
-      audioSrc: "audio/canto_chingolo.mp3",
-      reposo: "assets_mobile/chingolo_reposo_trans.webp",
-      canto: "assets_mobile/chingolo_canto_trans.webp"
+      canto: "assets_mobile/hornero_canto_trans.webp",
+      pokemon: "assets_pokemon/hornero_pokemon.webp",
+      card: "assets_pokemon/raw/hornero_card.jpg",
+      desc: "El ave alfarera uruguaya. Carga un sólido domo de barro impenetrable en su espalda y canta a dúo al amanecer con un potente repiqueteo rítmico."
     },
     tero: {
+      id: "tero",
       name: "Tero",
+      pokeName: "Teroraptor",
+      pokeType: ["lucha", "volador"],
+      pokeNumber: "#002",
       audioSrc: "audio/canto_tero.mp3",
       reposo: "assets_mobile/tero_reposo_trans.webp",
-      canto: "assets_mobile/tero_canto_trans.webp"
+      canto: "assets_mobile/tero_canto_trans.webp",
+      pokemon: "assets_pokemon/tero_pokemon.webp",
+      card: "assets_pokemon/raw/tero_card.jpg",
+      desc: "Centinela guerrero del campo uruguayo. Ojos carmesí, copete vigilante y afilados espolones rojos en sus alas para proteger a sus pichones."
+    },
+    benteveo: {
+      id: "benteveo",
+      name: "Benteveo",
+      pokeName: "Bentechú",
+      pokeType: ["electrico", "volador"],
+      pokeNumber: "#003",
+      audioSrc: "audio/canto_benteveo.mp3",
+      reposo: "assets_mobile/benteveo_reposo_trans.webp",
+      canto: "assets_mobile/benteveo_canto_trans.webp",
+      pokemon: "assets_pokemon/benteveo_pokemon.webp",
+      card: "assets_pokemon/raw/benteveo_card.jpg",
+      desc: "Luce un llamativo pecho amarillo eléctrico y un antifaz negro de bandido. Su grito inconfundible y enérgico retumba en todo el balneario."
+    },
+    cotorra: {
+      id: "cotorra",
+      name: "Cotorra",
+      pokeName: "Cotorriff",
+      pokeType: ["planta", "volador"],
+      pokeNumber: "#004",
+      audioSrc: "audio/canto_cotorra.mp3",
+      reposo: "assets_mobile/cotorra_reposo_trans.webp",
+      canto: "assets_mobile/cotorra_canto_trans.webp",
+      pokemon: "assets_pokemon/cotorra_pokemon.webp",
+      card: "assets_pokemon/raw/cotorra_card.jpg",
+      desc: "Plumaje verde esmeralda y pecho ceniza. Construye enormes nidos comunitarios en las copas de eucaliptos y llena el aire con alegres charlas."
+    },
+    cardenal: {
+      id: "cardenal",
+      name: "Cardenal",
+      pokeName: "Cardeflame",
+      pokeType: ["fuego", "volador"],
+      pokeNumber: "#005",
+      audioSrc: "audio/canto_cardenal.mp3",
+      reposo: "assets_mobile/cardenal_reposo_trans.webp",
+      canto: "assets_mobile/cardenal_canto_trans.webp",
+      pokemon: "assets_pokemon/cardenal_pokemon.webp",
+      card: "assets_pokemon/raw/cardenal_card.jpg",
+      desc: "Cantor noble con un vistoso copete rojo llameante. Se posa en el Ceibo en flor y emite un silbido aflautado de gran pureza musical."
+    },
+    zorzal: {
+      id: "zorzal",
+      name: "Zorzal Colorado",
+      pokeName: "Zorzalson",
+      pokeType: ["sonido", "volador"],
+      pokeNumber: "#006",
+      audioSrc: "audio/canto_zorzal_colorado.mp3",
+      reposo: "assets_mobile/zorzal_reposo_trans.webp",
+      canto: "assets_mobile/zorzal_canto_trans.webp",
+      pokemon: "assets_pokemon/zorzal_pokemon.webp",
+      card: "assets_pokemon/raw/zorzal_card.jpg",
+      desc: "Vientre color terracota y ojos coronados con un anillo dorado. Es el primer pájaro que canta en la madrugada, bendiciendo el nuevo día."
+    },
+    chingolo: {
+      id: "chingolo",
+      name: "Chingolo",
+      pokeName: "Chingolín",
+      pokeType: ["normal", "volador"],
+      pokeNumber: "#007",
+      audioSrc: "audio/canto_chingolo.mp3",
+      reposo: "assets_mobile/chingolo_reposo_trans.webp",
+      canto: "assets_mobile/chingolo_canto_trans.webp",
+      pokemon: "assets_pokemon/chingolo_pokemon.webp",
+      card: "assets_pokemon/raw/chingolo_card.jpg",
+      desc: "Pequeño y simpático pajarito con un collarín color canela. Salta confiado entre los postes de alambrado y entona su dulce silbido de cuatro notas."
+    },
+    gaviota: {
+      id: "gaviota",
+      name: "Gaviota Cocinera",
+      pokeName: "Gaviotix",
+      pokeType: ["agua", "volador"],
+      pokeNumber: "#008",
+      audioSrc: "audio/canto_gaviota.mp3",
+      reposo: "assets_mobile/gaviota_reposo_trans.webp",
+      canto: "assets_mobile/gaviota_canto_trans.webp",
+      pokemon: "assets_pokemon/gaviota_pokemon.webp",
+      card: "assets_pokemon/raw/gaviota_card.jpg",
+      desc: "Soberana de la costa de Pinamar. Su cuerpo blanco contrasta con sus alas negras y un pico amarillo con una curiosa mancha roja en el extremo."
     }
   };
 
@@ -726,7 +1055,7 @@
       audio.currentTime = 0;
       perch.classList.remove("is-singing");
       perch.classList.add("is-muted");
-      img.src = BIRDS[id].reposo;
+      img.src = currentSkin === "pokemon" ? BIRDS[id].pokemon : BIRDS[id].reposo;
       img.setAttribute("data-beak", "closed");
       if (camera.focusedBird === id) resetZoom();
     } else {
@@ -764,6 +1093,8 @@
     const perch = document.getElementById(`perch-${id}`);
     const toast = perch.querySelector(".bird-toast");
     if (!toast) return;
+
+    toast.textContent = currentSkin === "pokemon" ? `¡${BIRDS[id].pokeName}! ⚡` : `¡${BIRDS[id].name}!`;
 
     if (toastTimers[id]) clearTimeout(toastTimers[id]);
     toast.classList.add("show");
@@ -803,6 +1134,15 @@
         if (!isSinging[id]) return;
 
         const img = document.getElementById(`img-${id}`);
+
+        if (currentSkin === "pokemon") {
+          // En modo Pokémon el sprite es de cuerpo entero Sugimori
+          if (img.src !== BIRDS[id].pokemon && !img.src.endsWith(BIRDS[id].pokemon)) {
+            img.src = BIRDS[id].pokemon;
+          }
+          return;
+        }
+
         const audio = audioElements[id];
         const t = audio.currentTime || (now * 0.001);
 
@@ -887,6 +1227,101 @@
       Object.keys(BIRDS).forEach(id => {
         if (!isSinging[id]) toggleBird(id, false);
       });
+    }
+  });
+
+  /* =========================================================================
+     SKIN POKÉMON Y POKÉDEX MODAL
+     ========================================================================= */
+  const btnSkin = document.getElementById("btn-skin");
+  const skinIcon = document.getElementById("skin-icon");
+  const skinText = document.getElementById("skin-text");
+
+  function setSkin(skin) {
+    currentSkin = skin;
+    Object.keys(BIRDS).forEach(id => {
+      const img = document.getElementById(`img-${id}`);
+      const toast = document.querySelector(`#perch-${id} .bird-toast`);
+      if (currentSkin === "pokemon") {
+        img.src = BIRDS[id].pokemon;
+        if (toast) toast.textContent = `¡${BIRDS[id].pokeName}! ⚡`;
+      } else {
+        img.src = isSinging[id] ? BIRDS[id].canto : BIRDS[id].reposo;
+        if (toast) toast.textContent = `¡${BIRDS[id].name}!`;
+      }
+    });
+
+    if (currentSkin === "pokemon") {
+      skinIcon.textContent = "⚡";
+      skinText.textContent = "PokéAves ON";
+      btnSkin.style.background = "#f1c40f";
+      btnSkin.style.color = "#2c3e50";
+      btnSkin.style.borderColor = "#f39c12";
+    } else {
+      skinIcon.textContent = "🎨";
+      skinText.textContent = "PokéAves";
+      btnSkin.style.background = "rgba(255, 255, 255, 0.88)";
+      btnSkin.style.color = "#2f3542";
+      btnSkin.style.borderColor = "rgba(255, 255, 255, 0.95)";
+    }
+  }
+
+  btnSkin.addEventListener("click", () => {
+    setSkin(currentSkin === "classic" ? "pokemon" : "classic");
+  });
+
+  // Pokédex Modal y Renderizado de Tarjetas
+  const btnPokedex = document.getElementById("btn-pokedex");
+  const pokedexModal = document.getElementById("pokedex-modal");
+  const pokedexClose = document.getElementById("pokedex-close");
+  const pokedexGrid = document.getElementById("pokedex-grid");
+
+  function renderPokedex() {
+    pokedexGrid.innerHTML = "";
+    Object.values(BIRDS).forEach(bird => {
+      const card = document.createElement("div");
+      card.className = "poke-card";
+
+      const typeBadges = bird.pokeType.map(t => {
+        return `<span class="type-badge type-${t}">${t}</span>`;
+      }).join(" ");
+
+      card.innerHTML = `
+        <div class="poke-card-img-wrap">
+          <span class="poke-num">${bird.pokeNumber}</span>
+          <img class="poke-card-img" src="${bird.pokemon}" alt="${bird.pokeName}" loading="lazy">
+        </div>
+        <div class="poke-name">${bird.pokeName}</div>
+        <div class="poke-species">${bird.name}</div>
+        <div class="poke-types">${typeBadges}</div>
+        <div class="poke-desc">${bird.desc}</div>
+        <button class="poke-play-btn" type="button" data-id="${bird.id}">
+          <span>🔊</span>
+          <span>Canto</span>
+        </button>
+      `;
+
+      card.querySelector(".poke-play-btn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleBird(bird.id, false);
+      });
+
+      pokedexGrid.appendChild(card);
+    });
+  }
+
+  btnPokedex.addEventListener("click", () => {
+    renderPokedex();
+    pokedexModal.classList.add("open");
+  });
+
+  pokedexClose.addEventListener("click", () => {
+    pokedexModal.classList.remove("open");
+  });
+
+  pokedexModal.addEventListener("click", (e) => {
+    if (e.target === pokedexModal) {
+      pokedexModal.classList.remove("open");
     }
   });
 
