@@ -11,7 +11,8 @@ if m:
     assets = re.findall(r'"((?:assets_mobile|assets_pokemon|audio)/[^"]+)"', m.group(1))
     missing = 0
     for a in sorted(set(assets)):
-        p = os.path.join(base, a.replace("/", os.sep))
+        clean_a = a.split("?")[0]
+        p = os.path.join(base, clean_a.replace("/", os.sep))
         exists = os.path.exists(p)
         if not exists:
             print(f"[MISSING] {a}")

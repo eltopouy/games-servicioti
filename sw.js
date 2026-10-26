@@ -1,50 +1,40 @@
-const CACHE_NAME = 'pajaritos-cache-v4';
+const CACHE_NAME = 'pajaritos-cache-v7-force';
 const ASSETS_TO_CACHE = [
-  './',
   './index.html',
   './manifest.json',
-  './assets_mobile/pinamar_mediodia_gemini.webp',
-  './assets_mobile/pinamar_costa_gemini.webp',
-  './assets_mobile/pinamar_atardecer_gemini.webp',
-  './assets_mobile/pinamar_amanecer_gemini.webp',
-  './assets_mobile/cotorra_reposo_trans.webp',
-  './assets_mobile/cotorra_canto_trans.webp',
-  './assets_mobile/hornero_reposo_trans.webp',
-  './assets_mobile/hornero_canto_trans.webp',
-  './assets_mobile/hornero_canto_pico_trans.webp',
-  './assets_mobile/hornero_canto_alas_trans.webp',
-  './assets_mobile/benteveo_reposo_trans.webp',
-  './assets_mobile/benteveo_canto_trans.webp',
-  './assets_mobile/gaviota_reposo_trans.webp',
-  './assets_mobile/gaviota_canto_trans.webp',
-  './assets_mobile/cardenal_reposo_trans.webp',
-  './assets_mobile/cardenal_canto_trans.webp',
-  './assets_mobile/zorzal_reposo_trans.webp',
-  './assets_mobile/zorzal_canto_trans.webp',
-  './assets_mobile/chingolo_reposo_trans.webp',
-  './assets_mobile/chingolo_canto_trans.webp',
-  './assets_mobile/tero_reposo_trans.webp',
-  './assets_mobile/tero_canto_trans.webp',
-  './assets_mobile/tordo_reposo_trans.webp',
-  './assets_mobile/tordo_canto_trans.webp',
-  './assets_pokemon/hornero_pokemon.webp',
-  './assets_pokemon/tero_pokemon.webp',
-  './assets_pokemon/benteveo_pokemon.webp',
-  './assets_pokemon/cotorra_pokemon.webp',
-  './assets_pokemon/cardenal_pokemon.webp',
-  './assets_pokemon/zorzal_pokemon.webp',
-  './assets_pokemon/chingolo_pokemon.webp',
-  './assets_pokemon/gaviota_pokemon.webp',
-  './assets_pokemon/tordo_pokemon.webp',
-  './assets_pokemon/raw/hornero_card.jpg',
-  './assets_pokemon/raw/tero_card.jpg',
-  './assets_pokemon/raw/benteveo_card.jpg',
-  './assets_pokemon/raw/cotorra_card.jpg',
-  './assets_pokemon/raw/cardenal_card.jpg',
-  './assets_pokemon/raw/zorzal_card.jpg',
-  './assets_pokemon/raw/chingolo_card.jpg',
-  './assets_pokemon/raw/gaviota_card.jpg',
-  './assets_pokemon/raw/tordo_card.jpg',
+  './assets_mobile/pinamar_mediodia_gemini.webp?v=7',
+  './assets_mobile/pinamar_costa_gemini.webp?v=7',
+  './assets_mobile/pinamar_atardecer_gemini.webp?v=7',
+  './assets_mobile/pinamar_amanecer_gemini.webp?v=7',
+  './assets_mobile/cotorra_reposo_trans.webp?v=7',
+  './assets_mobile/cotorra_canto_trans.webp?v=7',
+  './assets_mobile/hornero_reposo_trans.webp?v=7',
+  './assets_mobile/hornero_canto_trans.webp?v=7',
+  './assets_mobile/hornero_canto_pico_trans.webp?v=7',
+  './assets_mobile/hornero_canto_alas_trans.webp?v=7',
+  './assets_mobile/benteveo_reposo_trans.webp?v=7',
+  './assets_mobile/benteveo_canto_trans.webp?v=7',
+  './assets_mobile/gaviota_reposo_trans.webp?v=7',
+  './assets_mobile/gaviota_canto_trans.webp?v=7',
+  './assets_mobile/cardenal_reposo_trans.webp?v=7',
+  './assets_mobile/cardenal_canto_trans.webp?v=7',
+  './assets_mobile/zorzal_reposo_trans.webp?v=7',
+  './assets_mobile/zorzal_canto_trans.webp?v=7',
+  './assets_mobile/chingolo_reposo_trans.webp?v=7',
+  './assets_mobile/chingolo_canto_trans.webp?v=7',
+  './assets_mobile/tero_reposo_trans.webp?v=7',
+  './assets_mobile/tero_canto_trans.webp?v=7',
+  './assets_mobile/tordo_reposo_trans.webp?v=7',
+  './assets_mobile/tordo_canto_trans.webp?v=7',
+  './assets_pokemon/hornero_pokemon.webp?v=7',
+  './assets_pokemon/tero_pokemon.webp?v=7',
+  './assets_pokemon/benteveo_pokemon.webp?v=7',
+  './assets_pokemon/cotorra_pokemon.webp?v=7',
+  './assets_pokemon/cardenal_pokemon.webp?v=7',
+  './assets_pokemon/zorzal_pokemon.webp?v=7',
+  './assets_pokemon/chingolo_pokemon.webp?v=7',
+  './assets_pokemon/gaviota_pokemon.webp?v=7',
+  './assets_pokemon/tordo_pokemon.webp?v=7',
   './audio/canto_cotorra.mp3',
   './audio/canto_hornero.mp3',
   './audio/canto_benteveo.mp3',
@@ -57,10 +47,10 @@ const ASSETS_TO_CACHE = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
-  );
   self.skipWaiting();
+  e.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE)).catch(() => {})
+  );
 });
 
 self.addEventListener('activate', (e) => {
@@ -68,18 +58,47 @@ self.addEventListener('activate', (e) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
-          if (key !== CACHE_NAME) return caches.delete(key);
+          if (key !== CACHE_NAME) {
+            console.log('Eliminando caché obsoleta:', key);
+            return caches.delete(key);
+          }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
+// ESTRATEGIA NETWORK-FIRST PARA DOCUMENTOS / HTML:
+// Siempre busca la versión más reciente en GitHub Pages primero.
 self.addEventListener('fetch', (e) => {
+  const req = e.request;
+  const url = new URL(req.url);
+
+  if (req.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/') || url.pathname === '') {
+    e.respondWith(
+      fetch(req).then((networkRes) => {
+        if (networkRes && networkRes.status === 200) {
+          const clone = networkRes.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
+        }
+        return networkRes;
+      }).catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // Para recursos estáticos: Stale-While-Revalidate
   e.respondWith(
-    caches.match(e.request).then((res) => {
-      return res || fetch(e.request);
+    caches.match(req).then((cachedRes) => {
+      const fetchPromise = fetch(req).then((networkRes) => {
+        if (networkRes && networkRes.status === 200) {
+          const clone = networkRes.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
+        }
+        return networkRes;
+      }).catch(() => null);
+
+      return cachedRes || fetchPromise;
     })
   );
 });
