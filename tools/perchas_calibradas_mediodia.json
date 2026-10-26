@@ -1,0 +1,52 @@
+```json
+{
+  "fondo": "mediodia",
+  "perchas": {
+    "cotorra": {
+      "pctX": 21.5,
+      "pctY": 45.2,
+      "soporte": "rama horizontal gruesa del pino a la izquierda"
+    },
+    "hornero": {
+      "pctX": 38.0,
+      "pctY": 27.2,
+      "soporte": "techo del nido de barro sobre la columna de luz"
+    },
+    "benteveo": {
+      "pctX": 11.5,
+      "pctY": 64.0,
+      "soporte": "poste de madera del alambrado a la izquierda"
+    },
+    "gaviota": {
+      "pctX": 52.0,
+      "pctY": 74.0,
+      "soporte": "suelo arenoso firme en el cruce de la calle de balasto"
+    },
+    "cardenal": {
+      "pctX": 68.5,
+      "pctY": 54.0,
+      "soporte": "rama baja del arbol con flores rojas"
+    },
+    "zorzal": {
+      "pctX": 62.5,
+      "pctY": 68.0,
+      "soporte": "pasto al costado del camino frente a las casas"
+    },
+    "chingolo": {
+      "pctX": 79.0,
+      "pctY": 65.5,
+      "soporte": "poste de madera del cerco junto a la palmera"
+    },
+    "tero": {
+      "pctX": 48.0,
+      "pctY": 88.0,
+      "soporte": "pasto verde en primer plano"
+    },
+    "tordo": {
+      "pctX": 92.5,
+      "pctY": 53.0,
+      "soporte": "rama del arbol verde a la derecha"
+    }
+  }
+}
+```

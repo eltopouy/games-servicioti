@@ -1,0 +1,52 @@
+```json
+{
+  "fondo": "costa",
+  "perchas": {
+    "cotorra": {
+      "pctX": 86.5,
+      "pctY": 11.5,
+      "soporte": "rama de pino en la parte superior derecha"
+    },
+    "hornero": {
+      "pctX": 57.5,
+      "pctY": 57.0,
+      "soporte": "borde superior del murete de hormigón en la entrada"
+    },
+    "benteveo": {
+      "pctX": 77.2,
+      "pctY": 33.5,
+      "soporte": "travesaño superior del poste de iluminación deportiva"
+    },
+    "gaviota": {
+      "pctX": 64.0,
+      "pctY": 68.0,
+      "soporte": "superficie plana de hormigón de la explanada"
+    },
+    "cardenal": {
+      "pctX": 6.0,
+      "pctY": 72.0,
+      "soporte": "rama del arbusto en el lateral inferior izquierdo"
+    },
+    "zorzal": {
+      "pctX": 22.0,
+      "pctY": 64.0,
+      "soporte": "césped verde en el jardín del ala izquierda"
+    },
+    "chingolo": {
+      "pctX": 15.2,
+      "pctY": 55.5,
+      "soporte": "poste del alambrado perimetral izquierdo"
+    },
+    "tero": {
+      "pctX": 38.0,
+      "pctY": 84.0,
+      "soporte": "suelo firme de tierra y balasto en primer plano"
+    },
+    "tordo": {
+      "pctX": 47.5,
+      "pctY": 42.0,
+      "soporte": "remate inclinado del techo de hormigón del edificio central"
+    }
+  }
+}
+```

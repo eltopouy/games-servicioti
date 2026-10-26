@@ -530,27 +530,27 @@
   /* =========================================================================
      UBICACIÓN EXACTA DE LAS 9 AVES ANALIZADAS CON GEMINI 3.8 FLASH
      ========================================================================= */
-  /* Posición base en Calle de Tosca (Mediodía, Atardecer, Amanecer) */
+  /* Posición base en Calle de Tosca (Mediodía, Atardecer, Amanecer) - Todos apoyados en ramas, postes o suelo */
   #perch-cotorra  { left: 31.0%; top: 18.0%; } /* Copa alta del eucalipto */
   #perch-hornero  { left: 22.8%; top: 65.2%; } /* De pie en el poste del alambrado izquierdo (sin nido) */
   #perch-benteveo { left: 28.0%; top: 46.5%; } /* En la rama horizontal del gran pino marítimo */
-  #perch-gaviota  { left: 54.0%; top: 13.0%; } /* Planeando en cielo abierto */
+  #perch-gaviota  { left: 52.0%; top: 74.0%; } /* De pie en el suelo arenoso de la calle de balasto */
   #perch-cardenal { left: 67.0%; top: 48.0%; } /* En la rama del ceibo / arbusto floral */
   #perch-zorzal   { left: 65.0%; top: 93.0%; } /* En el manchón de pasto verde del primer plano */
   #perch-chingolo { left: 78.8%; top: 66.0%; } /* En la punta del poste frente a la palmera */
   #perch-tero     { left: 44.0%; top: 82.0%; } /* En la banquina de pasto y suelo terroso */
   #perch-tordo    { left: 86.4%; top: 66.0%; } /* En el poste del cerco rústico a la derecha */
 
-  /* Posición adaptativa en la Escuela / Balneario de Pinamar */
-  #world-stage.theme-costa #perch-cotorra  { left: 22.0%; top: 18.0%; }
-  #world-stage.theme-costa #perch-hornero  { left: 47.5%; top: 43.5%; }
-  #world-stage.theme-costa #perch-benteveo { left: 12.0%; top: 38.0%; }
-  #world-stage.theme-costa #perch-gaviota  { left: 52.0%; top: 15.0%; }
-  #world-stage.theme-costa #perch-cardenal { left: 83.0%; top: 38.0%; }
-  #world-stage.theme-costa #perch-zorzal   { left: 68.0%; top: 86.0%; }
-  #world-stage.theme-costa #perch-chingolo { left: 30.0%; top: 71.0%; }
-  #world-stage.theme-costa #perch-tero     { left: 48.0%; top: 88.0%; }
-  #world-stage.theme-costa #perch-tordo    { left: 91.0%; top: 62.0%; }
+  /* Posición adaptativa en la Escuela / Balneario de Pinamar (costa) */
+  #world-stage.theme-costa #perch-cotorra  { left: 86.5%; top: 11.5%; }
+  #world-stage.theme-costa #perch-hornero  { left: 57.5%; top: 57.0%; }
+  #world-stage.theme-costa #perch-benteveo { left: 77.2%; top: 33.5%; }
+  #world-stage.theme-costa #perch-gaviota  { left: 64.0%; top: 68.0%; }
+  #world-stage.theme-costa #perch-cardenal { left: 6.0%;  top: 72.0%; }
+  #world-stage.theme-costa #perch-zorzal   { left: 22.0%; top: 64.0%; }
+  #world-stage.theme-costa #perch-chingolo { left: 15.2%; top: 55.5%; }
+  #world-stage.theme-costa #perch-tero     { left: 38.0%; top: 84.0%; }
+  #world-stage.theme-costa #perch-tordo    { left: 47.5%; top: 42.0%; }
 
   /* =========================================================================
      ESTILOS DEL JUEGO: ALIMENTAR A LOS PAJARITOS (MINIJUEGO PARA NIÑOS)
@@ -923,10 +923,12 @@
       pokeNumber: "#001",
       audioSrc: "audio/canto_hornero.mp3",
       reposo: "assets_mobile/hornero_reposo_trans.webp",
-      canto: "assets_mobile/hornero_canto_trans.webp",
+      canto: "assets_mobile/hornero_canto_pico_trans.webp",
+      cantoPico: "assets_mobile/hornero_canto_pico_trans.webp",
+      cantoAlas: "assets_mobile/hornero_canto_alas_trans.webp",
       pokemon: "assets_pokemon/hornero_pokemon.webp",
       card: "assets_pokemon/raw/hornero_card.jpg",
-      desc: "El ave alfarera uruguaya. Carga un sólido domo de barro impenetrable en su espalda y canta a dúo al amanecer con un potente repiqueteo rítmico."
+      desc: "El ave nacional uruguaya. De pie y sin nido, canta con alegre aleteo y potente repiqueteo rítmico mientras vigila confiado desde las alturas."
     },
     tero: {
       id: "tero",
@@ -1040,7 +1042,7 @@
       cotorra:  { pctX: 31.0, pctY: 18.0 },
       hornero:  { pctX: 22.8, pctY: 65.2 },
       benteveo: { pctX: 28.0, pctY: 46.5 },
-      gaviota:  { pctX: 54.0, pctY: 13.0 },
+      gaviota:  { pctX: 52.0, pctY: 74.0 },
       cardenal: { pctX: 67.0, pctY: 48.0 },
       zorzal:   { pctX: 65.0, pctY: 93.0 },
       chingolo: { pctX: 78.8, pctY: 66.0 },
@@ -1051,7 +1053,7 @@
       cotorra:  { pctX: 31.0, pctY: 18.0 },
       hornero:  { pctX: 22.8, pctY: 65.2 },
       benteveo: { pctX: 28.0, pctY: 46.5 },
-      gaviota:  { pctX: 54.0, pctY: 13.0 },
+      gaviota:  { pctX: 52.0, pctY: 74.0 },
       cardenal: { pctX: 67.0, pctY: 48.0 },
       zorzal:   { pctX: 65.0, pctY: 93.0 },
       chingolo: { pctX: 78.8, pctY: 66.0 },
@@ -1062,7 +1064,7 @@
       cotorra:  { pctX: 31.0, pctY: 18.0 },
       hornero:  { pctX: 22.8, pctY: 65.2 },
       benteveo: { pctX: 28.0, pctY: 46.5 },
-      gaviota:  { pctX: 54.0, pctY: 13.0 },
+      gaviota:  { pctX: 52.0, pctY: 74.0 },
       cardenal: { pctX: 67.0, pctY: 48.0 },
       zorzal:   { pctX: 65.0, pctY: 93.0 },
       chingolo: { pctX: 78.8, pctY: 66.0 },
@@ -1070,15 +1072,15 @@
       tordo:    { pctX: 86.4, pctY: 66.0 }
     },
     costa: {
-      cotorra:  { pctX: 22.0, pctY: 18.0 },
-      hornero:  { pctX: 47.5, pctY: 43.5 },
-      benteveo: { pctX: 12.0, pctY: 38.0 },
-      gaviota:  { pctX: 52.0, pctY: 15.0 },
-      cardenal: { pctX: 83.0, pctY: 38.0 },
-      zorzal:   { pctX: 68.0, pctY: 86.0 },
-      chingolo: { pctX: 30.0, pctY: 71.0 },
-      tero:     { pctX: 48.0, pctY: 88.0 },
-      tordo:    { pctX: 91.0, pctY: 62.0 }
+      cotorra:  { pctX: 86.5, pctY: 11.5 },
+      hornero:  { pctX: 57.5, pctY: 57.0 },
+      benteveo: { pctX: 77.2, pctY: 33.5 },
+      gaviota:  { pctX: 64.0, pctY: 68.0 },
+      cardenal: { pctX: 6.0,  pctY: 72.0 },
+      zorzal:   { pctX: 22.0, pctY: 64.0 },
+      chingolo: { pctX: 15.2, pctY: 55.5 },
+      tero:     { pctX: 38.0, pctY: 84.0 },
+      tordo:    { pctX: 47.5, pctY: 42.0 }
     }
   };
 
@@ -1100,6 +1102,14 @@
     audio.preload = "auto";
     audioElements[id] = audio;
     isSinging[id] = false;
+
+    // Precarga de imágenes para animación fluida instantánea
+    [BIRDS[id].reposo, BIRDS[id].canto, BIRDS[id].cantoPico, BIRDS[id].cantoAlas, BIRDS[id].pokemon].forEach(url => {
+      if (url) {
+        const pre = new Image();
+        pre.src = url;
+      }
+    });
   });
 
   /* =========================================================================
@@ -1297,6 +1307,7 @@
       perch.classList.add("is-muted");
       img.src = currentSkin === "pokemon" ? BIRDS[id].pokemon : BIRDS[id].reposo;
       img.setAttribute("data-beak", "closed");
+      img.setAttribute("data-frame-state", "reposo");
       if (camera.focusedBird === id) resetZoom();
     } else {
       isSinging[id] = true;
@@ -1365,7 +1376,7 @@
     setTimeout(() => note.remove(), 1500);
   }
 
-  // Motor de Sincronización de Pico en Tiempo Real a 60 FPS
+  // Motor de Sincronización de Pico y Aleteo de Alas en Tiempo Real a 60 FPS
   function startLipSyncEngine() {
     let lastNoteTime = 0;
 
@@ -1388,13 +1399,32 @@
 
         const isOpen = (Math.sin(t * 22 + (id.charCodeAt(0) % 7)) > 0.12) && ((Math.floor(t * 3.5) % 4) !== 0);
 
-        const currentBeak = img.getAttribute("data-beak");
-        if (isOpen && currentBeak !== "open") {
-          img.src = BIRDS[id].canto;
-          img.setAttribute("data-beak", "open");
-        } else if (!isOpen && currentBeak !== "closed") {
-          img.src = BIRDS[id].reposo;
-          img.setAttribute("data-beak", "closed");
+        const currentFrameState = img.getAttribute("data-frame-state") || "reposo";
+
+        if (isOpen) {
+          if (BIRDS[id].cantoAlas && BIRDS[id].cantoPico) {
+            // Animación multi-fotograma de 3 estados generada con Gemini Web Image:
+            // Alterna rítmicamente entre Piquito Abierto y Aleteo con Alas Desplegadas
+            const isWingsOpen = Math.sin(t * 14) > 0.0;
+            const targetState = isWingsOpen ? "alas" : "pico";
+            if (currentFrameState !== targetState) {
+              img.src = isWingsOpen ? BIRDS[id].cantoAlas : BIRDS[id].cantoPico;
+              img.setAttribute("data-frame-state", targetState);
+              img.setAttribute("data-beak", "open");
+            }
+          } else {
+            if (currentFrameState !== "pico") {
+              img.src = BIRDS[id].canto;
+              img.setAttribute("data-frame-state", "pico");
+              img.setAttribute("data-beak", "open");
+            }
+          }
+        } else {
+          if (currentFrameState !== "reposo") {
+            img.src = BIRDS[id].reposo;
+            img.setAttribute("data-frame-state", "reposo");
+            img.setAttribute("data-beak", "closed");
+          }
         }
       });
 
@@ -1487,6 +1517,7 @@
         if (toast) toast.textContent = `¡${BIRDS[id].pokeName}! ⚡`;
       } else {
         img.src = isSinging[id] ? BIRDS[id].canto : BIRDS[id].reposo;
+        img.setAttribute("data-frame-state", isSinging[id] ? "pico" : "reposo");
         if (toast) toast.textContent = `¡${BIRDS[id].name}!`;
       }
     });

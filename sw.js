@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pajaritos-cache-v3';
+const CACHE_NAME = 'pajaritos-cache-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -11,6 +11,8 @@ const ASSETS_TO_CACHE = [
   './assets_mobile/cotorra_canto_trans.webp',
   './assets_mobile/hornero_reposo_trans.webp',
   './assets_mobile/hornero_canto_trans.webp',
+  './assets_mobile/hornero_canto_pico_trans.webp',
+  './assets_mobile/hornero_canto_alas_trans.webp',
   './assets_mobile/benteveo_reposo_trans.webp',
   './assets_mobile/benteveo_canto_trans.webp',
   './assets_mobile/gaviota_reposo_trans.webp',
