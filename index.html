@@ -417,7 +417,10 @@
     position: absolute;
     transform: translate(-50%, -85%) scale(var(--bird-scale, 1));
     transform-origin: 50% 85%;
-    cursor: pointer;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
     z-index: 20;
     display: flex;
     flex-direction: column;
@@ -426,6 +429,20 @@
     width: 120px;
     height: 120px;
     transition: left 0.65s cubic-bezier(0.2, 0.9, 0.3, 1), top 0.65s cubic-bezier(0.2, 0.9, 0.3, 1), transform 0.65s cubic-bezier(0.2, 0.9, 0.3, 1), filter 0.2s ease;
+  }
+
+  /* Estado de Arrastre Libre por el Escenario */
+  .bird-perch.is-dragging {
+    cursor: grabbing !important;
+    z-index: 100 !important;
+    filter: drop-shadow(0 20px 28px rgba(0, 0, 0, 0.55)) brightness(1.08) !important;
+    transform: translate(-50%, -96%) scale(calc(var(--bird-scale, 1) * 1.10)) !important;
+    transition: transform 0.1s ease-out, filter 0.15s ease !important;
+  }
+
+  .bird-perch.is-dragging .sound-aura {
+    opacity: 0.6;
+    transform: scale(1.15);
   }
 
   .bird-sprite {
@@ -1021,7 +1038,7 @@
     <div id="perch-cotorra" class="bird-perch is-muted" data-bird="cotorra">
       <div class="sound-aura"></div>
       <div class="note-spawner"></div>
-      <img id="img-cotorra" class="bird-sprite" src="assets_mobile/cotorra_reposo_trans.webp?v=19" alt="Cotorra">
+      <img id="img-cotorra" class="bird-sprite" src="assets_mobile/cotorra_reposo_trans.webp?v=20" alt="Cotorra">
       <div class="bird-toast">¡Cotorra!</div>
     </div>
 
@@ -1029,7 +1046,7 @@
     <div id="perch-hornero" class="bird-perch is-muted" data-bird="hornero">
       <div class="sound-aura"></div>
       <div class="note-spawner"></div>
-      <img id="img-hornero" class="bird-sprite" src="assets_mobile/hornero_reposo_trans.webp?v=19" alt="Hornero">
+      <img id="img-hornero" class="bird-sprite" src="assets_mobile/hornero_reposo_trans.webp?v=20" alt="Hornero">
       <div class="bird-toast">¡Hornero!</div>
     </div>
 
@@ -1037,7 +1054,7 @@
     <div id="perch-benteveo" class="bird-perch is-muted" data-bird="benteveo">
       <div class="sound-aura"></div>
       <div class="note-spawner"></div>
-      <img id="img-benteveo" class="bird-sprite" src="assets_mobile/benteveo_reposo_trans.webp?v=19" alt="Benteveo">
+      <img id="img-benteveo" class="bird-sprite" src="assets_mobile/benteveo_reposo_trans.webp?v=20" alt="Benteveo">
       <div class="bird-toast">¡Benteveo!</div>
     </div>
 
@@ -1045,7 +1062,7 @@
     <div id="perch-gaviota" class="bird-perch is-muted" data-bird="gaviota">
       <div class="sound-aura"></div>
       <div class="note-spawner"></div>
-      <img id="img-gaviota" class="bird-sprite" src="assets_mobile/gaviota_reposo_trans.webp?v=19" alt="Gaviota Cocinera">
+      <img id="img-gaviota" class="bird-sprite" src="assets_mobile/gaviota_reposo_trans.webp?v=20" alt="Gaviota Cocinera">
       <div class="bird-toast">¡Gaviota!</div>
     </div>
 
@@ -1053,7 +1070,7 @@
     <div id="perch-cardenal" class="bird-perch is-muted" data-bird="cardenal">
       <div class="sound-aura"></div>
       <div class="note-spawner"></div>
-      <img id="img-cardenal" class="bird-sprite" src="assets_mobile/cardenal_reposo_trans.webp?v=19" alt="Cardenal">
+      <img id="img-cardenal" class="bird-sprite" src="assets_mobile/cardenal_reposo_trans.webp?v=20" alt="Cardenal">
       <div class="bird-toast">¡Cardenal!</div>
     </div>
 
@@ -1061,7 +1078,7 @@
     <div id="perch-zorzal" class="bird-perch is-muted" data-bird="zorzal">
       <div class="sound-aura"></div>
       <div class="note-spawner"></div>
-      <img id="img-zorzal" class="bird-sprite" src="assets_mobile/zorzal_reposo_trans.webp?v=19" alt="Zorzal Colorado">
+      <img id="img-zorzal" class="bird-sprite" src="assets_mobile/zorzal_reposo_trans.webp?v=20" alt="Zorzal Colorado">
       <div class="bird-toast">¡Zorzal Colorado!</div>
     </div>
 
@@ -1069,7 +1086,7 @@
     <div id="perch-chingolo" class="bird-perch is-muted" data-bird="chingolo">
       <div class="sound-aura"></div>
       <div class="note-spawner"></div>
-      <img id="img-chingolo" class="bird-sprite" src="assets_mobile/chingolo_reposo_trans.webp?v=19" alt="Chingolo">
+      <img id="img-chingolo" class="bird-sprite" src="assets_mobile/chingolo_reposo_trans.webp?v=20" alt="Chingolo">
       <div class="bird-toast">¡Chingolo!</div>
     </div>
 
@@ -1077,7 +1094,7 @@
     <div id="perch-tero" class="bird-perch is-muted" data-bird="tero">
       <div class="sound-aura"></div>
       <div class="note-spawner"></div>
-      <img id="img-tero" class="bird-sprite" src="assets_mobile/tero_reposo_trans.webp?v=19" alt="Tero">
+      <img id="img-tero" class="bird-sprite" src="assets_mobile/tero_reposo_trans.webp?v=20" alt="Tero">
       <div class="bird-toast">¡Tero!</div>
     </div>
 
@@ -1085,7 +1102,7 @@
     <div id="perch-tordo" class="bird-perch is-muted" data-bird="tordo">
       <div class="sound-aura"></div>
       <div class="note-spawner"></div>
-      <img id="img-tordo" class="bird-sprite" src="assets_mobile/tordo_reposo_trans.webp?v=19" alt="Tordo Renegrido">
+      <img id="img-tordo" class="bird-sprite" src="assets_mobile/tordo_reposo_trans.webp?v=20" alt="Tordo Renegrido">
       <div class="bird-toast">¡Tordo Renegrido!</div>
     </div>
 
@@ -1279,13 +1296,13 @@
       pokeNumber: "#001",
       audioSrc: "audio/canto_hornero.mp3",
       voiceSrc: "audio/voz_hornero.mp3",
-      reposo: "assets_mobile/hornero_reposo_trans.webp?v=19",
-      canto: "assets_mobile/hornero_canto_pico_trans.webp?v=19",
-      cantoPico: "assets_mobile/hornero_canto_pico_trans.webp?v=19",
-      cantoAlas: "assets_mobile/hornero_canto_alas_trans.webp?v=19",
-      vuelo: "assets_mobile/hornero_vuelo_trans.webp?v=19",
-      pokemon: "assets_pokemon/hornero_pokemon.webp?v=19",
-      card: "assets_pokemon/raw/hornero_card.jpg?v=19",
+      reposo: "assets_mobile/hornero_reposo_trans.webp?v=20",
+      canto: "assets_mobile/hornero_canto_pico_trans.webp?v=20",
+      cantoPico: "assets_mobile/hornero_canto_pico_trans.webp?v=20",
+      cantoAlas: "assets_mobile/hornero_canto_alas_trans.webp?v=20",
+      vuelo: "assets_mobile/hornero_vuelo_trans.webp?v=20",
+      pokemon: "assets_pokemon/hornero_pokemon.webp?v=20",
+      card: "assets_pokemon/raw/hornero_card.jpg?v=20",
       desc: "El ave nacional uruguaya. De pie y sin nido, canta con alegre aleteo y potente repiqueteo rítmico mientras vigila confiado desde las alturas."
     },
     tero: {
@@ -1296,13 +1313,13 @@
       pokeNumber: "#002",
       audioSrc: "audio/canto_tero.mp3",
       voiceSrc: "audio/voz_tero.mp3",
-      reposo: "assets_mobile/tero_reposo_trans.webp?v=19",
-      canto: "assets_mobile/tero_canto_pico_trans.webp?v=19",
-      cantoPico: "assets_mobile/tero_canto_pico_trans.webp?v=19",
-      vuelo: "assets_mobile/tero_vuelo_trans.webp?v=19",
-      cantoAlas: "assets_mobile/tero_canto_alas_trans.webp?v=19",
-      pokemon: "assets_pokemon/tero_pokemon.webp?v=19",
-      card: "assets_pokemon/raw/tero_card.jpg?v=19",
+      reposo: "assets_mobile/tero_reposo_trans.webp?v=20",
+      canto: "assets_mobile/tero_canto_pico_trans.webp?v=20",
+      cantoPico: "assets_mobile/tero_canto_pico_trans.webp?v=20",
+      vuelo: "assets_mobile/tero_vuelo_trans.webp?v=20",
+      cantoAlas: "assets_mobile/tero_canto_alas_trans.webp?v=20",
+      pokemon: "assets_pokemon/tero_pokemon.webp?v=20",
+      card: "assets_pokemon/raw/tero_card.jpg?v=20",
       desc: "Centinela guerrero del campo uruguayo. Ojos carmesí, copete vigilante y afilados espolones rojos en sus alas para proteger a sus pichones."
     },
     benteveo: {
@@ -1313,13 +1330,13 @@
       pokeNumber: "#003",
       audioSrc: "audio/canto_benteveo.mp3",
       voiceSrc: "audio/voz_benteveo.mp3",
-      reposo: "assets_mobile/benteveo_reposo_trans.webp?v=19",
-      canto: "assets_mobile/benteveo_canto_pico_trans.webp?v=19",
-      cantoPico: "assets_mobile/benteveo_canto_pico_trans.webp?v=19",
-      vuelo: "assets_mobile/benteveo_vuelo_trans.webp?v=19",
-      cantoAlas: "assets_mobile/benteveo_canto_alas_trans.webp?v=19",
-      pokemon: "assets_pokemon/benteveo_pokemon.webp?v=19",
-      card: "assets_pokemon/raw/benteveo_card.jpg?v=19",
+      reposo: "assets_mobile/benteveo_reposo_trans.webp?v=20",
+      canto: "assets_mobile/benteveo_canto_pico_trans.webp?v=20",
+      cantoPico: "assets_mobile/benteveo_canto_pico_trans.webp?v=20",
+      vuelo: "assets_mobile/benteveo_vuelo_trans.webp?v=20",
+      cantoAlas: "assets_mobile/benteveo_canto_alas_trans.webp?v=20",
+      pokemon: "assets_pokemon/benteveo_pokemon.webp?v=20",
+      card: "assets_pokemon/raw/benteveo_card.jpg?v=20",
       desc: "Luce un llamativo pecho amarillo eléctrico y un antifaz negro de bandido. Su grito inconfundible y enérgico retumba en todo el balneario."
     },
     cotorra: {
@@ -1330,13 +1347,13 @@
       pokeNumber: "#004",
       audioSrc: "audio/canto_cotorra.mp3",
       voiceSrc: "audio/voz_cotorra.mp3",
-      reposo: "assets_mobile/cotorra_reposo_trans.webp?v=19",
-      canto: "assets_mobile/cotorra_canto_pico_trans.webp?v=19",
-      cantoPico: "assets_mobile/cotorra_canto_pico_trans.webp?v=19",
-      vuelo: "assets_mobile/cotorra_vuelo_trans.webp?v=19",
-      cantoAlas: "assets_mobile/cotorra_canto_alas_trans.webp?v=19",
-      pokemon: "assets_pokemon/cotorra_pokemon.webp?v=19",
-      card: "assets_pokemon/raw/cotorra_card.jpg?v=19",
+      reposo: "assets_mobile/cotorra_reposo_trans.webp?v=20",
+      canto: "assets_mobile/cotorra_canto_pico_trans.webp?v=20",
+      cantoPico: "assets_mobile/cotorra_canto_pico_trans.webp?v=20",
+      vuelo: "assets_mobile/cotorra_vuelo_trans.webp?v=20",
+      cantoAlas: "assets_mobile/cotorra_canto_alas_trans.webp?v=20",
+      pokemon: "assets_pokemon/cotorra_pokemon.webp?v=20",
+      card: "assets_pokemon/raw/cotorra_card.jpg?v=20",
       desc: "Plumaje verde esmeralda y pecho ceniza. Construye enormes nidos comunitarios en las copas de eucaliptos y llena el aire con alegres charlas."
     },
     cardenal: {
@@ -1347,13 +1364,13 @@
       pokeNumber: "#005",
       audioSrc: "audio/canto_cardenal.mp3",
       voiceSrc: "audio/voz_cardenal.mp3",
-      reposo: "assets_mobile/cardenal_reposo_trans.webp?v=19",
-      canto: "assets_mobile/cardenal_canto_pico_trans.webp?v=19",
-      cantoPico: "assets_mobile/cardenal_canto_pico_trans.webp?v=19",
-      vuelo: "assets_mobile/cardenal_vuelo_trans.webp?v=19",
-      cantoAlas: "assets_mobile/cardenal_canto_alas_trans.webp?v=19",
-      pokemon: "assets_pokemon/cardenal_pokemon.webp?v=19",
-      card: "assets_pokemon/raw/cardenal_card.jpg?v=19",
+      reposo: "assets_mobile/cardenal_reposo_trans.webp?v=20",
+      canto: "assets_mobile/cardenal_canto_pico_trans.webp?v=20",
+      cantoPico: "assets_mobile/cardenal_canto_pico_trans.webp?v=20",
+      vuelo: "assets_mobile/cardenal_vuelo_trans.webp?v=20",
+      cantoAlas: "assets_mobile/cardenal_canto_alas_trans.webp?v=20",
+      pokemon: "assets_pokemon/cardenal_pokemon.webp?v=20",
+      card: "assets_pokemon/raw/cardenal_card.jpg?v=20",
       desc: "Cantor noble con un vistoso copete rojo llameante. Se posa en el Ceibo en flor y emite un silbido aflautado de gran pureza musical."
     },
     zorzal: {
@@ -1364,13 +1381,13 @@
       pokeNumber: "#006",
       audioSrc: "audio/canto_zorzal_colorado.mp3",
       voiceSrc: "audio/voz_zorzal_colorado.mp3",
-      reposo: "assets_mobile/zorzal_reposo_trans.webp?v=19",
-      canto: "assets_mobile/zorzal_canto_pico_trans.webp?v=19",
-      cantoPico: "assets_mobile/zorzal_canto_pico_trans.webp?v=19",
-      vuelo: "assets_mobile/zorzal_vuelo_trans.webp?v=19",
-      cantoAlas: "assets_mobile/zorzal_canto_alas_trans.webp?v=19",
-      pokemon: "assets_pokemon/zorzal_pokemon.webp?v=19",
-      card: "assets_pokemon/raw/zorzal_card.jpg?v=19",
+      reposo: "assets_mobile/zorzal_reposo_trans.webp?v=20",
+      canto: "assets_mobile/zorzal_canto_pico_trans.webp?v=20",
+      cantoPico: "assets_mobile/zorzal_canto_pico_trans.webp?v=20",
+      vuelo: "assets_mobile/zorzal_vuelo_trans.webp?v=20",
+      cantoAlas: "assets_mobile/zorzal_canto_alas_trans.webp?v=20",
+      pokemon: "assets_pokemon/zorzal_pokemon.webp?v=20",
+      card: "assets_pokemon/raw/zorzal_card.jpg?v=20",
       desc: "Vientre color terracota y ojos coronados con un anillo dorado. Es el primer pájaro que canta en la madrugada, bendiciendo el nuevo día."
     },
     chingolo: {
@@ -1381,13 +1398,13 @@
       pokeNumber: "#007",
       audioSrc: "audio/canto_chingolo.mp3",
       voiceSrc: "audio/voz_chingolo.mp3",
-      reposo: "assets_mobile/chingolo_reposo_trans.webp?v=19",
-      canto: "assets_mobile/chingolo_canto_pico_trans.webp?v=19",
-      cantoPico: "assets_mobile/chingolo_canto_pico_trans.webp?v=19",
-      vuelo: "assets_mobile/chingolo_vuelo_trans.webp?v=19",
-      cantoAlas: "assets_mobile/chingolo_canto_alas_trans.webp?v=19",
-      pokemon: "assets_pokemon/chingolo_pokemon.webp?v=19",
-      card: "assets_pokemon/raw/chingolo_card.jpg?v=19",
+      reposo: "assets_mobile/chingolo_reposo_trans.webp?v=20",
+      canto: "assets_mobile/chingolo_canto_pico_trans.webp?v=20",
+      cantoPico: "assets_mobile/chingolo_canto_pico_trans.webp?v=20",
+      vuelo: "assets_mobile/chingolo_vuelo_trans.webp?v=20",
+      cantoAlas: "assets_mobile/chingolo_canto_alas_trans.webp?v=20",
+      pokemon: "assets_pokemon/chingolo_pokemon.webp?v=20",
+      card: "assets_pokemon/raw/chingolo_card.jpg?v=20",
       desc: "Pequeño y simpático pajarito con un collarín color canela. Salta confiado entre los postes de alambrado y entona su dulce silbido de cuatro notas."
     },
     gaviota: {
@@ -1398,13 +1415,13 @@
       pokeNumber: "#008",
       audioSrc: "audio/canto_gaviota.mp3",
       voiceSrc: "audio/voz_gaviota.mp3",
-      reposo: "assets_mobile/gaviota_reposo_trans.webp?v=19",
-      canto: "assets_mobile/gaviota_canto_pico_trans.webp?v=19",
-      cantoPico: "assets_mobile/gaviota_canto_pico_trans.webp?v=19",
-      vuelo: "assets_mobile/gaviota_vuelo_trans.webp?v=19",
-      cantoAlas: "assets_mobile/gaviota_canto_alas_trans.webp?v=19",
-      pokemon: "assets_pokemon/gaviota_pokemon.webp?v=19",
-      card: "assets_pokemon/raw/gaviota_card.jpg?v=19",
+      reposo: "assets_mobile/gaviota_reposo_trans.webp?v=20",
+      canto: "assets_mobile/gaviota_canto_pico_trans.webp?v=20",
+      cantoPico: "assets_mobile/gaviota_canto_pico_trans.webp?v=20",
+      vuelo: "assets_mobile/gaviota_vuelo_trans.webp?v=20",
+      cantoAlas: "assets_mobile/gaviota_canto_alas_trans.webp?v=20",
+      pokemon: "assets_pokemon/gaviota_pokemon.webp?v=20",
+      card: "assets_pokemon/raw/gaviota_card.jpg?v=20",
       desc: "Soberana de la costa de Pinamar. Su cuerpo blanco contrasta con sus alas negras y un pico amarillo con una curiosa mancha roja en el extremo."
     },
     tordo: {
@@ -1415,13 +1432,13 @@
       pokeNumber: "#009",
       audioSrc: "audio/canto_tordo.mp3",
       voiceSrc: "audio/voz_tordo.mp3",
-      reposo: "assets_mobile/tordo_reposo_trans.webp?v=19",
-      canto: "assets_mobile/tordo_canto_pico_trans.webp?v=19",
-      cantoPico: "assets_mobile/tordo_canto_pico_trans.webp?v=19",
-      vuelo: "assets_mobile/tordo_vuelo_trans.webp?v=19",
-      cantoAlas: "assets_mobile/tordo_canto_alas_trans.webp?v=19",
-      pokemon: "assets_pokemon/tordo_pokemon.webp?v=19",
-      card: "assets_pokemon/raw/tordo_card.jpg?v=19",
+      reposo: "assets_mobile/tordo_reposo_trans.webp?v=20",
+      canto: "assets_mobile/tordo_canto_pico_trans.webp?v=20",
+      cantoPico: "assets_mobile/tordo_canto_pico_trans.webp?v=20",
+      vuelo: "assets_mobile/tordo_vuelo_trans.webp?v=20",
+      cantoAlas: "assets_mobile/tordo_canto_alas_trans.webp?v=20",
+      pokemon: "assets_pokemon/tordo_pokemon.webp?v=20",
+      card: "assets_pokemon/raw/tordo_card.jpg?v=20",
       desc: "El típico pajarito negro de los barrios de Uruguay. Plumaje azabache con brillo tornasolado violáceo y un alegre canto líquido burbujeante."
     }
   };
@@ -2010,15 +2027,126 @@
   }
 
   /* =========================================================================
-     MECÁNICA UNIFICADA Y ROBUSTA: TAP SIMPLE, DOBLE TAP Y ALIMENTACIÓN
+     MECÁNICA UNIFICADA: TAP (CANTO), DOBLE TAP (VUELO) Y ARRASTRE LIBRE (DRAG & DROP)
      ========================================================================= */
   let lastHandledGestureTime = 0;
-  const birdPointerDown = {};
+  let draggedBirdId = null;
+  let isBirdDragging = false;
+  let birdDragStart = { x: 0, y: 0, time: 0 };
+  let birdHoldTimer = null;
+
+  function playDropSound() {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = audioCtx || new AudioCtx();
+      if (ctx.state === 'suspended') ctx.resume();
+      const now = ctx.currentTime;
+
+      // Sonido suave de posado orgánico
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(460, now);
+      osc.frequency.exponentialRampToValueAtTime(290, now + 0.12);
+      gain.gain.setValueAtTime(0.20, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.14);
+    } catch(e) {}
+  }
+
+  function startBirdDrag(id, clientX, clientY) {
+    if (isBirdDragging || hasFlown[id]) return;
+    isBirdDragging = true;
+    const perch = document.getElementById(`perch-${id}`);
+    if (!perch) return;
+
+    // Si la cámara estaba enfocando al ave, restablecer zoom para visión panorámica completa
+    if (camera.isZoomed && camera.focusedBird === id) {
+      resetZoom();
+    }
+
+    perch.classList.add("is-dragging");
+    perch.style.zIndex = "100";
+    perch.style.cursor = "grabbing";
+    perch.style.transition = "none";
+
+    // Haptic feedback en dispositivos táctiles
+    if (navigator.vibrate) {
+      try { navigator.vibrate(25); } catch(e) {}
+    }
+
+    updateBirdDragPosition(id, clientX, clientY);
+  }
+
+  function updateBirdDragPosition(id, clientX, clientY) {
+    const perch = document.getElementById(`perch-${id}`);
+    if (!perch) return;
+
+    const rect = stage.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return;
+
+    // Convertir coordenadas del cursor/dedo a porcentaje dentro del escenario 16:9
+    const rawPctX = ((clientX - rect.left) / rect.width) * 100;
+    const rawPctY = ((clientY - rect.top) / rect.height) * 100;
+
+    // Delimitar dentro del área física visible del escenario
+    const pctX = Math.max(3, Math.min(97, rawPctX));
+    const pctY = Math.max(12, Math.min(92, rawPctY));
+
+    // Perspectiva dinámica Z: según la altura Y el ave se escala anatómicamente
+    // Más arriba (horizonte / fondo lejano): menor tamaño
+    // Más abajo (primer plano / suelo): mayor tamaño
+    const currentTheme = (typeof THEMES !== 'undefined' && THEMES[themeIndex]) ? THEMES[themeIndex].id : "costa";
+    const themeSet = THEME_PERCHES[currentTheme] || THEME_PERCHES.costa;
+    const baseConfig = themeSet[id] || { pctX: 50, pctY: 50, scale: 1.0 };
+
+    const deltaY = (pctY - baseConfig.pctY) / 100;
+    const dynScale = Math.max(0.35, Math.min(1.45, baseConfig.scale * (1 + deltaY * 0.85)));
+
+    perch.style.left = pctX.toFixed(2) + "%";
+    perch.style.top = pctY.toFixed(2) + "%";
+    perch.style.setProperty('--bird-scale', dynScale.toFixed(3));
+
+    // Actualizar registro de percha activa
+    if (themeSet[id]) {
+      themeSet[id].pctX = pctX;
+      themeSet[id].pctY = pctY;
+      themeSet[id].scale = dynScale;
+    }
+  }
+
+  function finishBirdDrag(id) {
+    if (!isBirdDragging) return;
+    isBirdDragging = false;
+    const perch = document.getElementById(`perch-${id}`);
+    if (!perch) return;
+
+    perch.classList.remove("is-dragging");
+
+    // Reasignar z-index por profundidad Y
+    const currentTheme = (typeof THEMES !== 'undefined' && THEMES[themeIndex]) ? THEMES[themeIndex].id : "costa";
+    const themeSet = THEME_PERCHES[currentTheme] || THEME_PERCHES.costa;
+    const currentY = themeSet[id] ? themeSet[id].pctY : 60;
+    perch.style.zIndex = Math.round(15 + (currentY / 100) * 15);
+    perch.style.cursor = "grab";
+    perch.style.transition = "transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28)";
+    perch.style.transform = "";
+
+    playDropSound();
+    showGlobalToast(`¡${BIRDS[id].name} colocado en su nueva posición! 📍`);
+
+    // Evitar que el evento click o tap active el canto o vuelo accidental
+    lastHandledGestureTime = Date.now() + 450;
+  }
 
   function handleBirdInteraction(id, e) {
     if (hasFlown[id]) return;
 
-    // 1. MODO DAR DE COMER: Evento delimitado exclusivo al hacer clic en el pajarito
+    // 1. MODO DAR DE COMER: Evento delimitado exclusivo al tocar al pajarito
     if (feedMode) {
       const perch = document.getElementById(`perch-${id}`);
       const r = perch ? perch.getBoundingClientRect() : { left: 0, top: 0, width: 0, height: 0 };
@@ -2044,44 +2172,103 @@
     }
   }
 
-  /* Conexión limpia de eventos por ave sin interferencia de clic sintético */
+  /* Conexión limpia de eventos por ave con soporte completo de arrastre y toque */
   Object.keys(BIRDS).forEach(id => {
     const perch = document.getElementById(`perch-${id}`);
+    if (!perch) return;
 
     perch.addEventListener("pointerdown", e => {
-      e.stopPropagation();
+      if (hasFlown[id]) return;
+
+      e.stopPropagation(); // Evitar que el viewport inicie el paneo de cámara
       drag.active = false;
       drag.hasMoved = false;
-      birdPointerDown[id] = {
+
+      draggedBirdId = id;
+      isBirdDragging = false;
+      birdDragStart = {
         x: e.clientX,
         y: e.clientY,
         time: Date.now()
       };
+
+      if (birdHoldTimer) clearTimeout(birdHoldTimer);
+      // Mantener presionado 190ms activa el modo arrastre
+      birdHoldTimer = setTimeout(() => {
+        if (draggedBirdId === id && !isBirdDragging) {
+          startBirdDrag(id, e.clientX, e.clientY);
+        }
+      }, 190);
     });
 
-    perch.addEventListener("pointerup", e => {
-      e.stopPropagation();
-      const start = birdPointerDown[id];
-      if (!start) return;
-      birdPointerDown[id] = null;
-
-      const dist = Math.hypot(e.clientX - start.x, e.clientY - start.y);
-      if (dist > 16) return; // Si arrastró el dedo, fue un intento de paneo
-
-      lastHandledGestureTime = Date.now();
-      handleBirdInteraction(id, e);
-    });
-
-    // Descartar el evento de clic sintético del navegador si pointerup ya lo procesó
     perch.addEventListener("click", e => {
       e.stopPropagation();
       e.preventDefault();
-      if (Date.now() - lastHandledGestureTime < 450) {
-        return; // Evita el doble disparo que apagaba el canto o provocaba vuelo involuntario
-      }
+      if (Date.now() - lastHandledGestureTime < 450) return;
       lastHandledGestureTime = Date.now();
       handleBirdInteraction(id, e);
     });
+  });
+
+  // Escuchadores globales para arrastre continuo
+  window.addEventListener("pointermove", e => {
+    if (!draggedBirdId) return;
+
+    const dx = e.clientX - birdDragStart.x;
+    const dy = e.clientY - birdDragStart.y;
+    const dist = Math.hypot(dx, dy);
+
+    // Si se mueve más de 7px antes del temporizador, iniciar arrastre inmediatamente
+    if (!isBirdDragging && dist > 7) {
+      if (birdHoldTimer) {
+        clearTimeout(birdHoldTimer);
+        birdHoldTimer = null;
+      }
+      startBirdDrag(draggedBirdId, e.clientX, e.clientY);
+    }
+
+    if (isBirdDragging) {
+      updateBirdDragPosition(draggedBirdId, e.clientX, e.clientY);
+    }
+  });
+
+  window.addEventListener("pointerup", e => {
+    if (birdHoldTimer) {
+      clearTimeout(birdHoldTimer);
+      birdHoldTimer = null;
+    }
+
+    if (draggedBirdId) {
+      const id = draggedBirdId;
+      const wasDragging = isBirdDragging;
+      draggedBirdId = null;
+
+      if (wasDragging) {
+        finishBirdDrag(id);
+        return;
+      }
+
+      // Si no se arrastró, evaluar si fue un tap limpio
+      const dist = Math.hypot(e.clientX - birdDragStart.x, e.clientY - birdDragStart.y);
+      const elapsed = Date.now() - birdDragStart.time;
+
+      if (dist <= 14 && elapsed < 400) {
+        lastHandledGestureTime = Date.now();
+        handleBirdInteraction(id, e);
+      }
+    }
+  });
+
+  window.addEventListener("pointercancel", () => {
+    if (birdHoldTimer) {
+      clearTimeout(birdHoldTimer);
+      birdHoldTimer = null;
+    }
+    if (draggedBirdId && isBirdDragging) {
+      finishBirdDrag(draggedBirdId);
+    }
+    draggedBirdId = null;
+    isBirdDragging = false;
   });
 
   /* =========================================================================
@@ -2153,6 +2340,17 @@
     themeIndex = foundIdx >= 0 ? foundIdx : 0;
     const current = THEMES[themeIndex];
     stage.classList.add(`theme-${current.id}`);
+
+    // Restablecer perchas inline para adoptar las posiciones calibradas del nuevo escenario
+    Object.keys(BIRDS).forEach(id => {
+      const p = document.getElementById(`perch-${id}`);
+      if (p) {
+        p.style.left = "";
+        p.style.top = "";
+        p.style.removeProperty('--bird-scale');
+        p.style.zIndex = "";
+      }
+    });
 
     // Actualizar botones de selección en el menú
     document.querySelectorAll('.theme-select-btn').forEach(btn => {
@@ -2496,7 +2694,7 @@
 
   
   // Auto-Actualizador agresivo con limpieza de caché PWA
-  const APP_DEPLOY_VERSION = '2026.10.27.v19.flawless_gaviota';
+  const APP_DEPLOY_VERSION = '2026.10.27.v20.draggable_birds';
   if (localStorage.getItem('pajaritos_app_version') !== APP_DEPLOY_VERSION) {
     localStorage.setItem('pajaritos_app_version', APP_DEPLOY_VERSION);
     if ('caches' in window) {

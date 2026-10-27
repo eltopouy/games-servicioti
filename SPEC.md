@@ -30,6 +30,7 @@ Videojuego web interactivo y educativo ambientado en los balnearios de Uruguay (
 ## 🕹️ Mecánicas de Interacción
 - **1 Tap / Clic:** Inicia o detiene el canto del ave individualmente, con enfoque de cámara.
 - **Doble Tap Rápido:** Despliega alas en perspectiva 3D (`[bird]_vuelo_trans.webp`), emite sonido de aleteo y vuela hacia el cielo desapareciendo de escena; la cámara panorámica se acomoda automáticamente.
+- **Arrastre Libre de Aves (Drag & Drop, v20):** Al mantener presionado un ave (hold de 190ms o desplazamiento >7px), el jugador puede transportarla y posarla libremente en cualquier rincón del escenario. El ave se eleva sutilmente con sombra profunda y feedback táctil, recalcula en tiempo real su escala por perspectiva Z (más pequeña cerca del horizonte, más grande en el suelo) y emite un suave sonido de aterrizaje al soltarla.
 - **Botón Llamar / Reiniciar:** Hace aterrizar a todas las aves de vuelta a sus perchas con animación suave de descenso (`is-landing`).
 - **Modo Dar de Comer (🌾🍞):** Al tocar un ave, caen miguitas/semillas, come con satisfacción, suma puntos en el contador HUD y muestra mensaje de agradecimiento.
 - **Modo Pokédex:** Alterna entre ilustraciones hiperrealistas de fauna uruguaya y sus versiones estilo criaturas coleccionables.
@@ -37,7 +38,7 @@ Videojuego web interactivo y educativo ambientado en los balnearios de Uruguay (
 
 ## 🚀 Despliegue y PWA
 - **Hosting:** GitHub Pages en `https://games.servicioti.com.uy/` (repo `eltopouy/games-servicioti`).
-- **PWA Service Worker:** Caché estricto con versionado automático (`v19-flawless-gaviota`).
+- **PWA Service Worker:** Caché estricto con versionado automático (`v20-draggable-birds`).
 - **Composición Multimodal:** Perchas calculadas por Gemini 3.8 Flash alimentado con la imagen de fondo y las 9 aves simultáneas en el prompt multimodal, garantizando orientación natural hacia el centro y apoyos físicos verificados.
 - **Animación Exclusiva de Pico Sutil y Lossless (v19):** Se eliminó por completo el aleteo corporal (`cantoAlas`) y el rebote CSS (`singingBob`) durante el canto. El ave permanece serena, nítida y perfectamente posada en su rama o pretil, activando única y exclusivamente una micro-rotación angular suave (1.2° a 1.4°) de la mandíbula inferior con sombreado orgánico de oclusión en la comisura bucal.
 - **Corrección Definitiva de la Gaviota Cocinera (v19):** Se restauró el pico íntegro de la gaviota (que había sido truncado en 34 píxeles durante el recorte inicial del spritesheet en x=438, mutilando el gancho terminal y la mancha roja gonidial característica). Ahora se posa en un lienzo extendido de 488x525 con coordenadas calibradas (`comisura: [380, 64]`, `punta: [471, 74]`, `mentón: [413, 86]`).
