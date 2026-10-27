@@ -37,9 +37,9 @@ Videojuego web interactivo y educativo ambientado en los balnearios de Uruguay (
 
 ## 🚀 Despliegue y PWA
 - **Hosting:** GitHub Pages en `https://games.servicioti.com.uy/` (repo `eltopouy/games-servicioti`).
-- **PWA Service Worker:** Caché estricto con versionado automático (`v17-subtle-beak-continuous-neck`).
+- **PWA Service Worker:** Caché estricto con versionado automático (`v18-subtle-beak-only`).
 - **Composición Multimodal:** Perchas calculadas por Gemini 3.8 Flash alimentado con la imagen de fondo y las 9 aves simultáneas en el prompt multimodal, garantizando orientación natural hacia el centro y apoyos físicos verificados.
-- **Animación Anatómica de Canto (v17):** Alineación subpíxel por correlación cruzada normalizada (`cv2.matchTemplate`) en la cabeza y trasplante quirúrgico emplumado (Gaussian blur) exclusivamente en la comisura del pico. El cuello, corona, mejillas y cuerpo permanecen 100% inalterados e idénticos al fotograma de reposo, eliminando cualquier discontinuidad o efecto de cabeza cortada (especialmente en Chingolo y Gaviota).
-- **Micro-vibración Respiratoria Suave:** `@keyframes singingBob` calibrado a 0.65s, -2px de elevación y micro-expansión torácica (1.008x, 0.992x) para simular la respiración natural al cantar, asegurando que el movimiento visual protagónico sea la apertura del pico.
+- **Animación Exclusiva de Pico Sutil (v18):** Se eliminó por completo el aleteo corporal (`cantoAlas`) y el rebote CSS (`singingBob`) durante el canto. El ave permanece serena, nítida y perfectamente posada en su rama o pretil, activando única y exclusivamente una micro-rotación angular suave (1.2° a 1.8°) de la mandíbula inferior con sombreado orgánico de oclusión en la comisura bucal.
+- **Fidelidad y Silueta 100% Bloqueada:** El canal alfa y el 99.7% de los píxeles (ojo, corona, mejillas, nuca, pecho, alas, cola y patas) son idénticos píxel a píxel a la pose de reposo, garantizando cero artefactos, cero parpadeo y cero discontinuidades visuales.
 - **Limpieza de Sprites Quirúrgica:** Componentes conexos con SciPy para eliminar motas flotantes y halos JPEG; anclaje anatómico de patas y base desde el fotograma de reposo para eliminar al 100% las basuritas y el parpadeo en las transiciones de canto.
 - **Compatibilidad Móvil:** Safe-area para pantallas con notch, touch events delimitados, soporte offline.
