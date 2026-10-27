@@ -37,5 +37,7 @@ Videojuego web interactivo y educativo ambientado en los balnearios de Uruguay (
 
 ## 🚀 Despliegue y PWA
 - **Hosting:** GitHub Pages en `https://games.servicioti.com.uy/` (repo `eltopouy/games-servicioti`).
-- **PWA Service Worker:** Caché estricto con versionado automático (`v15`).
+- **PWA Service Worker:** Caché estricto con versionado automático (`v16`).
+- **Composición Multimodal:** Perchas calculadas por Gemini 3.8 Flash alimentado con la imagen de fondo y las 9 aves simultáneas en el prompt multimodal, garantizando orientación natural hacia el centro y apoyos físicos verificados.
+- **Limpieza de Sprites Quirúrgica:** Componentes conexos con SciPy para eliminar motas flotantes y halos JPEG; anclaje anatómico de patas y base desde el fotograma de reposo para eliminar al 100% las basuritas y el parpadeo en las transiciones de canto.
 - **Compatibilidad Móvil:** Safe-area para pantallas con notch, touch events delimitados, soporte offline.
