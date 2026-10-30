@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pajaritos-cache-v21-voices';
+const CACHE_NAME = 'pajaritos-cache-v21-voices-20261030200701';
 const ASSETS_TO_CACHE = [
   './index.html',
   './manifest.json',
@@ -74,7 +74,10 @@ const ASSETS_TO_CACHE = [
   './audio/voz_cotorra.mp3',
   './audio/voz_hornero.mp3',
   './audio/voz_tero.mp3',
-  './audio/voz_tordo.mp3'
+  './audio/voz_tordo.mp3',
+  './audio/voz_chingolo.mp3',
+  './audio/voz_gaviota.mp3',
+  './audio/voz_zorzal_colorado.mp3'
 ];
 
 self.addEventListener('install', (e) => {
@@ -103,7 +106,9 @@ self.addEventListener('activate', (e) => {
 // Siempre busca la versión más reciente en GitHub Pages primero.
 self.addEventListener('fetch', (e) => {
   const req = e.request;
+  if (req.method !== 'GET') return;
   const url = new URL(req.url);
+  if (!url.protocol.startsWith('http')) return;
 
   if (req.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/') || url.pathname === '') {
     e.respondWith(
@@ -113,21 +118,54 @@ self.addEventListener('fetch', (e) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
         }
         return networkRes;
-      }).catch(() => caches.match(req))
+      }).catch(() => caches.match(req).then((r) => r || caches.match('./index.html') || Response.error()))
     );
     return;
   }
 
-  // Para recursos estáticos: Stale-While-Revalidate
+  // Soporte compatible con Safari/iOS y Chrome para peticiones Range de <audio> (.mp3)
+  if (req.headers.has('range')) {
+    e.respondWith(
+      caches.match(req.url).then(async (cachedRes) => {
+        if (cachedRes) {
+          try {
+            const buf = await cachedRes.arrayBuffer();
+            const bytes = /^bytes\=(\d+)\-(\d+)?$/i.exec(req.headers.get('range'));
+            if (bytes) {
+              const start = Number(bytes[1]);
+              const end = bytes[2] ? Math.min(Number(bytes[2]), buf.byteLength - 1) : buf.byteLength - 1;
+              const sliced = buf.slice(start, end + 1);
+              return new Response(sliced, {
+                status: 206,
+                statusText: 'Partial Content',
+                headers: [
+                  ['Content-Type', cachedRes.headers.get('Content-Type') || 'audio/mpeg'],
+                  ['Content-Range', `bytes ${start}-${end}/${buf.byteLength}`],
+                  ['Content-Length', String(sliced.byteLength)]
+                ]
+              });
+            }
+            return cachedRes;
+          } catch (_) {
+            return cachedRes;
+          }
+        }
+        return fetch(req).catch(() => Response.error());
+      })
+    );
+    return;
+  }
+
+  // Para recursos estáticos: Stale-While-Revalidate sin devolver nunca null a respondWith
   e.respondWith(
     caches.match(req).then((cachedRes) => {
       const fetchPromise = fetch(req).then((networkRes) => {
-        if (networkRes && networkRes.status === 200) {
+        if (networkRes && networkRes.status === 200 && networkRes.type === 'basic') {
           const clone = networkRes.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
         }
         return networkRes;
-      }).catch(() => null);
+      }).catch(() => cachedRes || Response.error());
 
       return cachedRes || fetchPromise;
     })

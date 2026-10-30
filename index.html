@@ -1520,15 +1520,19 @@
     benteveo: true,
     cotorra: true,
     cardenal: true,
-    zorzal: false,
-    chingolo: false,
-    gaviota: false,
+    zorzal: true,
+    chingolo: true,
+    gaviota: true,
     tordo: true
   };
 
-  function restoreSongVolume(id) {
-    const song = audioElements[id];
-    if (song) song.volume = 1;
+  function restoreSongVolume() {
+    const anyVoicePlaying = Object.values(voiceElements).some(v => v && !v.paused && !v.ended);
+    if (!anyVoicePlaying) {
+      Object.values(audioElements).forEach(song => {
+        if (song) song.volume = 1;
+      });
+    }
   }
 
   function playBirdVoice(id) {
@@ -1540,21 +1544,21 @@
         if (otherId !== id && voiceElements[otherId] && !voiceElements[otherId].paused) {
           voiceElements[otherId].pause();
           voiceElements[otherId].currentTime = 0;
-          restoreSongVolume(otherId);
         }
       });
-      // Bajar el canto mientras se escucha la locución para que el nombre se entienda
-      const song = audioElements[id];
-      if (song && !song.paused) song.volume = 0.25;
+      // Atenuar (ducking) todos los cantos para que la voz se escuche clara al frente (incluso si el canto inicia 5ms después)
+      Object.values(audioElements).forEach(song => {
+        if (song) song.volume = 0.25;
+      });
       if (v.readyState > 0) {
         v.currentTime = 0;
       }
       const playPromise = v.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => restoreSongVolume(id));
+        playPromise.catch(() => restoreSongVolume());
       }
     } catch(e) {
-      restoreSongVolume(id);
+      restoreSongVolume();
     }
   }
 
@@ -1829,11 +1833,23 @@
     setTimeout(() => note.remove(), 1500);
   }
 
+  let sharedAudioCtx = null;
+  function getSharedAudioCtx() {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return null;
+    if (!sharedAudioCtx || sharedAudioCtx.state === "closed") {
+      sharedAudioCtx = new AudioCtx();
+    }
+    if (sharedAudioCtx.state === "suspended") {
+      sharedAudioCtx.resume().catch(() => {});
+    }
+    return sharedAudioCtx;
+  }
+
   function playChime(freq = 660) {
     try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
+      const ctx = getSharedAudioCtx();
+      if (!ctx) return;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = "sine";
@@ -1903,6 +1919,12 @@
       if (audio) {
         audio.pause();
         audio.currentTime = 0;
+        audio.volume = 1;
+      }
+      if (voiceElements[id] && !voiceElements[id].paused) {
+        voiceElements[id].pause();
+        voiceElements[id].currentTime = 0;
+        restoreSongVolume();
       }
       perch.classList.remove("is-singing");
       perch.classList.add("is-muted");
@@ -1968,9 +1990,8 @@
 
   function playWingFlapSound() {
     try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
+      const ctx = getSharedAudioCtx();
+      if (!ctx) return;
       const bufferSize = ctx.sampleRate * 0.35;
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const data = buffer.getChannelData(0);
@@ -2116,10 +2137,8 @@
 
   function playDropSound() {
     try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = audioCtx || new AudioCtx();
-      if (ctx.state === 'suspended') ctx.resume();
+      const ctx = getSharedAudioCtx();
+      if (!ctx) return;
       const now = ctx.currentTime;
 
       // Sonido suave de posado orgánico
@@ -2518,8 +2537,13 @@
         img.src = BIRDS[id].pokemon;
         if (toast) toast.textContent = `¡${BIRDS[id].pokeName}! ⚡`;
       } else {
-        img.src = isSinging[id] ? BIRDS[id].canto : BIRDS[id].reposo;
-        img.setAttribute("data-frame-state", isSinging[id] ? "pico" : "reposo");
+        if (hasFlown[id]) {
+          img.src = BIRDS[id].vuelo || BIRDS[id].cantoAlas || BIRDS[id].reposo;
+          img.setAttribute("data-frame-state", "alas");
+        } else {
+          img.src = isSinging[id] ? BIRDS[id].canto : BIRDS[id].reposo;
+          img.setAttribute("data-frame-state", isSinging[id] ? "pico" : "reposo");
+        }
         if (toast) toast.textContent = `¡${BIRDS[id].name}!`;
       }
     });
@@ -2570,8 +2594,8 @@
         <div class="poke-desc">${bird.desc}</div>
         <div class="poke-actions-row">
           <button class="poke-play-btn" type="button" data-id="${bird.id}">
-            <span>🔊</span>
-            <span>Canto</span>
+            <span>${isSinging[bird.id] ? '⏹️' : '🔊'}</span>
+            <span>${isSinging[bird.id] ? 'Detener' : 'Canto'}</span>
           </button>
           <button class="poke-voice-btn" type="button" data-id="${bird.id}" title="${voiceAvailable[bird.id] === false ? 'Locución aún no grabada' : 'Escuchar locución con voz de Andrés'}" ${voiceAvailable[bird.id] === false || !bird.voiceSrc ? 'disabled' : ''}>
             <span>🎙️</span>
@@ -2580,9 +2604,11 @@
         </div>
       `;
 
-      card.querySelector(".poke-play-btn").addEventListener("click", (e) => {
+      const playBtn = card.querySelector(".poke-play-btn");
+      playBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         toggleBird(bird.id, false);
+        playBtn.innerHTML = `<span>${isSinging[bird.id] ? '⏹️' : '🔊'}</span><span>${isSinging[bird.id] ? 'Detener' : 'Canto'}</span>`;
       });
 
       card.querySelector(".poke-voice-btn").addEventListener("click", (e) => {
@@ -2622,37 +2648,37 @@
   const winModal = document.getElementById("win-modal");
   const winRestartBtn = document.getElementById("win-restart-btn");
 
-  let audioCtx = null;
+  const feedSongTimers = {};
   function playFeedSound() {
     try {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const ctx = getSharedAudioCtx();
+      if (!ctx) return;
       
-      const now = audioCtx.currentTime;
+      const now = ctx.currentTime;
       
       // Sonido de 'ñam/crunch'
-      const osc1 = audioCtx.createOscillator();
-      const gain1 = audioCtx.createGain();
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
       osc1.type = 'triangle';
       osc1.frequency.setValueAtTime(320, now);
       osc1.frequency.exponentialRampToValueAtTime(140, now + 0.12);
       gain1.gain.setValueAtTime(0.3, now);
       gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
       osc1.connect(gain1);
-      gain1.connect(audioCtx.destination);
+      gain1.connect(ctx.destination);
       osc1.start(now);
       osc1.stop(now + 0.12);
 
       // Campanita de felicidad (Ding!)
-      const osc2 = audioCtx.createOscillator();
-      const gain2 = audioCtx.createGain();
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
       osc2.type = 'sine';
       osc2.frequency.setValueAtTime(659.25, now + 0.08); // E5
       osc2.frequency.setValueAtTime(880, now + 0.16);    // A5
       gain2.gain.setValueAtTime(0.25, now + 0.08);
       gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
       osc2.connect(gain2);
-      gain2.connect(audioCtx.destination);
+      gain2.connect(ctx.destination);
       osc2.start(now + 0.08);
       osc2.stop(now + 0.5);
     } catch(e) {
@@ -2742,13 +2768,15 @@
 
     const audio = audioElements[id];
     if (audio && !isSinging[id]) {
+      if (feedSongTimers[id]) clearTimeout(feedSongTimers[id]);
       audio.currentTime = 0;
       audio.play().catch(() => {});
-      setTimeout(() => {
+      feedSongTimers[id] = setTimeout(() => {
         if (!isSinging[id]) {
           audio.pause();
           audio.currentTime = 0;
         }
+        delete feedSongTimers[id];
       }, 1800);
     }
 
@@ -2762,7 +2790,7 @@
   viewport.addEventListener("pointerdown", (e) => {
     if (!feedMode) return;
     // Si se hizo clic directamente en un pajarito o en un botón, no duplicar el evento
-    if (e.target.closest(".hud-btn") || e.target.closest("#win-modal") || e.target.closest("#pokedex-modal") || e.target.closest(".bird-perch")) return;
+    if (e.target.closest(".hud-btn") || e.target.closest("#btn-zoom-out") || e.target.closest("#win-modal") || e.target.closest("#pokedex-modal") || e.target.closest(".bird-perch")) return;
 
     const clickX = e.clientX;
     const clickY = e.clientY;
@@ -2808,15 +2836,19 @@
   startLipSyncEngine();
 
   
-  // Auto-Actualizador agresivo con limpieza de caché PWA
+  // Auto-Actualizador de cachés antiguas (conserva la caché activa v21 para no competir con sw.js install)
   const APP_DEPLOY_VERSION = '2026.10.30.v21.voices';
   if (localStorage.getItem('pajaritos_app_version') !== APP_DEPLOY_VERSION) {
     localStorage.setItem('pajaritos_app_version', APP_DEPLOY_VERSION);
     if ('caches' in window) {
       caches.keys().then((names) => {
-        return Promise.all(names.map(name => caches.delete(name)));
+        return Promise.all(
+          names
+            .filter(name => !name.startsWith('pajaritos-cache-v21-voices'))
+            .map(name => caches.delete(name))
+        );
       }).then(() => {
-        console.log('Cachés locales purgadas con éxito.');
+        console.log('Cachés antiguas purgadas con éxito.');
       });
     }
   }
@@ -2846,13 +2878,15 @@
   // Registro de Service Worker para carga offline con chequeo de red inmediato
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
+      const hadController = Boolean(navigator.serviceWorker.controller);
       navigator.serviceWorker.register('./sw.js?v=21').then((reg) => {
         reg.update();
       }).catch(() => {});
 
       let refreshing = false;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refreshing) {
+        // Solo recargar si ya existía un Service Worker previo y fue reemplazado por uno nuevo (evita recarga en primera visita)
+        if (hadController && !refreshing) {
           refreshing = true;
           window.location.reload();
         }
