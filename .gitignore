@@ -5,5 +5,4 @@ __pycache__/
 Thumbs.db
 *.log
 tools/
-audio/voz_*.mp3
 

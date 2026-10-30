@@ -11,12 +11,12 @@
 <meta http-equiv="Expires" content="0">
 
 <link rel="canonical" href="https://games.servicioti.com.uy/">
-<link rel="icon" type="image/webp" href="assets_mobile/hornero_reposo_trans.webp">
-<link rel="apple-touch-icon" href="assets_mobile/hornero_reposo_trans.webp">
+<link rel="icon" type="image/webp" href="assets_mobile/hornero_reposo_trans.webp?v=20">
+<link rel="apple-touch-icon" href="assets_mobile/hornero_reposo_trans.webp?v=20">
 <link rel="manifest" href="manifest.json">
 <!-- Open Graph / Redes Sociales -->
 <meta property="og:title" content="Pajaritos de Pinamar - Paisaje Interactivo | Juegos ServicioTI">
-<meta property="og:description" content="Paisaje sonoro e interactivo de aves típicas de Uruguay: Hornero, Cotorra, Tero, Cardenal, Zorzal, Benteveo, Chingolo y Gaviota.">
+<meta property="og:description" content="Paisaje sonoro e interactivo de las 9 aves típicas de Uruguay: Hornero, Cotorra, Tero, Cardenal, Zorzal, Benteveo, Chingolo, Gaviota y Tordo Renegrido.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://games.servicioti.com.uy/">
 <meta property="og:image" content="https://games.servicioti.com.uy/assets_mobile/pinamar_mediodia_gemini.webp">
@@ -74,16 +74,16 @@
 
   /* Fondos Reales de Gemini Web */
   #world-stage.theme-mediodia {
-    background-image: url('assets_mobile/pinamar_mediodia_gemini.webp');
+    background-image: url('assets_mobile/pinamar_mediodia_gemini.webp?v=20');
   }
   #world-stage.theme-costa {
-    background-image: url('assets_mobile/pinamar_costa_gemini.webp');
+    background-image: url('assets_mobile/pinamar_costa_gemini.webp?v=20');
   }
   #world-stage.theme-atardecer {
-    background-image: url('assets_mobile/pinamar_atardecer_gemini.webp');
+    background-image: url('assets_mobile/pinamar_atardecer_gemini.webp?v=20');
   }
   #world-stage.theme-amanecer {
-    background-image: url('assets_mobile/pinamar_amanecer_gemini.webp');
+    background-image: url('assets_mobile/pinamar_amanecer_gemini.webp?v=20');
   }
 
   /* Barra Superior de Control */
@@ -369,6 +369,14 @@
     background: #38bdf8;
     color: #0c1017;
     transform: scale(1.05);
+  }
+  .poke-voice-btn:disabled,
+  .poke-voice-btn:disabled:hover {
+    background: #475569;
+    color: #cbd5e1;
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
   }
 
   .poke-play-btn {
@@ -1491,6 +1499,8 @@
     }
   };
 
+  const DEFAULT_THEME_PERCHES = JSON.parse(JSON.stringify(THEME_PERCHES));
+
   function getBirdCoordinates(id) {
     const currentTheme = (typeof THEMES !== 'undefined' && THEMES[themeIndex]) ? THEMES[themeIndex].id : "costa";
     const themeSet = THEME_PERCHES[currentTheme] || THEME_PERCHES.costa;
@@ -1503,15 +1513,48 @@
   const isSinging = {};
   const toastTimers = {};
 
+  // Locuciones grabadas y publicadas en audio/voz_[id].mp3
+  const voiceAvailable = {
+    hornero: true,
+    tero: true,
+    benteveo: true,
+    cotorra: true,
+    cardenal: true,
+    zorzal: false,
+    chingolo: false,
+    gaviota: false,
+    tordo: true
+  };
+
+  function restoreSongVolume(id) {
+    const song = audioElements[id];
+    if (song) song.volume = 1;
+  }
+
   function playBirdVoice(id) {
     const v = voiceElements[id];
-    if (v) {
-      try {
+    if (!v || voiceAvailable[id] === false) return;
+    try {
+      // Detener otra locución que estuviera sonando para evitar solapamientos
+      Object.keys(voiceElements).forEach(otherId => {
+        if (otherId !== id && voiceElements[otherId] && !voiceElements[otherId].paused) {
+          voiceElements[otherId].pause();
+          voiceElements[otherId].currentTime = 0;
+          restoreSongVolume(otherId);
+        }
+      });
+      // Bajar el canto mientras se escucha la locución para que el nombre se entienda
+      const song = audioElements[id];
+      if (song && !song.paused) song.volume = 0.25;
+      if (v.readyState > 0) {
         v.currentTime = 0;
-        v.play().catch(e => {
-          console.log("Voz del ave pendiente de grabar:", id);
-        });
-      } catch(e) {}
+      }
+      const playPromise = v.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => restoreSongVolume(id));
+      }
+    } catch(e) {
+      restoreSongVolume(id);
     }
   }
 
@@ -1523,15 +1566,26 @@
     audioElements[id] = audio;
     isSinging[id] = false;
 
-    if (BIRDS[id].voiceSrc) {
+    if (BIRDS[id].voiceSrc && voiceAvailable[id] !== false) {
       const vAudio = new Audio();
+      vAudio.preload = "auto";
+      vAudio.addEventListener("ended", () => restoreSongVolume(id));
+      vAudio.addEventListener("pause", () => restoreSongVolume(id));
+      vAudio.addEventListener("error", () => {
+        // Locución aún no grabada/publicada: desactivar sin romper la experiencia
+        voiceAvailable[id] = false;
+        restoreSongVolume(id);
+        document.querySelectorAll(`.poke-voice-btn[data-id="${id}"]`).forEach(b => {
+          b.disabled = true;
+          b.title = "Locución aún no grabada";
+        });
+      });
       vAudio.src = BIRDS[id].voiceSrc;
-      vAudio.preload = "none";
       voiceElements[id] = vAudio;
     }
 
-    // Precarga de imágenes para animación fluida instantánea
-    [BIRDS[id].reposo, BIRDS[id].canto, BIRDS[id].cantoPico, BIRDS[id].cantoAlas, BIRDS[id].pokemon].forEach(url => {
+    // Precarga de imágenes clave (reposo, canto sutil de pico, vuelo y pokémon)
+    [BIRDS[id].reposo, BIRDS[id].cantoPico, BIRDS[id].vuelo, BIRDS[id].pokemon].forEach(url => {
       if (url) {
         const pre = new Image();
         pre.src = url;
@@ -1681,6 +1735,24 @@
   // Interacción táctil y de ratón: Arrastre fluido con el dedo (Pan)
   viewport.addEventListener("pointerdown", e => {
     if (e.target.closest(".hud-btn")) return;
+
+    // Si el segundo toque de un doble tap cae donde estaba el ave antes del zoom automático:
+    if (
+      !feedMode &&
+      typeof lastTapScreenInfo !== "undefined" &&
+      lastTapScreenInfo.id &&
+      !hasFlown[lastTapScreenInfo.id] &&
+      Date.now() - lastTapScreenInfo.time >= 40 &&
+      Date.now() - lastTapScreenInfo.time < 420 &&
+      Math.hypot(e.clientX - lastTapScreenInfo.x, e.clientY - lastTapScreenInfo.y) < 65
+    ) {
+      const targetId = lastTapScreenInfo.id;
+      lastTapTime[targetId] = 0;
+      lastTapScreenInfo = { id: null, time: 0, x: 0, y: 0 };
+      flyBirdAway(targetId);
+      return;
+    }
+
     drag.active = true;
     drag.startX = e.clientX;
     drag.startY = e.clientY;
@@ -1927,32 +1999,39 @@
 
     hasFlown[id] = true;
 
-    // 1. Si estaba cantando, silenciar de inmediato
+    // 1. Si estaba cantando o hablando, silenciar de inmediato
     if (isSinging[id]) {
       isSinging[id] = false;
       const audio = audioElements[id];
       if (audio) {
         audio.pause();
         audio.currentTime = 0;
+        audio.volume = 1;
       }
       perch.classList.remove("is-singing");
       perch.classList.add("is-muted");
+    }
+    if (voiceElements[id] && !voiceElements[id].paused) {
+      voiceElements[id].pause();
+      voiceElements[id].currentTime = 0;
     }
 
     // 2. Acomodar automáticamente la vista del fondo para seguir el vuelo panorámico completo
     accommodateCameraToBirdFlight(id);
 
-    // 2. Desplegar de inmediato las alas con el fotograma de alas abiertas
+    // 3. Desplegar de inmediato las alas con el fotograma de alas abiertas
     const img = document.getElementById(`img-${id}`);
     if (img && currentSkin !== "pokemon") {
       img.src = BIRDS[id].vuelo || BIRDS[id].cantoAlas || BIRDS[id].canto;
       img.setAttribute("data-frame-state", "alas");
     }
 
-    // 3. Efecto de audio de batido de alas
+    // 4. Efecto de audio de batido de alas
     playWingFlapSound();
 
-    // 4. Iniciar animación de vuelo hacia el cielo
+    // 5. Iniciar animación de vuelo hacia el cielo (limpiando transiciones inline previas)
+    perch.style.transition = "";
+    perch.style.transform = "";
     perch.classList.remove("is-landing");
     void perch.offsetWidth;
     perch.classList.add("is-flying-away");
@@ -2058,16 +2137,11 @@
     } catch(e) {}
   }
 
-  function startBirdDrag(id, clientX, clientY) {
-    if (isBirdDragging || hasFlown[id]) return;
+  function startBirdDrag(id, clientX, clientY, moveImmediately = true) {
+    if (isBirdDragging || hasFlown[id] || feedMode) return;
     isBirdDragging = true;
     const perch = document.getElementById(`perch-${id}`);
     if (!perch) return;
-
-    // Si la cámara estaba enfocando al ave, restablecer zoom para visión panorámica completa
-    if (camera.isZoomed && camera.focusedBird === id) {
-      resetZoom();
-    }
 
     perch.classList.add("is-dragging");
     perch.style.zIndex = "100";
@@ -2079,7 +2153,9 @@
       try { navigator.vibrate(25); } catch(e) {}
     }
 
-    updateBirdDragPosition(id, clientX, clientY);
+    if (moveImmediately) {
+      updateBirdDragPosition(id, clientX, clientY);
+    }
   }
 
   function updateBirdDragPosition(id, clientX, clientY) {
@@ -2097,12 +2173,13 @@
     const pctX = Math.max(3, Math.min(97, rawPctX));
     const pctY = Math.max(12, Math.min(92, rawPctY));
 
-    // Perspectiva dinámica Z: según la altura Y el ave se escala anatómicamente
+    // Perspectiva dinámica Z: calculada siempre respecto a la percha base inmutable (sin deriva de escala)
     // Más arriba (horizonte / fondo lejano): menor tamaño
     // Más abajo (primer plano / suelo): mayor tamaño
     const currentTheme = (typeof THEMES !== 'undefined' && THEMES[themeIndex]) ? THEMES[themeIndex].id : "costa";
+    const defaultSet = DEFAULT_THEME_PERCHES[currentTheme] || DEFAULT_THEME_PERCHES.costa;
+    const baseConfig = defaultSet[id] || { pctX: 50, pctY: 50, scale: 1.0 };
     const themeSet = THEME_PERCHES[currentTheme] || THEME_PERCHES.costa;
-    const baseConfig = themeSet[id] || { pctX: 50, pctY: 50, scale: 1.0 };
 
     const deltaY = (pctY - baseConfig.pctY) / 100;
     const dynScale = Math.max(0.35, Math.min(1.45, baseConfig.scale * (1 + deltaY * 0.85)));
@@ -2136,12 +2213,21 @@
     perch.style.transition = "transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28)";
     perch.style.transform = "";
 
+    // Limpiar la transición inline tras el asentamiento para preservar las transiciones CSS de escenario y vuelo
+    setTimeout(() => {
+      if (perch && !perch.classList.contains("is-dragging")) {
+        perch.style.transition = "";
+      }
+    }, 220);
+
     playDropSound();
     showGlobalToast(`¡${BIRDS[id].name} colocado en su nueva posición! 📍`);
 
     // Evitar que el evento click o tap active el canto o vuelo accidental
     lastHandledGestureTime = Date.now() + 450;
   }
+
+  let lastTapScreenInfo = { id: null, time: 0, x: 0, y: 0 };
 
   function handleBirdInteraction(id, e) {
     if (hasFlown[id]) return;
@@ -2150,8 +2236,8 @@
     if (feedMode) {
       const perch = document.getElementById(`perch-${id}`);
       const r = perch ? perch.getBoundingClientRect() : { left: 0, top: 0, width: 0, height: 0 };
-      const cx = (e.clientX && e.clientX > 0) ? e.clientX : (r.left + r.width / 2);
-      const cy = (e.clientY && e.clientY > 0) ? e.clientY : (r.top + r.height / 2);
+      const cx = (e && e.clientX && e.clientX > 0) ? e.clientX : (r.left + r.width / 2);
+      const cy = (e && e.clientY && e.clientY > 0) ? e.clientY : (r.top + r.height / 2);
       feedBird(id, cx, cy);
       return;
     }
@@ -2161,13 +2247,20 @@
     const last = lastTapTime[id] || 0;
     const diff = now - last;
 
-    if (diff >= 40 && diff < 380) {
+    if (diff >= 40 && diff < 420) {
       // ¡DOBLE TAP DETECTADO!: Despliega alas y vuela
       lastTapTime[id] = 0;
+      lastTapScreenInfo = { id: null, time: 0, x: 0, y: 0 };
       flyBirdAway(id);
     } else {
       // TAP SIMPLE: Alternar canto (1 tap canta, otro tap para de cantar)
       lastTapTime[id] = now;
+      lastTapScreenInfo = {
+        id,
+        time: now,
+        x: e && e.clientX ? e.clientX : 0,
+        y: e && e.clientY ? e.clientY : 0
+      };
       toggleBird(id, true);
     }
   }
@@ -2184,6 +2277,13 @@
       drag.active = false;
       drag.hasMoved = false;
 
+      if (feedMode) {
+        // En modo Dar de Comer, el toque alimenta directamente sin activar arrastre
+        lastHandledGestureTime = Date.now();
+        handleBirdInteraction(id, e);
+        return;
+      }
+
       draggedBirdId = id;
       isBirdDragging = false;
       birdDragStart = {
@@ -2193,12 +2293,12 @@
       };
 
       if (birdHoldTimer) clearTimeout(birdHoldTimer);
-      // Mantener presionado 190ms activa el modo arrastre
+      // Mantener presionado 300ms en el lugar activa el modo arrastre sin desplazar el pie de apoyo
       birdHoldTimer = setTimeout(() => {
         if (draggedBirdId === id && !isBirdDragging) {
-          startBirdDrag(id, e.clientX, e.clientY);
+          startBirdDrag(id, e.clientX, e.clientY, false);
         }
-      }, 190);
+      }, 300);
     });
 
     perch.addEventListener("click", e => {
@@ -2341,7 +2441,10 @@
     const current = THEMES[themeIndex];
     stage.classList.add(`theme-${current.id}`);
 
-    // Restablecer perchas inline para adoptar las posiciones calibradas del nuevo escenario
+    // Restablecer perchas inline y coordenadas activas para adoptar las posiciones calibradas del nuevo escenario
+    Object.keys(DEFAULT_THEME_PERCHES).forEach(tKey => {
+      THEME_PERCHES[tKey] = JSON.parse(JSON.stringify(DEFAULT_THEME_PERCHES[tKey]));
+    });
     Object.keys(BIRDS).forEach(id => {
       const p = document.getElementById(`perch-${id}`);
       if (p) {
@@ -2349,6 +2452,7 @@
         p.style.top = "";
         p.style.removeProperty('--bird-scale');
         p.style.zIndex = "";
+        p.style.transition = "";
       }
     });
 
@@ -2387,8 +2491,13 @@
       });
       resetZoom();
     } else {
+      // Si todas las aves habían volado, hacerlas regresar antes de iniciar el coro
+      const allFlown = Object.keys(BIRDS).every(id => hasFlown[id]);
+      if (allFlown) {
+        recallAllBirds();
+      }
       Object.keys(BIRDS).forEach(id => {
-        if (!isSinging[id]) toggleBird(id, false);
+        if (!hasFlown[id] && !isSinging[id]) toggleBird(id, false);
       });
     }
   });
@@ -2464,7 +2573,7 @@
             <span>🔊</span>
             <span>Canto</span>
           </button>
-          <button class="poke-voice-btn" type="button" data-id="${bird.id}" title="Escuchar locución con voz de Andrés">
+          <button class="poke-voice-btn" type="button" data-id="${bird.id}" title="${voiceAvailable[bird.id] === false ? 'Locución aún no grabada' : 'Escuchar locución con voz de Andrés'}" ${voiceAvailable[bird.id] === false || !bird.voiceSrc ? 'disabled' : ''}>
             <span>🎙️</span>
             <span>Voz</span>
           </button>
@@ -2554,6 +2663,10 @@
   function toggleFeedMode() {
     feedMode = !feedMode;
     if (feedMode) {
+      // Si algún ave había volado con doble tap, llamarla de regreso para que las 9 aves estén presentes
+      if (Object.keys(hasFlown).some(id => hasFlown[id])) {
+        recallAllBirds();
+      }
       feedHud.classList.add("active");
       btnFeedMode.style.background = "#e67e22";
       btnFeedMode.style.borderColor = "#d35400";
@@ -2590,6 +2703,7 @@
     if (!perch) return;
 
     playFeedSound();
+    playBirdVoice(id);
     fedBirds.add(id);
     feedCounter.textContent = fedBirds.size;
 
@@ -2657,6 +2771,7 @@
     let minDist = Infinity;
 
     Object.keys(BIRDS).forEach(id => {
+      if (hasFlown[id]) return;
       const perch = document.getElementById(`perch-${id}`);
       if (!perch) return;
       const r = perch.getBoundingClientRect();
@@ -2694,7 +2809,7 @@
 
   
   // Auto-Actualizador agresivo con limpieza de caché PWA
-  const APP_DEPLOY_VERSION = '2026.10.27.v20.draggable_birds';
+  const APP_DEPLOY_VERSION = '2026.10.30.v21.voices';
   if (localStorage.getItem('pajaritos_app_version') !== APP_DEPLOY_VERSION) {
     localStorage.setItem('pajaritos_app_version', APP_DEPLOY_VERSION);
     if ('caches' in window) {
@@ -2731,7 +2846,7 @@
   // Registro de Service Worker para carga offline con chequeo de red inmediato
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js?v=7').then((reg) => {
+      navigator.serviceWorker.register('./sw.js?v=21').then((reg) => {
         reg.update();
       }).catch(() => {});
 

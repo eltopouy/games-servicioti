@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pajaritos-cache-v20-draggable-birds';
+const CACHE_NAME = 'pajaritos-cache-v21-voices';
 const ASSETS_TO_CACHE = [
   './index.html',
   './manifest.json',
@@ -68,7 +68,13 @@ const ASSETS_TO_CACHE = [
   './audio/canto_zorzal_colorado.mp3',
   './audio/canto_chingolo.mp3',
   './audio/canto_tero.mp3',
-  './audio/canto_tordo.mp3'
+  './audio/canto_tordo.mp3',
+  './audio/voz_benteveo.mp3',
+  './audio/voz_cardenal.mp3',
+  './audio/voz_cotorra.mp3',
+  './audio/voz_hornero.mp3',
+  './audio/voz_tero.mp3',
+  './audio/voz_tordo.mp3'
 ];
 
 self.addEventListener('install', (e) => {
