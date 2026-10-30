@@ -2835,16 +2835,90 @@
 
   startLipSyncEngine();
 
+  /* =========================================================================
+     GESTI?N DE CICLO DE VIDA DE AUDIO Y APAGADO EN SEGUNDO PLANO (ANDROID / CHROME)
+     ========================================================================= */
+  function silenceAllAudio() {
+    Object.keys(BIRDS).forEach(id => {
+      if (isSinging[id]) {
+        isSinging[id] = false;
+        const perch = document.getElementById(`perch-${id}`);
+        if (perch) {
+          perch.classList.remove("is-singing");
+          perch.classList.add("is-muted");
+        }
+        const img = document.getElementById(`img-${id}`);
+        if (img) {
+          if (currentSkin === "pokemon") {
+            img.src = BIRDS[id].pokemon;
+          } else if (hasFlown[id]) {
+            img.src = BIRDS[id].vuelo || BIRDS[id].cantoAlas || BIRDS[id].reposo;
+            img.setAttribute("data-frame-state", "alas");
+          } else {
+            img.src = BIRDS[id].reposo;
+            img.setAttribute("data-frame-state", "reposo");
+            img.setAttribute("data-beak", "closed");
+          }
+        }
+      }
+      const audio = audioElements[id];
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.volume = 1;
+      }
+      const v = voiceElements[id];
+      if (v) {
+        v.pause();
+        v.currentTime = 0;
+      }
+      if (feedSongTimers[id]) {
+        clearTimeout(feedSongTimers[id]);
+        delete feedSongTimers[id];
+      }
+    });
+
+    if (sharedAudioCtx && sharedAudioCtx.state === "running") {
+      sharedAudioCtx.suspend().catch(() => {});
+    }
+
+    if ("mediaSession" in navigator) {
+      try {
+        navigator.mediaSession.playbackState = "none";
+      } catch(e) {}
+    }
+
+    updateMasterButtonState();
+  }
+
+  // Apagar inmediatamente el audio si la pesta?a o ventana se oculta, se cierra o se cambia de app en Android
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      silenceAllAudio();
+    }
+  });
+
+  window.addEventListener("pagehide", silenceAllAudio);
+  window.addEventListener("beforeunload", silenceAllAudio);
+  document.addEventListener("freeze", silenceAllAudio);
+
+  if ("mediaSession" in navigator) {
+    try {
+      navigator.mediaSession.setActionHandler("pause", silenceAllAudio);
+      navigator.mediaSession.setActionHandler("stop", silenceAllAudio);
+    } catch(e) {}
+  }
+
   
   // Auto-Actualizador de cachés antiguas (conserva la caché activa v21 para no competir con sw.js install)
-  const APP_DEPLOY_VERSION = '2026.10.30.v21.voices';
+  const APP_DEPLOY_VERSION = '2026.10.30.v22.audio_lifecycle';
   if (localStorage.getItem('pajaritos_app_version') !== APP_DEPLOY_VERSION) {
     localStorage.setItem('pajaritos_app_version', APP_DEPLOY_VERSION);
     if ('caches' in window) {
       caches.keys().then((names) => {
         return Promise.all(
           names
-            .filter(name => !name.startsWith('pajaritos-cache-v21-voices'))
+            .filter(name => !name.startsWith('pajaritos-cache-v22'))
             .map(name => caches.delete(name))
         );
       }).then(() => {
@@ -2879,7 +2953,7 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       const hadController = Boolean(navigator.serviceWorker.controller);
-      navigator.serviceWorker.register('./sw.js?v=21').then((reg) => {
+      navigator.serviceWorker.register('./sw.js?v=22').then((reg) => {
         reg.update();
       }).catch(() => {});
 
