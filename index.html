@@ -1526,6 +1526,8 @@
     tordo: true
   };
 
+  let voiceEndTimer = null;
+
   function restoreSongVolume() {
     const anyVoicePlaying = Object.values(voiceElements).some(v => v && !v.paused && !v.ended);
     if (!anyVoicePlaying) {
@@ -1539,6 +1541,8 @@
     const v = voiceElements[id];
     if (!v || voiceAvailable[id] === false) return;
     try {
+      if (voiceEndTimer) clearTimeout(voiceEndTimer);
+
       // Detener otra locución que estuviera sonando para evitar solapamientos
       Object.keys(voiceElements).forEach(otherId => {
         if (otherId !== id && voiceElements[otherId] && !voiceElements[otherId].paused) {
@@ -1546,9 +1550,9 @@
           voiceElements[otherId].currentTime = 0;
         }
       });
-      // Atenuar (ducking) todos los cantos para que la voz se escuche clara al frente (incluso si el canto inicia 5ms después)
+      // Atenuación suave y armónica (0.65) para que el canto del ave SE ESCUCHE con total claridad junto con la locución
       Object.values(audioElements).forEach(song => {
-        if (song) song.volume = 0.25;
+        if (song) song.volume = 0.65;
       });
       if (v.readyState > 0) {
         v.currentTime = 0;
@@ -1557,6 +1561,11 @@
       if (playPromise !== undefined) {
         playPromise.catch(() => restoreSongVolume());
       }
+      // Temporizador de resguardo automático para restaurar volumen al 100% tras la locución
+      const durMs = (v.duration && isFinite(v.duration) && v.duration > 0) ? (v.duration * 1000 + 150) : 1600;
+      voiceEndTimer = setTimeout(() => {
+        restoreSongVolume();
+      }, durMs);
     } catch(e) {
       restoreSongVolume();
     }
@@ -1793,6 +1802,53 @@
   });
 
   /* =========================================================================
+     ZOOM FLUIDO CON LA RUEDITA DEL RATÓN (MOUSE WHEEL ZOOM)
+     ========================================================================= */
+  viewport.addEventListener("wheel", e => {
+    // Si el usuario tiene abierto un modal interactivo, permitir el scroll interno nativo
+    if (e.target.closest("#menu-modal") || e.target.closest("#pokedex-modal") || e.target.closest("#win-modal")) {
+      return;
+    }
+
+    e.preventDefault();
+
+    const oldScale = camera.targetScale;
+    // deltaY negativo: rueda hacia arriba (acercar); deltaY positivo: rueda hacia abajo (alejar)
+    const factor = e.deltaY < 0 ? 1.15 : (1 / 1.15);
+    let nextScale = Math.min(3.8, Math.max(1.0, oldScale * factor));
+
+    // Si está muy cerca de la vista panorámica completa, ajustar a 1.0 exacto
+    if (Math.abs(nextScale - 1.0) < 0.03) {
+      nextScale = 1.0;
+    }
+
+    if (nextScale === oldScale) return;
+
+    const vpRect = viewport.getBoundingClientRect();
+    const mouseX = e.clientX - vpRect.left;
+    const mouseY = e.clientY - vpRect.top;
+
+    // Zoom centrado exactamente en el cursor del ratón (conservar el punto del mundo bajo el cursor)
+    camera.targetX = mouseX - (mouseX - camera.targetX) * (nextScale / oldScale);
+    camera.targetY = mouseY - (mouseY - camera.targetY) * (nextScale / oldScale);
+    camera.targetScale = nextScale;
+    camera.scale = nextScale;
+
+    if (nextScale > 1.05) {
+      camera.isZoomed = true;
+      if (btnZoomOut) btnZoomOut.classList.add("show");
+    } else {
+      camera.isZoomed = false;
+      camera.focusedBird = null;
+      if (btnZoomOut) btnZoomOut.classList.remove("show");
+    }
+
+    clampCameraBounds();
+    stage.style.transition = "transform 0.09s ease-out";
+    stage.style.transform = `translate3d(${camera.targetX}px, ${camera.targetY}px, 0) scale(${camera.targetScale})`;
+  }, { passive: false });
+
+  /* =========================================================================
      FUNCIONES DE RETROALIMENTACIÓN VISUAL, AUDITIVA Y DE ESTADO
      ========================================================================= */
   
@@ -1938,8 +1994,14 @@
       perch.classList.remove("is-muted");
       perch.classList.add("is-singing");
       if (audio) {
-        audio.currentTime = 0;
-        audio.play().catch(e => console.log("Audio play err", e));
+        audio.volume = 1;
+        if (audio.currentTime > 0) {
+          audio.currentTime = 0;
+        }
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(e => console.log("Audio play err", e));
+        }
       }
       spawnMusicNote(id);
 
@@ -2769,7 +2831,8 @@
     const audio = audioElements[id];
     if (audio && !isSinging[id]) {
       if (feedSongTimers[id]) clearTimeout(feedSongTimers[id]);
-      audio.currentTime = 0;
+      audio.volume = 1;
+      if (audio.currentTime > 0) audio.currentTime = 0;
       audio.play().catch(() => {});
       feedSongTimers[id] = setTimeout(() => {
         if (!isSinging[id]) {
@@ -2777,7 +2840,7 @@
           audio.currentTime = 0;
         }
         delete feedSongTimers[id];
-      }, 1800);
+      }, 2200);
     }
 
     if (fedBirds.size >= Object.keys(BIRDS).length) {
@@ -2910,19 +2973,19 @@
   }
 
   
-  // Auto-Actualizador de cachés antiguas (conserva la caché activa v21 para no competir con sw.js install)
-  const APP_DEPLOY_VERSION = '2026.10.30.v22.audio_lifecycle';
+  // Auto-Actualizador de cachés antiguas (purga versiones anteriores a v23)
+  const APP_DEPLOY_VERSION = '2026.11.07.v23.wheel_and_audio_boost';
   if (localStorage.getItem('pajaritos_app_version') !== APP_DEPLOY_VERSION) {
     localStorage.setItem('pajaritos_app_version', APP_DEPLOY_VERSION);
     if ('caches' in window) {
       caches.keys().then((names) => {
         return Promise.all(
           names
-            .filter(name => !name.startsWith('pajaritos-cache-v22'))
+            .filter(name => !name.startsWith('pajaritos-cache-v23'))
             .map(name => caches.delete(name))
         );
       }).then(() => {
-        console.log('Cachés antiguas purgadas con éxito.');
+        console.log('Cachés antiguas purgadas con éxito para v23.');
       });
     }
   }
@@ -2953,7 +3016,7 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       const hadController = Boolean(navigator.serviceWorker.controller);
-      navigator.serviceWorker.register('./sw.js?v=22').then((reg) => {
+      navigator.serviceWorker.register('./sw.js?v=23').then((reg) => {
         reg.update();
       }).catch(() => {});
 

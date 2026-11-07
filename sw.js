@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pajaritos-cache-v22-audio-lifecycle';
+const CACHE_NAME = 'pajaritos-cache-v23-audio-boost';
 const ASSETS_TO_CACHE = [
   './index.html',
   './manifest.json',

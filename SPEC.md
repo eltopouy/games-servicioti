@@ -34,7 +34,9 @@ Videojuego web interactivo y educativo ambientado en los balnearios de Uruguay (
 - **Botón Llamar / Reiniciar:** Hace aterrizar a todas las aves de vuelta a sus perchas con animación suave de descenso (`is-landing`).
 - **Modo Dar de Comer (🌾🍞):** Al tocar un ave, caen miguitas/semillas, come con satisfacción, suma puntos en el contador HUD y muestra mensaje de agradecimiento. Al activarse, hace regresar automáticamente a cualquier ave que hubiera volado para garantizar las 9 aves en escena.
 - **Modo Pokédex:** Alterna entre ilustraciones hiperrealistas de fauna uruguaya y sus versiones estilo criaturas coleccionables.
-- **Locución con Voz Humana (v21):** Integración de audios de pronunciación grabados localmente en Voice Studio (`audio/voz_[id].mp3`) con control de disponibilidad (`voiceAvailable`) para evitar peticiones 404 en locuciones pendientes y atenuación automática del canto (`ducking` a 25%) mientras suena la voz de Andrés.
+- **Zoom con Ruedita del Ratón (Mouse Wheel Zoom, v23):** Control de aumento fluido e interactivo en PC/escritorio con la ruedita del mouse, centrado matemáticamente sobre el cursor para explorar cada detalle del plumaje sin perder la orientación espacial, con límites de escala seguros (1.0x a 3.8x) y clamp de bordes continuo.
+- **Normalización Acústica y Equilibrio de Cantos (v23):** Se normalizaron todos los cantos reales con estándar EBU R128 (-14.5 LUFS, pico -1.0 dBTP), eliminando el silencio inicial muerto en especies como Zorzal Colorado, Tordo y Cotorra. El ducking de locución se ajustó a un nivel balanceado y armónico (65%), garantizando que tanto la voz humana como el canto del ave se escuchen perfectamente juntos, con temporizador de seguridad de recuperación de volumen.
+- **Locución con Voz Humana (v21/v23):** Integración de audios de pronunciación grabados localmente en Voice Studio (`audio/voz_[id].mp3`) con control de disponibilidad (`voiceAvailable`) para evitar peticiones 404 y ducking balanceado al 65%.
 - **Menú Hamburguesa:** Control de escenarios, tarjetas de sonido, reinicio y créditos sin saturar la pantalla en dispositivos móviles.
 
 ## 🚀 Despliegue y PWA
