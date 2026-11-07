@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pajaritos-cache-v23-audio-boost';
+const CACHE_NAME = 'pajaritos-cache-v24-pinch-zoom';
 const ASSETS_TO_CACHE = [
   './index.html',
   './manifest.json',

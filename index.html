@@ -1633,6 +1633,16 @@
     hasMoved: false
   };
 
+  let pinch = {
+    active: false,
+    startDist: 0,
+    startMidX: 0,
+    startMidY: 0,
+    startScale: 1,
+    startX: 0,
+    startY: 0
+  };
+
   // Ajustar el tamaño del escenario manteniendo la proporción 16:9 de Gemini
   let stageW = 1920;
   let stageH = 1080;
@@ -1748,6 +1758,7 @@
   // Interacción táctil y de ratón: Arrastre fluido con el dedo (Pan)
   viewport.addEventListener("pointerdown", e => {
     if (e.target.closest(".hud-btn")) return;
+    if (pinch.active) return;
 
     // Si el segundo toque de un doble tap cae donde estaba el ave antes del zoom automático:
     if (
@@ -1776,7 +1787,7 @@
   });
 
   window.addEventListener("pointermove", e => {
-    if (!drag.active) return;
+    if (!drag.active || pinch.active) return;
     const dx = e.clientX - drag.startX;
     const dy = e.clientY - drag.startY;
 
@@ -1801,12 +1812,16 @@
     layoutStage();
   });
 
+  function isInsideModal(target) {
+    return Boolean(target && target.closest && (target.closest("#menu-modal") || target.closest("#pokedex-modal") || target.closest("#win-modal")));
+  }
+
   /* =========================================================================
      ZOOM FLUIDO CON LA RUEDITA DEL RATÓN (MOUSE WHEEL ZOOM)
      ========================================================================= */
   viewport.addEventListener("wheel", e => {
     // Si el usuario tiene abierto un modal interactivo, permitir el scroll interno nativo
-    if (e.target.closest("#menu-modal") || e.target.closest("#pokedex-modal") || e.target.closest("#win-modal")) {
+    if (isInsideModal(e.target)) {
       return;
     }
 
@@ -1847,6 +1862,99 @@
     stage.style.transition = "transform 0.09s ease-out";
     stage.style.transform = `translate3d(${camera.targetX}px, ${camera.targetY}px, 0) scale(${camera.targetScale})`;
   }, { passive: false });
+
+  /* =========================================================================
+     ZOOM TÁCTIL MULTITOUCH / PELLIZCO CON 2 DEDOS (MOBILE PINCH-TO-ZOOM)
+     ========================================================================= */
+  window.addEventListener("touchstart", e => {
+    if (e.touches && e.touches.length === 2) {
+      if (isInsideModal(e.target)) {
+        return;
+      }
+
+      // Cancelar cualquier arrastre de pajarito o paneo con 1 dedo
+      if (birdHoldTimer) {
+        clearTimeout(birdHoldTimer);
+        birdHoldTimer = null;
+      }
+      if (isBirdDragging && draggedBirdId) {
+        finishBirdDrag(draggedBirdId);
+      }
+      draggedBirdId = null;
+      isBirdDragging = false;
+      drag.active = false;
+
+      const t0 = e.touches[0];
+      const t1 = e.touches[1];
+
+      pinch.active = true;
+      pinch.startDist = Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
+      pinch.startMidX = (t0.clientX + t1.clientX) / 2;
+      pinch.startMidY = (t0.clientY + t1.clientY) / 2;
+      pinch.startScale = camera.targetScale;
+      pinch.startX = camera.targetX;
+      pinch.startY = camera.targetY;
+      stage.style.transition = "none";
+    }
+  }, { passive: false });
+
+  window.addEventListener("touchmove", e => {
+    if (pinch.active && e.touches && e.touches.length === 2) {
+      if (e.cancelable) e.preventDefault();
+
+      const t0 = e.touches[0];
+      const t1 = e.touches[1];
+
+      const currentDist = Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
+      if (pinch.startDist < 8) return;
+
+      const scaleRatio = currentDist / pinch.startDist;
+      let nextScale = Math.min(3.8, Math.max(1.0, pinch.startScale * scaleRatio));
+
+      if (Math.abs(nextScale - 1.0) < 0.03) {
+        nextScale = 1.0;
+      }
+
+      const currentMidX = (t0.clientX + t1.clientX) / 2;
+      const currentMidY = (t0.clientY + t1.clientY) / 2;
+
+      // Mantener la posición relativa del mundo bajo el punto medio entre los dos dedos
+      const worldMidX = (pinch.startMidX - pinch.startX) / pinch.startScale;
+      const worldMidY = (pinch.startMidY - pinch.startY) / pinch.startScale;
+
+      camera.targetX = currentMidX - worldMidX * nextScale;
+      camera.targetY = currentMidY - worldMidY * nextScale;
+      camera.targetScale = nextScale;
+      camera.scale = nextScale;
+
+      if (nextScale > 1.05) {
+        camera.isZoomed = true;
+        if (btnZoomOut) btnZoomOut.classList.add("show");
+      } else {
+        camera.isZoomed = false;
+        camera.focusedBird = null;
+        if (btnZoomOut) btnZoomOut.classList.remove("show");
+      }
+
+      clampCameraBounds();
+      stage.style.transform = `translate3d(${camera.targetX}px, ${camera.targetY}px, 0) scale(${camera.targetScale})`;
+    }
+  }, { passive: false });
+
+  function endPinchGesture(e) {
+    if (pinch.active) {
+      if (!e.touches || e.touches.length < 2) {
+        pinch.active = false;
+        lastHandledGestureTime = Date.now() + 450;
+        drag.active = false;
+        clampCameraBounds();
+        updateCameraTransform(false);
+      }
+    }
+  }
+
+  window.addEventListener("touchend", endPinchGesture);
+  window.addEventListener("touchcancel", endPinchGesture);
 
   /* =========================================================================
      FUNCIONES DE RETROALIMENTACIÓN VISUAL, AUDITIVA Y DE ESTADO
@@ -2352,7 +2460,7 @@
     if (!perch) return;
 
     perch.addEventListener("pointerdown", e => {
-      if (hasFlown[id]) return;
+      if (hasFlown[id] || pinch.active) return;
 
       e.stopPropagation(); // Evitar que el viewport inicie el paneo de cámara
       drag.active = false;
@@ -2973,19 +3081,19 @@
   }
 
   
-  // Auto-Actualizador de cachés antiguas (purga versiones anteriores a v23)
-  const APP_DEPLOY_VERSION = '2026.11.07.v23.wheel_and_audio_boost';
+  // Auto-Actualizador de cachés antiguas (purga versiones anteriores a v24)
+  const APP_DEPLOY_VERSION = '2026.11.07.v24.mobile_pinch_zoom';
   if (localStorage.getItem('pajaritos_app_version') !== APP_DEPLOY_VERSION) {
     localStorage.setItem('pajaritos_app_version', APP_DEPLOY_VERSION);
     if ('caches' in window) {
       caches.keys().then((names) => {
         return Promise.all(
           names
-            .filter(name => !name.startsWith('pajaritos-cache-v23'))
+            .filter(name => !name.startsWith('pajaritos-cache-v24'))
             .map(name => caches.delete(name))
         );
       }).then(() => {
-        console.log('Cachés antiguas purgadas con éxito para v23.');
+        console.log('Cachés antiguas purgadas con éxito para v24.');
       });
     }
   }
@@ -3016,7 +3124,7 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       const hadController = Boolean(navigator.serviceWorker.controller);
-      navigator.serviceWorker.register('./sw.js?v=23').then((reg) => {
+      navigator.serviceWorker.register('./sw.js?v=24').then((reg) => {
         reg.update();
       }).catch(() => {});
 
