@@ -3,7 +3,7 @@
 ## 📌 Descripción General
 Videojuego web interactivo y educativo ambientado en los balnearios de Uruguay (Pinamar, Canelones), enfocado en la fauna autóctona de aves, sus cantos reales, comportamiento ornitológico, animaciones y minijuegos infantiles.
 
-## 🦤 Aves Presentes (9 Especies Autóctonas)
+## 🦤 Aves Presentes (15 Especies Autóctonas de Uruguay)
 1. **Hornero** (*Furnarius rufus*) - Ave nacional, posado sin nido, canta con aleteo alegre.
 2. **Tero** (*Vanellus chilensis*) - Centinela del campo, espolones carmesí, primer plano en suelo.
 3. **Benteveo** (*Pitangus sulphuratus*) - Antifaz negro, pecho amarillo vivo, posado en ramas.
@@ -13,6 +13,12 @@ Videojuego web interactivo y educativo ambientado en los balnearios de Uruguay (
 7. **Chingolo** (*Zonotrichia capensis*) - Copete estriado y collar canela, en postes de alambrado.
 8. **Gaviota Cocinera** (*Larus dominicanus*) - De pie en suelo despejado o losa, primer plano.
 9. **Tordo Renegrido** (*Molothrus bonariensis*) - Plumaje azabache tornasolado, posado en el pretil de la azotea escolar al fondo a escala pequeña por perspectiva.
+10. **Carpintero** (*Colaptes campestris / melanochloros*) - Nuca roja y pecho amarillo dorado con barras negras, posado en el tronco principal del eucalipto/pino.
+11. **Dorado** (*Sicalis flaveola*) - Plumaje amarillo solar con frente anaranjada, posado en el cerco soleado.
+12. **Ñacurutú** (*Bubo virginianus nacurutu*) - El gran búho cornudo de Uruguay con penachos auriculares, ojos ámbar, babero blanco y pecho barrado (basado en fotografía real de referencia), posado en las ramas altas.
+13. **Torcaza** (*Zenaida auriculata*) - Paloma nativa con reflejos tornasolados violáceos en el cuello y manchas negras alares, en la explanada frontal.
+14. **Calandria** (*Mimus saturninus*) - Ceja blanca marcada y cola larga con timoneras externas blancas, posada en los postes centrales.
+15. **Picaflor Bronceado** (*Hylocharis chrysura*) - Plumaje verde esmeralda y dorado metálico con pico rojo coral, junto a los arbustos floridos.
 
 ## 🎨 Escenarios y Fondos 16:9
 1. **Balneario Pinamar Escuela 295** (`costa`, por defecto).
