@@ -1,7 +1,9 @@
-const CACHE_NAME = 'pajaritos-cache-v25-15aves';
+const CACHE_NAME = 'pajaritos-cache-v26-kids-edition';
 const ASSETS_TO_CACHE = [
   './index.html',
   './manifest.json',
+  './coloring_game.js?v=26',
+  './kids_games.js?v=26',
   './assets_mobile/pinamar_mediodia_gemini.webp?v=20',
   './assets_mobile/pinamar_costa_gemini.webp?v=20',
   './assets_mobile/pinamar_atardecer_gemini.webp?v=20',

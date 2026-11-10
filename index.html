@@ -291,6 +291,20 @@
     border-radius: 8px;
   }
 
+  .poke-size-badge {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.72rem;
+    color: #7dd3fc;
+    background: rgba(12, 16, 23, 0.78);
+    border: 1px solid rgba(56, 189, 248, 0.45);
+    padding: 2px 7px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+  }
+
   .poke-name {
     font-family: 'Fredoka One', cursive;
     font-size: 1.05rem;
@@ -593,39 +607,39 @@
   /* =========================================================================
      UBICACIÓN EXACTA DE LAS 15 AVES ANALIZADAS CON GEMINI 3.8 FLASH
      ========================================================================= */
-  /* Posición base en Calle de Tosca (Mediodía, Atardecer, Amanecer) - Apoyos reales y profundidad Z */
-  #perch-cotorra    { left: 27.5%; top: 41.5%; --bird-scale: 0.80; z-index: 22; } /* Rama media del pino dentro de safe-area */
-  #perch-hornero    { left: 22.8%; top: 65.2%; --bird-scale: 0.82; z-index: 22; } /* Poste de madera del alambrado izquierdo */
-  #perch-benteveo   { left: 24.0%; top: 44.5%; --bird-scale: 0.82; z-index: 22; } /* Rama horizontal de pino */
-  #perch-gaviota    { left: 53.0%; top: 74.5%; --bird-scale: 1.15; z-index: 26; } /* De pie en el suelo arenoso de la calle */
-  #perch-cardenal   { left: 64.0%; top: 48.5%; --bird-scale: 0.80; z-index: 22; } /* Entre el follaje con flores rojas */
-  #perch-zorzal     { left: 62.0%; top: 86.5%; --bird-scale: 1.20; z-index: 28; } /* Franja de pasto verde frontal (primer plano) */
-  #perch-chingolo   { left: 17.5%; top: 65.5%; --bird-scale: 0.78; z-index: 22; } /* Extremo del poste de madera */
-  #perch-tero       { left: 31.0%; top: 79.5%; --bird-scale: 1.25; z-index: 28; } /* Suelo de arena firme en primer plano */
-  #perch-tordo      { left: 50.5%; top: 61.2%; --bird-scale: 0.46; z-index: 18; } /* Cumbrera de la casa lejana al fondo */
-  #perch-carpintero { left: 14.5%; top: 48.5%; --bird-scale: 0.80; z-index: 22; } /* Tronco del pino marítimo izquierdo */
-  #perch-dorado     { left: 74.0%; top: 62.5%; --bird-scale: 0.72; z-index: 22; } /* Arbusto soleado derecho */
-  #perch-nacurutu   { left: 81.5%; top: 34.0%; --bird-scale: 0.78; z-index: 21; } /* Rama alta del árbol derecho */
-  #perch-torcaza    { left: 43.0%; top: 82.0%; --bird-scale: 0.90; z-index: 27; } /* Orilla de la calle de tosca en primer plano */
-  #perch-calandria  { left: 37.5%; top: 63.5%; --bird-scale: 0.72; z-index: 21; } /* Poste del alambrado medio */
-  #perch-picaflor   { left: 72.5%; top: 46.5%; --bird-scale: 0.64; z-index: 23; } /* Flores rojas del jardín */
+  /* Posición base en Calle de Tosca (Mediodía, Atardecer, Amanecer) - Proporción biológica real + profundidad Z */
+  #perch-cotorra    { left: 29.2%; top: 41.5%; --bird-scale: 0.86; z-index: 22; } /* Rama media del pino dentro de safe-area (29 cm) */
+  #perch-hornero    { left: 22.8%; top: 65.2%; --bird-scale: 0.75; z-index: 22; } /* Poste de madera del alambrado izquierdo (19.5 cm) */
+  #perch-benteveo   { left: 21.5%; top: 44.0%; --bird-scale: 0.80; z-index: 22; } /* Rama horizontal de pino (23 cm) */
+  #perch-gaviota    { left: 53.0%; top: 74.5%; --bird-scale: 1.44; z-index: 26; } /* De pie en el suelo arenoso de la calle (58 cm) */
+  #perch-cardenal   { left: 64.0%; top: 48.5%; --bird-scale: 0.76; z-index: 22; } /* Entre el follaje con flores rojas (19 cm) */
+  #perch-zorzal     { left: 62.0%; top: 86.5%; --bird-scale: 0.99; z-index: 28; } /* Franja de pasto verde frontal (primer plano) (23.5 cm) */
+  #perch-chingolo   { left: 17.5%; top: 65.5%; --bird-scale: 0.60; z-index: 22; } /* Extremo del poste de madera (14 cm) */
+  #perch-tero       { left: 31.0%; top: 79.5%; --bird-scale: 1.25; z-index: 28; } /* Suelo de arena firme en primer plano (35 cm) */
+  #perch-tordo      { left: 50.5%; top: 61.2%; --bird-scale: 0.45; z-index: 18; } /* Cumbrera de la casa lejana al fondo (20 cm) */
+  #perch-carpintero { left: 14.5%; top: 48.5%; --bird-scale: 0.93; z-index: 22; } /* Tronco del pino marítimo izquierdo (30 cm) */
+  #perch-dorado     { left: 74.0%; top: 62.5%; --bird-scale: 0.58; z-index: 22; } /* Arbusto soleado derecho (14 cm) */
+  #perch-nacurutu   { left: 81.5%; top: 34.0%; --bird-scale: 1.41; z-index: 21; } /* Rama alta del árbol derecho (50 cm) */
+  #perch-torcaza    { left: 43.0%; top: 82.0%; --bird-scale: 0.94; z-index: 27; } /* Orilla de la calle de tosca en primer plano (24 cm) */
+  #perch-calandria  { left: 37.5%; top: 63.5%; --bird-scale: 0.82; z-index: 21; } /* Poste del alambrado medio (26 cm) */
+  #perch-picaflor   { left: 72.5%; top: 46.5%; --bird-scale: 0.46; z-index: 23; } /* Flores rojas del jardín (9 cm) */
 
-  /* Posición y escalas en el escenario Balneario Pinamar Escuela 295 (calibradas con perspectiva Z) */
-  #world-stage.theme-costa #perch-cotorra    { left: 18.2%; top: 26.5%; --bird-scale: 0.78; z-index: 22; } /* Rama horizontal del eucalipto izquierdo */
-  #world-stage.theme-costa #perch-hornero    { left: 56.5%; top: 58.2%; --bird-scale: 0.68; z-index: 22; } /* Pretil/murete de hormigón del patio escolar */
-  #world-stage.theme-costa #perch-benteveo   { left: 13.5%; top: 51.8%; --bird-scale: 0.72; z-index: 22; } /* Cabezal del poste esquinero izquierdo */
-  #world-stage.theme-costa #perch-gaviota    { left: 63.8%; top: 69.4%; --bird-scale: 1.12; z-index: 26; } /* Plataforma de hormigón en primer plano */
-  #world-stage.theme-costa #perch-cardenal   { left: 83.5%; top: 43.0%; --bird-scale: 0.74; z-index: 22; } /* Rama del pino derecho */
-  #world-stage.theme-costa #perch-zorzal     { left: 74.2%; top: 83.8%; --bird-scale: 1.15; z-index: 28; } /* Suelo de tosca frontal derecho */
-  #world-stage.theme-costa #perch-chingolo   { left: 34.5%; top: 76.2%; --bird-scale: 0.78; z-index: 22; } /* Cordón/escalón frontal de cemento */
-  #world-stage.theme-costa #perch-tero       { left: 22.0%; top: 82.5%; --bird-scale: 1.22; z-index: 28; } /* Pasto y suelo natural frontal izquierdo */
-  #world-stage.theme-costa #perch-tordo      { left: 62.4%; top: 44.2%; --bird-scale: 0.45; z-index: 18; } /* Pretil de la escuela al fondo */
-  #world-stage.theme-costa #perch-carpintero { left: 11.2%; top: 38.5%; --bird-scale: 0.76; z-index: 22; } /* Tronco principal del eucalipto izquierdo */
-  #world-stage.theme-costa #perch-dorado     { left: 28.5%; top: 63.5%; --bird-scale: 0.68; z-index: 22; } /* Cerco perimetral izquierdo */
-  #world-stage.theme-costa #perch-nacurutu   { left: 88.5%; top: 26.8%; --bird-scale: 0.76; z-index: 21; } /* Rama alta del pino derecho */
-  #world-stage.theme-costa #perch-torcaza    { left: 48.0%; top: 79.5%; --bird-scale: 0.88; z-index: 26; } /* Explanada frontal central */
-  #world-stage.theme-costa #perch-calandria  { left: 43.5%; top: 57.5%; --bird-scale: 0.66; z-index: 21; } /* Poste central del patio escolar */
-  #world-stage.theme-costa #perch-picaflor   { left: 88.0%; top: 66.5%; --bird-scale: 0.62; z-index: 24; } /* Arbustos floridos derechos */
+  /* Posición y escalas en el escenario Balneario Pinamar Escuela 295 (Proporción biológica real + perspectiva Z) */
+  #world-stage.theme-costa #perch-cotorra    { left: 18.2%; top: 26.5%; --bird-scale: 0.84; z-index: 22; } /* Rama horizontal del eucalipto izquierdo (29 cm) */
+  #world-stage.theme-costa #perch-hornero    { left: 56.5%; top: 58.2%; --bird-scale: 0.71; z-index: 22; } /* Pretil/murete de hormigón del patio escolar (19.5 cm) */
+  #world-stage.theme-costa #perch-benteveo   { left: 13.5%; top: 51.8%; --bird-scale: 0.79; z-index: 22; } /* Cabezal del poste esquinero izquierdo (23 cm) */
+  #world-stage.theme-costa #perch-gaviota    { left: 63.8%; top: 69.4%; --bird-scale: 1.41; z-index: 26; } /* Plataforma de hormigón en primer plano (58 cm) */
+  #world-stage.theme-costa #perch-cardenal   { left: 83.5%; top: 43.0%; --bird-scale: 0.75; z-index: 22; } /* Rama del pino derecho (19 cm) */
+  #world-stage.theme-costa #perch-zorzal     { left: 74.2%; top: 83.8%; --bird-scale: 0.98; z-index: 28; } /* Suelo de tosca frontal derecho (23.5 cm) */
+  #world-stage.theme-costa #perch-chingolo   { left: 34.5%; top: 76.2%; --bird-scale: 0.64; z-index: 22; } /* Cordón/escalón frontal de cemento (14 cm) */
+  #world-stage.theme-costa #perch-tero       { left: 22.0%; top: 82.5%; --bird-scale: 1.24; z-index: 28; } /* Pasto y suelo natural frontal izquierdo (35 cm) */
+  #world-stage.theme-costa #perch-tordo      { left: 62.4%; top: 44.2%; --bird-scale: 0.44; z-index: 18; } /* Pretil de la escuela al fondo (20 cm) */
+  #world-stage.theme-costa #perch-carpintero { left: 11.2%; top: 38.5%; --bird-scale: 0.92; z-index: 22; } /* Tronco principal del eucalipto izquierdo (30 cm) */
+  #world-stage.theme-costa #perch-dorado     { left: 28.5%; top: 63.5%; --bird-scale: 0.57; z-index: 22; } /* Cerco perimetral izquierdo (14 cm) */
+  #world-stage.theme-costa #perch-nacurutu   { left: 88.5%; top: 26.8%; --bird-scale: 1.39; z-index: 21; } /* Rama alta del pino derecho (50 cm) */
+  #world-stage.theme-costa #perch-torcaza    { left: 48.0%; top: 79.5%; --bird-scale: 0.93; z-index: 26; } /* Explanada frontal central (24 cm) */
+  #world-stage.theme-costa #perch-calandria  { left: 43.5%; top: 57.5%; --bird-scale: 0.81; z-index: 21; } /* Poste central del patio escolar (26 cm) */
+  #world-stage.theme-costa #perch-picaflor   { left: 88.0%; top: 66.5%; --bird-scale: 0.47; z-index: 24; } /* Arbustos floridos derechos (9 cm) */
 
   /* =========================================================================
      ESTILOS DEL JUEGO: ALIMENTAR A LOS PAJARITOS (MINIJUEGO PARA NIÑOS)
@@ -827,6 +841,36 @@
   .hud-btn-menu:hover {
     background: #0284c7 !important;
     transform: scale(1.05);
+  }
+
+  .hud-btn-coloring {
+    background: linear-gradient(135deg, #ec4899, #db2777) !important;
+    color: #ffffff !important;
+    border-color: #f9a8d4 !important;
+    box-shadow: 0 4px 14px rgba(236, 72, 153, 0.45);
+  }
+  .hud-btn-coloring:hover {
+    background: linear-gradient(135deg, #db2777, #be185d) !important;
+    transform: scale(1.05);
+  }
+
+  .hud-btn-games {
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9) !important;
+    color: #ffffff !important;
+    border-color: #c4b5fd !important;
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.45);
+  }
+  .hud-btn-games:hover {
+    background: linear-gradient(135deg, #7c3aed, #5b21b6) !important;
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 520px) {
+    .hud-btn {
+      padding: 7px 11px;
+      font-size: 0.74rem;
+      gap: 5px;
+    }
   }
 
   .menu-modal {
@@ -1180,12 +1224,20 @@
 
     <!-- Barra Superior de Control Organizada y Limpia -->
   <header class="hud-bar">
-    <div class="hud-group">
-      
-
+    <div class="hud-group" style="flex-wrap: wrap;">
       <button id="btn-feed-mode" class="hud-btn" type="button" aria-label="Jugar a dar de comer" style="background: #2ecc71; color: #ffffff; border-color: #27ae60;">
         <span id="feed-btn-icon">🌾</span>
         <span id="feed-btn-text">Dar de Comer</span>
+      </button>
+
+      <button id="btn-open-coloring" class="hud-btn hud-btn-coloring" type="button" aria-label="Abrir Taller de Pintura Infantil" onclick="window.openColoringGame && window.openColoringGame()">
+        <span>🎨</span>
+        <span>Pintar</span>
+      </button>
+
+      <button id="btn-open-games" class="hud-btn hud-btn-games" type="button" aria-label="Abrir Sala de Minijuegos Infantiles" onclick="window.openKidsGamesModal && window.openKidsGamesModal()">
+        <span>🎮</span>
+        <span>Juegos</span>
       </button>
     </div>
 
@@ -1212,6 +1264,34 @@
       </div>
 
       <div class="menu-body">
+        <!-- 0A. Taller de Pintura (3+) -->
+        <div class="menu-item-card" style="border-color: rgba(236, 72, 153, 0.35);">
+          <div class="menu-item-info">
+            <span class="item-icon">🎨</span>
+            <div>
+              <strong>Taller de Pintura (3+)</strong>
+              <small>Coloreá las 15 aves sin salirte de la raya y posalas en el paisaje</small>
+            </div>
+          </div>
+          <button id="btn-menu-coloring" class="menu-action-btn" type="button" style="background:#ec4899; color:#fff; border-color:#f9a8d4;">
+            <span>Pintar</span>
+          </button>
+        </div>
+
+        <!-- 0B. Sala de Minijuegos (3+) -->
+        <div class="menu-item-card" style="border-color: rgba(139, 92, 246, 0.35);">
+          <div class="menu-item-info">
+            <span class="item-icon">🎮</span>
+            <div>
+              <strong>Sala de Minijuegos (3+)</strong>
+              <small>¿Quién Canta?, Memoria de Pajaritos y ¿Dónde Está?</small>
+            </div>
+          </div>
+          <button id="btn-menu-games" class="menu-action-btn" type="button" style="background:#8b5cf6; color:#fff; border-color:#c4b5fd;">
+            <span>Jugar</span>
+          </button>
+        </div>
+
         <!-- 1. Volver a llamar a todas las aves -->
         <div class="menu-item-card">
           <div class="menu-item-info">
@@ -1361,6 +1441,7 @@
     hornero: {
       id: "hornero",
       name: "Hornero",
+      realCm: 19.5,
       pokeName: "Hornerox",
       pokeType: ["tierra", "volador"],
       pokeNumber: "#001",
@@ -1378,6 +1459,7 @@
     tero: {
       id: "tero",
       name: "Tero",
+      realCm: 35,
       pokeName: "Teroraptor",
       pokeType: ["lucha", "volador"],
       pokeNumber: "#002",
@@ -1395,6 +1477,7 @@
     benteveo: {
       id: "benteveo",
       name: "Benteveo",
+      realCm: 23,
       pokeName: "Bentechú",
       pokeType: ["electrico", "volador"],
       pokeNumber: "#003",
@@ -1412,6 +1495,7 @@
     cotorra: {
       id: "cotorra",
       name: "Cotorra",
+      realCm: 29,
       pokeName: "Cotorriff",
       pokeType: ["planta", "volador"],
       pokeNumber: "#004",
@@ -1429,6 +1513,7 @@
     cardenal: {
       id: "cardenal",
       name: "Cardenal",
+      realCm: 19,
       pokeName: "Cardeflame",
       pokeType: ["fuego", "volador"],
       pokeNumber: "#005",
@@ -1446,6 +1531,7 @@
     zorzal: {
       id: "zorzal",
       name: "Zorzal Colorado",
+      realCm: 23.5,
       pokeName: "Zorzalson",
       pokeType: ["sonido", "volador"],
       pokeNumber: "#006",
@@ -1463,6 +1549,7 @@
     chingolo: {
       id: "chingolo",
       name: "Chingolo",
+      realCm: 14,
       pokeName: "Chingolín",
       pokeType: ["normal", "volador"],
       pokeNumber: "#007",
@@ -1480,6 +1567,7 @@
     gaviota: {
       id: "gaviota",
       name: "Gaviota Cocinera",
+      realCm: 58,
       pokeName: "Gaviotix",
       pokeType: ["agua", "volador"],
       pokeNumber: "#008",
@@ -1497,6 +1585,7 @@
     tordo: {
       id: "tordo",
       name: "Tordo Renegrido",
+      realCm: 20,
       pokeName: "Tordox",
       pokeType: ["siniestro", "volador"],
       pokeNumber: "#009",
@@ -1514,6 +1603,7 @@
     carpintero: {
       id: "carpintero",
       name: "Carpintero",
+      realCm: 30,
       pokeName: "Carpintor",
       pokeType: ["lucha", "volador"],
       pokeNumber: "#010",
@@ -1531,6 +1621,7 @@
     dorado: {
       id: "dorado",
       name: "Dorado",
+      realCm: 14,
       pokeName: "Auridoro",
       pokeType: ["electrico", "volador"],
       pokeNumber: "#011",
@@ -1548,6 +1639,7 @@
     nacurutu: {
       id: "nacurutu",
       name: "Ñacurutú",
+      realCm: 50,
       pokeName: "Ñacuror",
       pokeType: ["psiquico", "volador"],
       pokeNumber: "#012",
@@ -1565,6 +1657,7 @@
     torcaza: {
       id: "torcaza",
       name: "Torcaza",
+      realCm: 24,
       pokeName: "Torcazoom",
       pokeType: ["normal", "volador"],
       pokeNumber: "#013",
@@ -1582,6 +1675,7 @@
     calandria: {
       id: "calandria",
       name: "Calandria",
+      realCm: 26,
       pokeName: "Calandrix",
       pokeType: ["sonido", "volador"],
       pokeNumber: "#014",
@@ -1599,6 +1693,7 @@
     picaflor: {
       id: "picaflor",
       name: "Picaflor",
+      realCm: 9,
       pokeName: "Picaflash",
       pokeType: ["hada", "volador"],
       pokeNumber: "#015",
@@ -1615,75 +1710,75 @@
     }
   };
 
-  /* Coordenadas y escalas adaptativas de percha según el fondo calibradas con Gemini 3.8 Flash */
+  /* Coordenadas y escalas adaptativas de percha según tamaño biológico real (cm) y perspectiva Z (v26) */
   const THEME_PERCHES = {
     costa: {
-      cotorra:    { pctX: 18.2, pctY: 26.5, scale: 0.78 },
-      hornero:    { pctX: 56.5, pctY: 58.2, scale: 0.68 },
-      benteveo:   { pctX: 13.5, pctY: 51.8, scale: 0.72 },
-      gaviota:    { pctX: 63.8, pctY: 69.4, scale: 1.12 },
-      cardenal:   { pctX: 83.5, pctY: 43.0, scale: 0.74 },
-      zorzal:     { pctX: 74.2, pctY: 83.8, scale: 1.15 },
-      chingolo:   { pctX: 34.5, pctY: 76.2, scale: 0.78 },
-      tero:       { pctX: 22.0, pctY: 82.5, scale: 1.22 },
-      tordo:      { pctX: 62.4, pctY: 44.2, scale: 0.45 },
-      carpintero: { pctX: 11.2, pctY: 38.5, scale: 0.76 },
-      dorado:     { pctX: 28.5, pctY: 63.5, scale: 0.68 },
-      nacurutu:   { pctX: 88.5, pctY: 26.8, scale: 0.76 },
-      torcaza:    { pctX: 48.0, pctY: 79.5, scale: 0.88 },
-      calandria:  { pctX: 43.5, pctY: 57.5, scale: 0.66 },
-      picaflor:   { pctX: 88.0, pctY: 66.5, scale: 0.62 }
+      cotorra:    { pctX: 18.2, pctY: 26.5, scale: 0.84 },
+      hornero:    { pctX: 56.5, pctY: 58.2, scale: 0.71 },
+      benteveo:   { pctX: 13.5, pctY: 51.8, scale: 0.79 },
+      gaviota:    { pctX: 63.8, pctY: 69.4, scale: 1.41 },
+      cardenal:   { pctX: 83.5, pctY: 43.0, scale: 0.75 },
+      zorzal:     { pctX: 74.2, pctY: 83.8, scale: 0.98 },
+      chingolo:   { pctX: 34.5, pctY: 76.2, scale: 0.64 },
+      tero:       { pctX: 22.0, pctY: 82.5, scale: 1.24 },
+      tordo:      { pctX: 62.4, pctY: 44.2, scale: 0.44 },
+      carpintero: { pctX: 11.2, pctY: 38.5, scale: 0.92 },
+      dorado:     { pctX: 28.5, pctY: 63.5, scale: 0.57 },
+      nacurutu:   { pctX: 88.5, pctY: 26.8, scale: 1.39 },
+      torcaza:    { pctX: 48.0, pctY: 79.5, scale: 0.93 },
+      calandria:  { pctX: 43.5, pctY: 57.5, scale: 0.81 },
+      picaflor:   { pctX: 88.0, pctY: 66.5, scale: 0.47 }
     },
     mediodia: {
-      cotorra:    { pctX: 27.5, pctY: 41.5, scale: 0.80 },
-      hornero:    { pctX: 22.8, pctY: 65.2, scale: 0.82 },
-      benteveo:   { pctX: 24.0, pctY: 44.5, scale: 0.82 },
-      gaviota:    { pctX: 53.0, pctY: 74.5, scale: 1.15 },
-      cardenal:   { pctX: 64.0, pctY: 48.5, scale: 0.80 },
-      zorzal:     { pctX: 62.0, pctY: 86.5, scale: 1.20 },
-      chingolo:   { pctX: 17.5, pctY: 65.5, scale: 0.78 },
+      cotorra:    { pctX: 29.2, pctY: 41.5, scale: 0.86 },
+      hornero:    { pctX: 22.8, pctY: 65.2, scale: 0.75 },
+      benteveo:   { pctX: 21.5, pctY: 44.0, scale: 0.80 },
+      gaviota:    { pctX: 53.0, pctY: 74.5, scale: 1.44 },
+      cardenal:   { pctX: 64.0, pctY: 48.5, scale: 0.76 },
+      zorzal:     { pctX: 62.0, pctY: 86.5, scale: 0.99 },
+      chingolo:   { pctX: 17.5, pctY: 65.5, scale: 0.60 },
       tero:       { pctX: 31.0, pctY: 79.5, scale: 1.25 },
-      tordo:      { pctX: 50.5, pctY: 61.2, scale: 0.46 },
-      carpintero: { pctX: 14.5, pctY: 48.5, scale: 0.80 },
-      dorado:     { pctX: 74.0, pctY: 62.5, scale: 0.72 },
-      nacurutu:   { pctX: 81.5, pctY: 34.0, scale: 0.78 },
-      torcaza:    { pctX: 43.0, pctY: 82.0, scale: 0.90 },
-      calandria:  { pctX: 37.5, pctY: 63.5, scale: 0.72 },
-      picaflor:   { pctX: 72.5, pctY: 46.5, scale: 0.64 }
+      tordo:      { pctX: 50.5, pctY: 61.2, scale: 0.45 },
+      carpintero: { pctX: 14.5, pctY: 48.5, scale: 0.93 },
+      dorado:     { pctX: 74.0, pctY: 62.5, scale: 0.58 },
+      nacurutu:   { pctX: 81.5, pctY: 34.0, scale: 1.41 },
+      torcaza:    { pctX: 43.0, pctY: 82.0, scale: 0.94 },
+      calandria:  { pctX: 37.5, pctY: 63.5, scale: 0.82 },
+      picaflor:   { pctX: 72.5, pctY: 46.5, scale: 0.46 }
     },
     atardecer: {
-      cotorra:    { pctX: 27.5, pctY: 41.5, scale: 0.80 },
-      hornero:    { pctX: 22.8, pctY: 65.2, scale: 0.82 },
-      benteveo:   { pctX: 24.0, pctY: 44.5, scale: 0.82 },
-      gaviota:    { pctX: 53.0, pctY: 74.5, scale: 1.15 },
-      cardenal:   { pctX: 64.0, pctY: 48.5, scale: 0.80 },
-      zorzal:     { pctX: 62.0, pctY: 86.5, scale: 1.20 },
-      chingolo:   { pctX: 17.5, pctY: 65.5, scale: 0.78 },
+      cotorra:    { pctX: 29.2, pctY: 41.5, scale: 0.86 },
+      hornero:    { pctX: 22.8, pctY: 65.2, scale: 0.75 },
+      benteveo:   { pctX: 21.5, pctY: 44.0, scale: 0.80 },
+      gaviota:    { pctX: 53.0, pctY: 74.5, scale: 1.44 },
+      cardenal:   { pctX: 64.0, pctY: 48.5, scale: 0.76 },
+      zorzal:     { pctX: 62.0, pctY: 86.5, scale: 0.99 },
+      chingolo:   { pctX: 17.5, pctY: 65.5, scale: 0.60 },
       tero:       { pctX: 31.0, pctY: 79.5, scale: 1.25 },
-      tordo:      { pctX: 50.5, pctY: 61.2, scale: 0.46 },
-      carpintero: { pctX: 14.5, pctY: 48.5, scale: 0.80 },
-      dorado:     { pctX: 74.0, pctY: 62.5, scale: 0.72 },
-      nacurutu:   { pctX: 81.5, pctY: 34.0, scale: 0.78 },
-      torcaza:    { pctX: 43.0, pctY: 82.0, scale: 0.90 },
-      calandria:  { pctX: 37.5, pctY: 63.5, scale: 0.72 },
-      picaflor:   { pctX: 72.5, pctY: 46.5, scale: 0.64 }
+      tordo:      { pctX: 50.5, pctY: 61.2, scale: 0.45 },
+      carpintero: { pctX: 14.5, pctY: 48.5, scale: 0.93 },
+      dorado:     { pctX: 74.0, pctY: 62.5, scale: 0.58 },
+      nacurutu:   { pctX: 81.5, pctY: 34.0, scale: 1.41 },
+      torcaza:    { pctX: 43.0, pctY: 82.0, scale: 0.94 },
+      calandria:  { pctX: 37.5, pctY: 63.5, scale: 0.82 },
+      picaflor:   { pctX: 72.5, pctY: 46.5, scale: 0.46 }
     },
     amanecer: {
-      cotorra:    { pctX: 27.5, pctY: 41.5, scale: 0.80 },
-      hornero:    { pctX: 22.8, pctY: 65.2, scale: 0.82 },
-      benteveo:   { pctX: 24.0, pctY: 44.5, scale: 0.82 },
-      gaviota:    { pctX: 53.0, pctY: 74.5, scale: 1.15 },
-      cardenal:   { pctX: 64.0, pctY: 48.5, scale: 0.80 },
-      zorzal:     { pctX: 62.0, pctY: 86.5, scale: 1.20 },
-      chingolo:   { pctX: 17.5, pctY: 65.5, scale: 0.78 },
+      cotorra:    { pctX: 29.2, pctY: 41.5, scale: 0.86 },
+      hornero:    { pctX: 22.8, pctY: 65.2, scale: 0.75 },
+      benteveo:   { pctX: 21.5, pctY: 44.0, scale: 0.80 },
+      gaviota:    { pctX: 53.0, pctY: 74.5, scale: 1.44 },
+      cardenal:   { pctX: 64.0, pctY: 48.5, scale: 0.76 },
+      zorzal:     { pctX: 62.0, pctY: 86.5, scale: 0.99 },
+      chingolo:   { pctX: 17.5, pctY: 65.5, scale: 0.60 },
       tero:       { pctX: 31.0, pctY: 79.5, scale: 1.25 },
-      tordo:      { pctX: 50.5, pctY: 61.2, scale: 0.46 },
-      carpintero: { pctX: 14.5, pctY: 48.5, scale: 0.80 },
-      dorado:     { pctX: 74.0, pctY: 62.5, scale: 0.72 },
-      nacurutu:   { pctX: 81.5, pctY: 34.0, scale: 0.78 },
-      torcaza:    { pctX: 43.0, pctY: 82.0, scale: 0.90 },
-      calandria:  { pctX: 37.5, pctY: 63.5, scale: 0.72 },
-      picaflor:   { pctX: 72.5, pctY: 46.5, scale: 0.64 }
+      tordo:      { pctX: 50.5, pctY: 61.2, scale: 0.45 },
+      carpintero: { pctX: 14.5, pctY: 48.5, scale: 0.93 },
+      dorado:     { pctX: 74.0, pctY: 62.5, scale: 0.58 },
+      nacurutu:   { pctX: 81.5, pctY: 34.0, scale: 1.41 },
+      torcaza:    { pctX: 43.0, pctY: 82.0, scale: 0.94 },
+      calandria:  { pctX: 37.5, pctY: 63.5, scale: 0.82 },
+      picaflor:   { pctX: 72.5, pctY: 46.5, scale: 0.46 }
     }
   };
 
@@ -2007,7 +2102,16 @@
   });
 
   function isInsideModal(target) {
-    return Boolean(target && target.closest && (target.closest("#menu-modal") || target.closest("#pokedex-modal") || target.closest("#win-modal")));
+    return Boolean(
+      target &&
+      target.closest &&
+      (target.closest("#menu-modal") ||
+        target.closest("#pokedex-modal") ||
+        target.closest("#win-modal") ||
+        target.closest("#coloring-modal") ||
+        target.closest("#kids-games-modal") ||
+        target.closest("#kids-where-hud"))
+    );
   }
 
   /* =========================================================================
@@ -2345,6 +2449,21 @@
   if (btnMenuClose) btnMenuClose.addEventListener("click", closeMenu);
   if (menuBackdrop) menuBackdrop.addEventListener("click", closeMenu);
 
+  const btnMenuColoring = document.getElementById("btn-menu-coloring");
+  const btnMenuGames = document.getElementById("btn-menu-games");
+  if (btnMenuColoring) {
+    btnMenuColoring.addEventListener("click", () => {
+      closeMenu();
+      if (window.openColoringGame) window.openColoringGame();
+    });
+  }
+  if (btnMenuGames) {
+    btnMenuGames.addEventListener("click", () => {
+      closeMenu();
+      if (window.openKidsGamesModal) window.openKidsGamesModal();
+    });
+  }
+
   /* =========================================================================
      MECÁNICA DE VUELO: DOBLE TAP PARA VOLAR Y REINICIAR AVES
      ========================================================================= */
@@ -2565,7 +2684,7 @@
     const themeSet = THEME_PERCHES[currentTheme] || THEME_PERCHES.costa;
 
     const deltaY = (pctY - baseConfig.pctY) / 100;
-    const dynScale = Math.max(0.35, Math.min(1.45, baseConfig.scale * (1 + deltaY * 0.85)));
+    const dynScale = Math.max(0.35, Math.min(1.55, baseConfig.scale * (1 + deltaY * 0.85)));
 
     perch.style.left = pctX.toFixed(2) + "%";
     perch.style.top = pctY.toFixed(2) + "%";
@@ -2950,6 +3069,7 @@
       card.innerHTML = `
         <div class="poke-card-img-wrap">
           <span class="poke-num">${bird.pokeNumber}</span>
+          <span class="poke-size-badge" title="Tamaño real aproximado en Uruguay">📏 ${bird.realCm} cm</span>
           <img class="poke-card-img" src="${bird.pokemon}" alt="${bird.pokeName}" loading="lazy">
         </div>
         <div class="poke-name">${bird.pokeName}</div>
@@ -3275,19 +3395,32 @@
   }
 
   
-  // Auto-Actualizador de cachés antiguas (purga versiones anteriores a v25)
-  const APP_DEPLOY_VERSION = '2026.11.10.v25.quince_aves_uruguay';
+  // Exponer referencias globales para los módulos infantiles (Taller de Pintura y Sala de Minijuegos)
+  window.BIRDS = BIRDS;
+  window.audioElements = audioElements;
+  window.voiceElements = voiceElements;
+  window.playBirdVoice = playBirdVoice;
+  window.toggleBird = toggleBird;
+  window.zoomToBird = zoomToBird;
+  window.recallAllBirds = recallAllBirds;
+  window.toggleFeedMode = toggleFeedMode;
+  window.getSharedAudioCtx = getSharedAudioCtx;
+  window.playChime = playChime;
+  window.isInsideModal = isInsideModal;
+
+  // Auto-Actualizador de cachés antiguas (purga versiones anteriores a v26)
+  const APP_DEPLOY_VERSION = '2026.11.10.v26.kids_coloring_and_proportions';
   if (localStorage.getItem('pajaritos_app_version') !== APP_DEPLOY_VERSION) {
     localStorage.setItem('pajaritos_app_version', APP_DEPLOY_VERSION);
     if ('caches' in window) {
       caches.keys().then((names) => {
         return Promise.all(
           names
-            .filter(name => !name.startsWith('pajaritos-cache-v25'))
+            .filter(name => !name.startsWith('pajaritos-cache-v26'))
             .map(name => caches.delete(name))
         );
       }).then(() => {
-        console.log('Cachés antiguas purgadas con éxito para v25.');
+        console.log('Cachés antiguas purgadas con éxito para v26.');
       });
     }
   }
@@ -3318,7 +3451,7 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       const hadController = Boolean(navigator.serviceWorker.controller);
-      navigator.serviceWorker.register('./sw.js?v=25').then((reg) => {
+      navigator.serviceWorker.register('./sw.js?v=26').then((reg) => {
         reg.update();
       }).catch(() => {});
 
@@ -3334,6 +3467,8 @@
   }
 
 </script>
+<script src="coloring_game.js?v=26"></script>
+<script src="kids_games.js?v=26"></script>
 
 </body>
 </html>
