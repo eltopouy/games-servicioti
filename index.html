@@ -1798,6 +1798,8 @@
   const toastTimers = {};
 
   let sharedAudioCtx = null;
+  let sharedDecodeCtx = null;
+
   function getSharedAudioCtx() {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return null;
@@ -1808,6 +1810,21 @@
       sharedAudioCtx.resume().catch(() => {});
     }
     return sharedAudioCtx;
+  }
+
+  function getDecodeContext() {
+    if (sharedAudioCtx && sharedAudioCtx.state !== "closed") {
+      return sharedAudioCtx;
+    }
+    if (!sharedDecodeCtx) {
+      const OfflineCtx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+      if (OfflineCtx) {
+        try {
+          sharedDecodeCtx = new OfflineCtx(2, 1, 44100);
+        } catch (e) {}
+      }
+    }
+    return sharedDecodeCtx || getSharedAudioCtx();
   }
 
   // Desbloqueo proactivo global del AudioContext en el primer gesto del usuario
@@ -1912,11 +1929,11 @@
           return res.arrayBuffer();
         })
         .then(arrayBuf => {
-          const ctx = getSharedAudioCtx();
-          if (!ctx) throw new Error("No AudioContext");
+          const decCtx = getDecodeContext();
+          if (!decCtx) throw new Error("No DecodeContext");
           return new Promise((resolve, reject) => {
             try {
-              const p = ctx.decodeAudioData(
+              const p = decCtx.decodeAudioData(
                 arrayBuf,
                 decoded => resolve(decoded),
                 err => reject(err || new Error("decodeAudioData failed"))
