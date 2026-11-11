@@ -1,9 +1,36 @@
-const CACHE_NAME = 'pajaritos-cache-v26-kids-edition';
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'pajaritos-cache-v27-webaudio';
+const PRIORITY_AUDIO_AND_CORE = [
   './index.html',
   './manifest.json',
-  './coloring_game.js?v=26',
-  './kids_games.js?v=26',
+  './coloring_game.js?v=27',
+  './kids_games.js?v=27',
+  './audio/canto_cotorra.mp3',
+  './audio/canto_hornero.mp3',
+  './audio/canto_benteveo.mp3',
+  './audio/canto_gaviota.mp3',
+  './audio/canto_cardenal.mp3',
+  './audio/canto_zorzal_colorado.mp3',
+  './audio/canto_chingolo.mp3',
+  './audio/canto_tero.mp3',
+  './audio/canto_tordo.mp3',
+  './audio/canto_carpintero.mp3',
+  './audio/canto_dorado.mp3',
+  './audio/canto_nacurutu.mp3',
+  './audio/canto_torcaza.mp3',
+  './audio/canto_calandria.mp3',
+  './audio/canto_picaflor.mp3',
+  './audio/voz_benteveo.mp3',
+  './audio/voz_cardenal.mp3',
+  './audio/voz_cotorra.mp3',
+  './audio/voz_hornero.mp3',
+  './audio/voz_tero.mp3',
+  './audio/voz_tordo.mp3',
+  './audio/voz_chingolo.mp3',
+  './audio/voz_gaviota.mp3',
+  './audio/voz_zorzal_colorado.mp3'
+];
+
+const VISUAL_ASSETS_TO_CACHE = [
   './assets_mobile/pinamar_mediodia_gemini.webp?v=20',
   './assets_mobile/pinamar_costa_gemini.webp?v=20',
   './assets_mobile/pinamar_atardecer_gemini.webp?v=20',
@@ -97,37 +124,28 @@ const ASSETS_TO_CACHE = [
   './assets_mobile/chingolo_canto_pico_trans.webp?v=20',
   './assets_mobile/chingolo_vuelo_trans.webp?v=20',
   './assets_mobile/gaviota_canto_pico_trans.webp?v=20',
-  './assets_mobile/gaviota_vuelo_trans.webp?v=20',
-  './audio/canto_cotorra.mp3',
-  './audio/canto_hornero.mp3',
-  './audio/canto_benteveo.mp3',
-  './audio/canto_gaviota.mp3',
-  './audio/canto_cardenal.mp3',
-  './audio/canto_zorzal_colorado.mp3',
-  './audio/canto_chingolo.mp3',
-  './audio/canto_tero.mp3',
-  './audio/canto_tordo.mp3',
-  './audio/canto_carpintero.mp3',
-  './audio/canto_dorado.mp3',
-  './audio/canto_nacurutu.mp3',
-  './audio/canto_torcaza.mp3',
-  './audio/canto_calandria.mp3',
-  './audio/canto_picaflor.mp3',
-  './audio/voz_benteveo.mp3',
-  './audio/voz_cardenal.mp3',
-  './audio/voz_cotorra.mp3',
-  './audio/voz_hornero.mp3',
-  './audio/voz_tero.mp3',
-  './audio/voz_tordo.mp3',
-  './audio/voz_chingolo.mp3',
-  './audio/voz_gaviota.mp3',
-  './audio/voz_zorzal_colorado.mp3'
+  './assets_mobile/gaviota_vuelo_trans.webp?v=20'
 ];
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE)).catch(() => {})
+    caches.open(CACHE_NAME).then(async (cache) => {
+      // 1. Prioridad máxima: almacenar primero todos los audios .mp3 y scripts principales de forma individual resiliente
+      await Promise.allSettled(
+        PRIORITY_AUDIO_AND_CORE.map((url) =>
+          fetch(url, { cache: 'reload' }).then((res) => {
+            if (res && res.status === 200) return cache.put(url, res);
+          }).catch(() => {})
+        )
+      );
+      // 2. Segundo plano: almacenar sprites y fondos
+      await Promise.allSettled(
+        VISUAL_ASSETS_TO_CACHE.map((url) =>
+          cache.add(url).catch(() => {})
+        )
+      );
+    }).catch(() => {})
   );
 });
 
@@ -170,10 +188,21 @@ self.addEventListener('fetch', (e) => {
   // Soporte compatible con Safari/iOS y Chrome para peticiones Range de <audio> (.mp3)
   if (req.headers.has('range')) {
     e.respondWith(
-      caches.match(req.url).then(async (cachedRes) => {
-        if (cachedRes) {
+      caches.match(req.url, { ignoreSearch: true }).then(async (cachedRes) => {
+        let fullRes = cachedRes;
+        if (!fullRes) {
           try {
-            const buf = await cachedRes.arrayBuffer();
+            const netFull = await fetch(req.url);
+            if (netFull && netFull.status === 200) {
+              const cache = await caches.open(CACHE_NAME);
+              await cache.put(req.url, netFull.clone());
+              fullRes = netFull;
+            }
+          } catch (_) {}
+        }
+        if (fullRes) {
+          try {
+            const buf = await fullRes.arrayBuffer();
             const bytes = /^bytes\=(\d+)\-(\d+)?$/i.exec(req.headers.get('range'));
             if (bytes) {
               const start = Number(bytes[1]);
@@ -183,15 +212,15 @@ self.addEventListener('fetch', (e) => {
                 status: 206,
                 statusText: 'Partial Content',
                 headers: [
-                  ['Content-Type', cachedRes.headers.get('Content-Type') || 'audio/mpeg'],
+                  ['Content-Type', fullRes.headers.get('Content-Type') || 'audio/mpeg'],
                   ['Content-Range', `bytes ${start}-${end}/${buf.byteLength}`],
                   ['Content-Length', String(sliced.byteLength)]
                 ]
               });
             }
-            return cachedRes;
+            return fullRes;
           } catch (_) {
-            return cachedRes;
+            return fullRes;
           }
         }
         return fetch(req).catch(() => Response.error());
@@ -204,12 +233,12 @@ self.addEventListener('fetch', (e) => {
   e.respondWith(
     caches.match(req).then((cachedRes) => {
       const fetchPromise = fetch(req).then((networkRes) => {
-        if (networkRes && networkRes.status === 200 && networkRes.type === 'basic') {
+        if (networkRes && networkRes.status === 200 && (networkRes.type === 'basic' || networkRes.type === 'cors')) {
           const clone = networkRes.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
         }
         return networkRes;
-      }).catch(() => cachedRes || Response.error());
+      }).catch(() => cachedRes || caches.match(req, { ignoreSearch: true }) || Response.error());
 
       return cachedRes || fetchPromise;
     })

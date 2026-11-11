@@ -93,6 +93,7 @@
   let lastPt = null;
   let undoStack = [];
   let previewSongTimer = null;
+  let previewSongBirdId = null;
 
   // Caché de plantillas de contorno y pinturas guardadas en sesión por ave
   const templateCache = {};
@@ -1284,6 +1285,7 @@
 
     if (playSound) {
       playPopTone(620, 0.14, "sine");
+      playCurrentBirdSongInWorkshop(2500);
     }
 
     if (templateCache[birdId]) {
@@ -1606,6 +1608,7 @@
           loadBirdIntoWorkshop(id, true);
         } else {
           playPopTone(700, 0.1);
+          playCurrentBirdSongInWorkshop(2500);
         }
       });
       strip.appendChild(pill);
@@ -1664,33 +1667,63 @@
     renderColorPalette();
   }
 
-  function playCurrentBirdSongInWorkshop() {
+  function stopWorkshopPreviewSong() {
+    if (previewSongTimer) {
+      clearTimeout(previewSongTimer);
+      previewSongTimer = null;
+    }
+    if (previewSongBirdId && typeof audioElements !== "undefined" && audioElements[previewSongBirdId]) {
+      const a = audioElements[previewSongBirdId];
+      const stillSingingInStage = (typeof isSinging !== "undefined" && isSinging && isSinging[previewSongBirdId]);
+      if (!stillSingingInStage) {
+        try {
+          a.pause();
+          a.currentTime = 0;
+        } catch (e) {}
+      }
+    }
+    previewSongBirdId = null;
+  }
+
+  function playCurrentBirdSongInWorkshop(durationMs = 3600) {
     const birds = getBirdsMap();
     const bird = birds[currentBirdId];
     if (!bird) return;
 
-    // Reproducir locución si existe
-    if (typeof playBirdVoice === "function") {
-      playBirdVoice(currentBirdId);
+    stopWorkshopPreviewSong();
+    if (typeof getSharedAudioCtx === "function") {
+      try { getSharedAudioCtx(); } catch (e) {}
     }
 
-    // Reproducir canto real del ave durante 3.5 segundos
-    if (typeof audioElements !== "undefined" && audioElements[currentBirdId]) {
-      const a = audioElements[currentBirdId];
-      if (previewSongTimer) clearTimeout(previewSongTimer);
+    const targetBirdId = currentBirdId;
+    previewSongBirdId = targetBirdId;
+
+    // Reproducir canto real del ave primero y luego la locución si existe
+    if (typeof audioElements !== "undefined" && audioElements[targetBirdId]) {
+      const a = audioElements[targetBirdId];
       a.volume = 1;
       a.currentTime = 0;
-      a.play().catch(() => {});
+      const p = a.play();
+      if (p !== undefined) p.catch(() => {});
       previewSongTimer = setTimeout(() => {
-        if (typeof isSinging !== "undefined" && !isSinging[currentBirdId]) {
-          a.pause();
-          a.currentTime = 0;
+        if (typeof isSinging === "undefined" || !isSinging[targetBirdId]) {
+          try {
+            a.pause();
+            a.currentTime = 0;
+          } catch (e) {}
         }
-      }, 3600);
+        if (previewSongBirdId === targetBirdId) {
+          previewSongBirdId = null;
+        }
+      }, durationMs);
     } else if (bird.audioSrc) {
       const tempAudio = new Audio(bird.audioSrc);
       tempAudio.play().catch(() => {});
-      setTimeout(() => tempAudio.pause(), 3600);
+      setTimeout(() => tempAudio.pause(), durationMs);
+    }
+
+    if (typeof playBirdVoice === "function") {
+      playBirdVoice(targetBirdId);
     }
   }
 
@@ -2031,6 +2064,7 @@
   };
 
   window.closeColoringGame = function () {
+    stopWorkshopPreviewSong();
     saveCurrentBirdPaintingState();
     const modal = document.getElementById("coloring-modal");
     if (modal) {

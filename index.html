@@ -1790,11 +1790,359 @@
     return themeSet[id] || { pctX: 50, pctY: 50, scale: 1.0 };
   }
 
-  // Elementos de Audio HTML5 nativos para salida directa sin bloqueos
+  // Motor de Audio Híbrido (WebAudio AudioBufferSourceNode + Respaldo HTML5 Audio)
+  // Garantiza reproducción instantánea, sin bloqueos de Range 206, sin límite de WebMediaPlayers y desbloqueo global en el primer toque
   const audioElements = {};
   const voiceElements = {};
   const isSinging = {};
   const toastTimers = {};
+
+  let sharedAudioCtx = null;
+  function getSharedAudioCtx() {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return null;
+    if (!sharedAudioCtx || sharedAudioCtx.state === "closed") {
+      sharedAudioCtx = new AudioCtx();
+    }
+    if (sharedAudioCtx.state === "suspended") {
+      sharedAudioCtx.resume().catch(() => {});
+    }
+    return sharedAudioCtx;
+  }
+
+  // Desbloqueo proactivo global del AudioContext en el primer gesto del usuario
+  ["pointerdown", "touchstart", "mousedown", "click", "keydown"].forEach(evtName => {
+    window.addEventListener(evtName, () => {
+      getSharedAudioCtx();
+    }, { capture: true, passive: true });
+  });
+
+  function createSmartAudioPlayer(srcUrl, loopByDefault = false) {
+    let _src = srcUrl || "";
+    let _loop = Boolean(loopByDefault);
+    let _volume = 1;
+    let _muted = false;
+    let _paused = true;
+    let _ended = false;
+    let _offset = 0;
+    let _startTime = 0;
+    let _duration = 0;
+    let _readyState = 1;
+    let _error = null;
+    let _playToken = 0;
+
+    let decodedBuffer = null;
+    let decodePromise = null;
+    let activeSource = null;
+    let activeGain = null;
+    let fallbackAudio = null;
+
+    const listeners = { ended: [], pause: [], error: [], canplaythrough: [] };
+    function emit(type, evt) {
+      if (listeners[type]) {
+        listeners[type].slice().forEach(fn => {
+          try { fn(evt); } catch (e) {}
+        });
+      }
+    }
+
+    function stopActiveWebAudio() {
+      if (activeSource) {
+        const srcNode = activeSource;
+        activeSource = null;
+        activeGain = null;
+        try { srcNode.onended = null; } catch (e) {}
+        try { srcNode.stop(0); } catch (e) {}
+        try { srcNode.disconnect(); } catch (e) {}
+      }
+    }
+
+    function stopFallbackAudio() {
+      if (fallbackAudio) {
+        try { fallbackAudio.pause(); } catch (e) {}
+      }
+    }
+
+    function ensureFallbackAudio() {
+      if (!fallbackAudio) {
+        fallbackAudio = new Audio();
+        fallbackAudio.preload = "metadata";
+        fallbackAudio.loop = _loop;
+        fallbackAudio.volume = _muted ? 0 : _volume;
+        fallbackAudio.src = _src;
+        fallbackAudio.addEventListener("loadedmetadata", () => {
+          if (!_duration && isFinite(fallbackAudio.duration)) {
+            _duration = fallbackAudio.duration;
+          }
+          if (_readyState < 2) _readyState = 2;
+        });
+        fallbackAudio.addEventListener("canplaythrough", () => {
+          _readyState = 4;
+          emit("canplaythrough");
+        });
+        fallbackAudio.addEventListener("ended", () => {
+          if (!_loop) {
+            _paused = true;
+            _ended = true;
+            _offset = 0;
+            emit("ended");
+          }
+        });
+        fallbackAudio.addEventListener("pause", () => {
+          emit("pause");
+        });
+        fallbackAudio.addEventListener("error", (e) => {
+          _error = fallbackAudio.error || { code: 4, message: "Media load error" };
+          emit("error", e);
+        });
+      }
+      return fallbackAudio;
+    }
+
+    function loadAndDecode() {
+      if (decodedBuffer) return Promise.resolve(decodedBuffer);
+      if (decodePromise) return decodePromise;
+      if (!_src || window.location.protocol === "file:") {
+        return Promise.resolve(null);
+      }
+
+      decodePromise = fetch(_src)
+        .then(res => {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.arrayBuffer();
+        })
+        .then(arrayBuf => {
+          const ctx = getSharedAudioCtx();
+          if (!ctx) throw new Error("No AudioContext");
+          return new Promise((resolve, reject) => {
+            try {
+              const p = ctx.decodeAudioData(
+                arrayBuf,
+                decoded => resolve(decoded),
+                err => reject(err || new Error("decodeAudioData failed"))
+              );
+              if (p && typeof p.then === "function") {
+                p.then(resolve).catch(reject);
+              }
+            } catch (err) {
+              reject(err);
+            }
+          });
+        })
+        .then(decoded => {
+          decodedBuffer = decoded;
+          _duration = decoded.duration || 0;
+          _readyState = 4;
+          _error = null;
+          emit("canplaythrough");
+          return decoded;
+        })
+        .catch(err => {
+          decodePromise = null;
+          return null;
+        });
+
+      return decodePromise;
+    }
+
+    function startWebAudioPlayback(ctx, buf, token) {
+      stopActiveWebAudio();
+      stopFallbackAudio();
+
+      const source = ctx.createBufferSource();
+      source.buffer = buf;
+      source.loop = _loop;
+
+      const gainNode = ctx.createGain();
+      const targetVol = _muted ? 0 : _volume;
+      gainNode.gain.setValueAtTime(targetVol, ctx.currentTime);
+
+      source.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      const dur = buf.duration || 0;
+      const startOff = (dur > 0 && _offset > 0 && _offset < dur) ? _offset : 0;
+      _startTime = ctx.currentTime - startOff;
+
+      source.onended = () => {
+        if (activeSource === source) {
+          activeSource = null;
+          activeGain = null;
+          if (!_loop && token === _playToken && !_paused) {
+            _paused = true;
+            _ended = true;
+            _offset = 0;
+            emit("ended");
+          }
+        }
+      };
+
+      activeSource = source;
+      activeGain = gainNode;
+      source.start(0, startOff);
+    }
+
+    function startFallbackPlayback(token) {
+      stopActiveWebAudio();
+      const fb = ensureFallbackAudio();
+      fb.loop = _loop;
+      fb.volume = _muted ? 0 : _volume;
+      if (fb.readyState > 0 && _offset === 0 && fb.currentTime > 0) {
+        try { fb.currentTime = 0; } catch (e) {}
+      }
+      const p = fb.play();
+      if (p && typeof p.then === "function") {
+        return p.then(() => {
+          if (token !== _playToken || _paused) {
+            try { fb.pause(); } catch (e) {}
+          }
+        });
+      }
+      return Promise.resolve();
+    }
+
+    return {
+      get src() { return _src; },
+      set src(val) {
+        if (val !== _src) {
+          _src = val || "";
+          decodedBuffer = null;
+          decodePromise = null;
+          if (fallbackAudio) fallbackAudio.src = _src;
+        }
+      },
+      get loop() { return _loop; },
+      set loop(val) {
+        _loop = Boolean(val);
+        if (activeSource) activeSource.loop = _loop;
+        if (fallbackAudio) fallbackAudio.loop = _loop;
+      },
+      get volume() { return _volume; },
+      set volume(val) {
+        _volume = Math.max(0, Math.min(1, Number(val)));
+        const eff = _muted ? 0 : _volume;
+        if (activeGain && sharedAudioCtx) {
+          try {
+            activeGain.gain.setValueAtTime(eff, sharedAudioCtx.currentTime);
+          } catch (e) {
+            activeGain.gain.value = eff;
+          }
+        }
+        if (fallbackAudio) {
+          try { fallbackAudio.volume = eff; } catch (e) {}
+        }
+      },
+      get muted() { return _muted; },
+      set muted(val) {
+        _muted = Boolean(val);
+        const eff = _muted ? 0 : _volume;
+        if (activeGain && sharedAudioCtx) {
+          try {
+            activeGain.gain.setValueAtTime(eff, sharedAudioCtx.currentTime);
+          } catch (e) {
+            activeGain.gain.value = eff;
+          }
+        }
+        if (fallbackAudio) {
+          try { fallbackAudio.muted = _muted; } catch (e) {}
+        }
+      },
+      get paused() { return _paused; },
+      get ended() { return _ended; },
+      get readyState() { return _readyState; },
+      get networkState() { return _readyState >= 4 ? 1 : 2; },
+      get error() { return _error; },
+      get duration() {
+        if (_duration > 0) return _duration;
+        if (fallbackAudio && isFinite(fallbackAudio.duration)) return fallbackAudio.duration;
+        return 0;
+      },
+      get currentTime() {
+        if (_paused) return _offset;
+        if (sharedAudioCtx && activeSource && _duration > 0) {
+          const elapsed = Math.max(0, sharedAudioCtx.currentTime - _startTime);
+          return _loop ? (elapsed % _duration) : Math.min(_duration, elapsed);
+        }
+        if (fallbackAudio) return fallbackAudio.currentTime || 0;
+        return _offset;
+      },
+      set currentTime(val) {
+        const nextVal = Math.max(0, Number(val) || 0);
+        _offset = nextVal;
+        if (fallbackAudio && fallbackAudio.readyState > 0) {
+          try { fallbackAudio.currentTime = nextVal; } catch (e) {}
+        }
+        if (!_paused && sharedAudioCtx && decodedBuffer && activeSource) {
+          startWebAudioPlayback(sharedAudioCtx, decodedBuffer, _playToken);
+        }
+      },
+      addEventListener(type, fn) {
+        if (listeners[type] && typeof fn === "function") {
+          listeners[type].push(fn);
+        }
+      },
+      removeEventListener(type, fn) {
+        if (listeners[type]) {
+          listeners[type] = listeners[type].filter(f => f !== fn);
+        }
+      },
+      preloadBuffer() {
+        return loadAndDecode();
+      },
+      load() {
+        return loadAndDecode();
+      },
+      play() {
+        const token = ++_playToken;
+        _paused = false;
+        _ended = false;
+
+        const ctx = getSharedAudioCtx();
+        if (ctx && ctx.state === "suspended") {
+          ctx.resume().catch(() => {});
+        }
+
+        if (ctx && decodedBuffer) {
+          try {
+            startWebAudioPlayback(ctx, decodedBuffer, token);
+            return Promise.resolve();
+          } catch (e) {
+            return startFallbackPlayback(token);
+          }
+        }
+
+        return loadAndDecode().then(buf => {
+          if (token !== _playToken || _paused) return;
+          const activeCtx = getSharedAudioCtx();
+          if (activeCtx && buf) {
+            if (activeCtx.state === "suspended") {
+              activeCtx.resume().catch(() => {});
+            }
+            try {
+              startWebAudioPlayback(activeCtx, buf, token);
+              return;
+            } catch (e) {}
+          }
+          return startFallbackPlayback(token);
+        });
+      },
+      pause() {
+        ++_playToken;
+        if (!_paused) {
+          if (sharedAudioCtx && activeSource && _duration > 0) {
+            const elapsed = Math.max(0, sharedAudioCtx.currentTime - _startTime);
+            _offset = _loop ? (elapsed % _duration) : Math.min(_duration, elapsed);
+          } else if (fallbackAudio) {
+            _offset = fallbackAudio.currentTime || 0;
+          }
+        }
+        _paused = true;
+        stopActiveWebAudio();
+        stopFallbackAudio();
+        emit("pause");
+      }
+    };
+  }
 
   // Locuciones grabadas y publicadas en audio/voz_[id].mp3
   const voiceAvailable = {
@@ -1843,9 +2191,7 @@
       Object.values(audioElements).forEach(song => {
         if (song) song.volume = 0.65;
       });
-      if (v.readyState > 0) {
-        v.currentTime = 0;
-      }
+      v.currentTime = 0;
       const playPromise = v.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => restoreSongVolume());
@@ -1861,16 +2207,12 @@
   }
 
   Object.keys(BIRDS).forEach(id => {
-    const audio = new Audio();
-    audio.src = BIRDS[id].audioSrc;
-    audio.loop = true;
-    audio.preload = "auto";
+    const audio = createSmartAudioPlayer(BIRDS[id].audioSrc, true);
     audioElements[id] = audio;
     isSinging[id] = false;
 
     if (BIRDS[id].voiceSrc && voiceAvailable[id] !== false) {
-      const vAudio = new Audio();
-      vAudio.preload = "auto";
+      const vAudio = createSmartAudioPlayer(BIRDS[id].voiceSrc, false);
       vAudio.addEventListener("ended", () => restoreSongVolume(id));
       vAudio.addEventListener("pause", () => restoreSongVolume(id));
       vAudio.addEventListener("error", () => {
@@ -1882,18 +2224,34 @@
           b.title = "Locución aún no grabada";
         });
       });
-      vAudio.src = BIRDS[id].voiceSrc;
       voiceElements[id] = vAudio;
     }
-
-    // Precarga de imágenes clave (reposo, canto sutil de pico, vuelo y pokémon)
-    [BIRDS[id].reposo, BIRDS[id].cantoPico, BIRDS[id].vuelo, BIRDS[id].pokemon].forEach(url => {
-      if (url) {
-        const pre = new Image();
-        pre.src = url;
-      }
-    });
   });
+
+  // Precarga escalonada con prioridad absoluta para los cantos de las 15 aves (lotes de 4),
+  // seguida de locuciones y finalmente sprites secundarios de animación para no saturar sockets HTTP
+  (async function preloadAudioAndAssetsStaggered() {
+    const birdIds = Object.keys(BIRDS);
+    for (let i = 0; i < birdIds.length; i += 4) {
+      const batch = birdIds.slice(i, i + 4);
+      await Promise.all(batch.map(id => audioElements[id] ? audioElements[id].preloadBuffer() : Promise.resolve()));
+    }
+    const voiceIds = Object.keys(voiceElements);
+    for (let i = 0; i < voiceIds.length; i += 4) {
+      const batch = voiceIds.slice(i, i + 4);
+      await Promise.all(batch.map(id => voiceElements[id] ? voiceElements[id].preloadBuffer() : Promise.resolve()));
+    }
+    setTimeout(() => {
+      birdIds.forEach(id => {
+        [BIRDS[id].cantoPico, BIRDS[id].vuelo, BIRDS[id].pokemon].forEach(url => {
+          if (url) {
+            const pre = new Image();
+            pre.src = url;
+          }
+        });
+      });
+    }, 600);
+  })();
 
   /* =========================================================================
      CÁMARA: ESCENARIO 16:9, ARRASTRE FLUIDO (PAN) Y ZOOM INTERACTIVO
@@ -2295,19 +2653,6 @@
     setTimeout(() => note.remove(), 1500);
   }
 
-  let sharedAudioCtx = null;
-  function getSharedAudioCtx() {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return null;
-    if (!sharedAudioCtx || sharedAudioCtx.state === "closed") {
-      sharedAudioCtx = new AudioCtx();
-    }
-    if (sharedAudioCtx.state === "suspended") {
-      sharedAudioCtx.resume().catch(() => {});
-    }
-    return sharedAudioCtx;
-  }
-
   function playChime(freq = 660) {
     try {
       const ctx = getSharedAudioCtx();
@@ -2615,6 +2960,7 @@
   let lastHandledGestureTime = 0;
   let draggedBirdId = null;
   let isBirdDragging = false;
+  let birdDragHasMoved = false;
   let birdDragStart = { x: 0, y: 0, time: 0 };
   let birdHoldTimer = null;
 
@@ -2698,6 +3044,20 @@
     }
   }
 
+  function cancelStationaryBirdDrag(id) {
+    isBirdDragging = false;
+    const perch = document.getElementById(`perch-${id}`);
+    if (!perch) return;
+    perch.classList.remove("is-dragging");
+    const currentTheme = (typeof THEMES !== 'undefined' && THEMES[themeIndex]) ? THEMES[themeIndex].id : "costa";
+    const themeSet = THEME_PERCHES[currentTheme] || THEME_PERCHES.costa;
+    const currentY = themeSet[id] ? themeSet[id].pctY : 60;
+    perch.style.zIndex = Math.round(15 + (currentY / 100) * 15);
+    perch.style.cursor = "grab";
+    perch.style.transition = "";
+    perch.style.transform = "";
+  }
+
   function finishBirdDrag(id) {
     if (!isBirdDragging) return;
     isBirdDragging = false;
@@ -2733,6 +3093,9 @@
 
   function handleBirdInteraction(id, e) {
     if (hasFlown[id]) return;
+
+    // Asegurar contexto de audio activo en el gesto del usuario
+    getSharedAudioCtx();
 
     // 1. MODO DAR DE COMER: Evento delimitado exclusivo al tocar al pajarito
     if (feedMode) {
@@ -2775,6 +3138,7 @@
     perch.addEventListener("pointerdown", e => {
       if (hasFlown[id] || pinch.active) return;
 
+      getSharedAudioCtx();
       e.stopPropagation(); // Evitar que el viewport inicie el paneo de cámara
       drag.active = false;
       drag.hasMoved = false;
@@ -2788,6 +3152,7 @@
 
       draggedBirdId = id;
       isBirdDragging = false;
+      birdDragHasMoved = false;
       birdDragStart = {
         x: e.clientX,
         y: e.clientY,
@@ -2795,12 +3160,12 @@
       };
 
       if (birdHoldTimer) clearTimeout(birdHoldTimer);
-      // Mantener presionado 300ms en el lugar activa el modo arrastre sin desplazar el pie de apoyo
+      // Mantener presionado 450ms en el lugar muestra el estado de agarre, pero solo cuenta como arrastre real si el usuario desplaza el ave
       birdHoldTimer = setTimeout(() => {
         if (draggedBirdId === id && !isBirdDragging) {
           startBirdDrag(id, e.clientX, e.clientY, false);
         }
-      }, 300);
+      }, 450);
     });
 
     perch.addEventListener("click", e => {
@@ -2820,16 +3185,19 @@
     const dy = e.clientY - birdDragStart.y;
     const dist = Math.hypot(dx, dy);
 
-    // Si se mueve más de 7px antes del temporizador, iniciar arrastre inmediatamente
-    if (!isBirdDragging && dist > 7) {
-      if (birdHoldTimer) {
-        clearTimeout(birdHoldTimer);
-        birdHoldTimer = null;
+    // Si se mueve más de 12px, iniciar arrastre real y marcar desplazamiento efectivo
+    if (dist > 12) {
+      birdDragHasMoved = true;
+      if (!isBirdDragging) {
+        if (birdHoldTimer) {
+          clearTimeout(birdHoldTimer);
+          birdHoldTimer = null;
+        }
+        startBirdDrag(draggedBirdId, e.clientX, e.clientY, true);
       }
-      startBirdDrag(draggedBirdId, e.clientX, e.clientY);
     }
 
-    if (isBirdDragging) {
+    if (isBirdDragging && birdDragHasMoved) {
       updateBirdDragPosition(draggedBirdId, e.clientX, e.clientY);
     }
   });
@@ -2843,18 +3211,28 @@
     if (draggedBirdId) {
       const id = draggedBirdId;
       const wasDragging = isBirdDragging;
+      const movedEnough = birdDragHasMoved;
       draggedBirdId = null;
+      birdDragHasMoved = false;
 
-      if (wasDragging) {
+      if (wasDragging && movedEnough) {
         finishBirdDrag(id);
         return;
       }
 
-      // Si no se arrastró, evaluar si fue un tap limpio
+      if (wasDragging && !movedEnough) {
+        // El usuario sostuvo el clic un momento (ej. 300-600ms) sin arrastrar: cancelar agarre y hacer cantar al ave
+        cancelStationaryBirdDrag(id);
+        lastHandledGestureTime = Date.now();
+        handleBirdInteraction(id, e);
+        return;
+      }
+
+      // Si no se arrastró, evaluar si fue un tap o clic (incluso si duró hasta 900ms para niños)
       const dist = Math.hypot(e.clientX - birdDragStart.x, e.clientY - birdDragStart.y);
       const elapsed = Date.now() - birdDragStart.time;
 
-      if (dist <= 14 && elapsed < 400) {
+      if (dist <= 18 && elapsed < 900) {
         lastHandledGestureTime = Date.now();
         handleBirdInteraction(id, e);
       }
@@ -2867,10 +3245,15 @@
       birdHoldTimer = null;
     }
     if (draggedBirdId && isBirdDragging) {
-      finishBirdDrag(draggedBirdId);
+      if (birdDragHasMoved) {
+        finishBirdDrag(draggedBirdId);
+      } else {
+        cancelStationaryBirdDrag(draggedBirdId);
+      }
     }
     draggedBirdId = null;
     isBirdDragging = false;
+    birdDragHasMoved = false;
   });
 
   /* =========================================================================
@@ -3397,6 +3780,7 @@
   
   // Exponer referencias globales para los módulos infantiles (Taller de Pintura y Sala de Minijuegos)
   window.BIRDS = BIRDS;
+  window.isSinging = isSinging;
   window.audioElements = audioElements;
   window.voiceElements = voiceElements;
   window.playBirdVoice = playBirdVoice;
@@ -3408,19 +3792,19 @@
   window.playChime = playChime;
   window.isInsideModal = isInsideModal;
 
-  // Auto-Actualizador de cachés antiguas (purga versiones anteriores a v26)
-  const APP_DEPLOY_VERSION = '2026.11.10.v26.kids_coloring_and_proportions';
+  // Auto-Actualizador de cachés antiguas (purga versiones anteriores a v27)
+  const APP_DEPLOY_VERSION = '2026.11.10.v27.webaudio_bird_songs';
   if (localStorage.getItem('pajaritos_app_version') !== APP_DEPLOY_VERSION) {
     localStorage.setItem('pajaritos_app_version', APP_DEPLOY_VERSION);
     if ('caches' in window) {
       caches.keys().then((names) => {
         return Promise.all(
           names
-            .filter(name => !name.startsWith('pajaritos-cache-v26'))
+            .filter(name => !name.startsWith('pajaritos-cache-v27'))
             .map(name => caches.delete(name))
         );
       }).then(() => {
-        console.log('Cachés antiguas purgadas con éxito para v26.');
+        console.log('Cachés antiguas purgadas con éxito para v27.');
       });
     }
   }
@@ -3451,7 +3835,7 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       const hadController = Boolean(navigator.serviceWorker.controller);
-      navigator.serviceWorker.register('./sw.js?v=26').then((reg) => {
+      navigator.serviceWorker.register('./sw.js?v=27').then((reg) => {
         reg.update();
       }).catch(() => {});
 
@@ -3467,8 +3851,8 @@
   }
 
 </script>
-<script src="coloring_game.js?v=26"></script>
-<script src="kids_games.js?v=26"></script>
+<script src="coloring_game.js?v=27"></script>
+<script src="kids_games.js?v=27"></script>
 
 </body>
 </html>

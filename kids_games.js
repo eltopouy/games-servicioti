@@ -196,6 +196,7 @@
 
   function playBirdSongSnippet(birdId, durationMs = 4200) {
     stopActiveQuizSong();
+    getAudioContext();
     const birds = getBirdsMap();
     const bird = birds[birdId];
     if (!bird) return;
@@ -226,9 +227,7 @@
 
     try {
       audio.volume = 1;
-      if (audio.readyState > 0) {
-        audio.currentTime = 0;
-      }
+      audio.currentTime = 0;
       const p = audio.play();
       if (p !== undefined) {
         p.catch(() => {
@@ -1176,7 +1175,7 @@
       if (modal && modal.classList.contains("open") && currentTab === "who") {
         playBirdSongSnippet(targetId, 4500);
       }
-    }, 180);
+    }, 30);
   }
 
   function handleWhoChoiceTap(cardEl) {
@@ -1191,6 +1190,7 @@
       cardEl.classList.add("kg-card-correct");
 
       playSuccessSound();
+      playBirdSongSnippet(chosenId, 1650);
       triggerBirdVoiceSafe(chosenId);
 
       const birdName = birdsMap[chosenId] ? birdsMap[chosenId].name : "Pajarito";
@@ -1330,6 +1330,10 @@
     playFlipSound();
     memState.flippedIndices.push(idx);
     cardEl.classList.add("flipped");
+
+    if (memState.flippedIndices.length === 1) {
+      playBirdSongSnippet(cardData.id, 1400);
+    }
 
     if (memState.flippedIndices.length === 2) {
       memState.locked = true;
@@ -1472,6 +1476,7 @@
       starsEl.textContent = `⭐ ${whereState.stars} / ${whereState.maxRounds} encontrados`;
     }
 
+    playBirdSongSnippet(targetId, 2400);
     triggerBirdVoiceSafe(targetId);
   }
 
@@ -1531,8 +1536,8 @@
         clearAllHintRings();
 
         playSuccessSound();
-        triggerBirdVoiceSafe(birdId);
         playBirdSongSnippet(birdId, 2300);
+        triggerBirdVoiceSafe(birdId);
 
         if (typeof zoomToBird === "function") {
           zoomToBird(birdId);
